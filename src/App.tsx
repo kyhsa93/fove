@@ -794,8 +794,8 @@ function calculateSaju(birthDateStr: string, birthTimeStr: string, gender: Gende
   }
 }
 
-function buildDailyFortune(result: SajuResult): DailyFortune {
-  const now = new Date()
+function buildDailyFortune(result: SajuResult, referenceDate: Date = new Date()): DailyFortune {
+  const now = referenceDate
   const year = now.getFullYear()
   const month = now.getMonth() + 1
   const day = now.getDate()
@@ -1015,7 +1015,14 @@ export default function App(): JSX.Element {
 
   const dailyFortune = useMemo<DailyFortune | null>(() => {
     if (!result) return null
-    return buildDailyFortune(result)
+
+    const [year, month, day] = todayKey.split('-').map(Number)
+    const referenceDate =
+      year && month && day && !Number.isNaN(year) && !Number.isNaN(month) && !Number.isNaN(day)
+        ? new Date(year, month - 1, day)
+        : new Date()
+
+    return buildDailyFortune(result, referenceDate)
   }, [result, todayKey])
 
   return (
