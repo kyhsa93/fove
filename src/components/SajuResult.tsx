@@ -3,13 +3,14 @@ import {
   ELEMENT_LABELS,
   PILLAR_FOCUS,
   PILLAR_LABELS,
+  STEM_YINYANG,
+  recommendLottoNumbers,
   type DailyFortune,
   type ElementBar,
   type InterpretationCategory,
   type Pillar,
   type PillarKey,
-  type SajuResult,
-  STEM_YINYANG
+  type SajuResult
 } from '../lib/saju'
 
 interface PillarCardProps {
@@ -64,9 +65,13 @@ function PillarCard({ pillarKey, pillar }: PillarCardProps): JSX.Element {
 
 interface DailyFortuneCardProps {
   dailyFortune: DailyFortune
+  result: SajuResult
 }
 
-function DailyFortuneCard({ dailyFortune }: DailyFortuneCardProps): JSX.Element {
+function DailyFortuneCard({ dailyFortune, result }: DailyFortuneCardProps): JSX.Element {
+  const lucky = recommendLottoNumbers(result, dailyFortune)
+  const strongestElement = result.summary.strongest.element
+
   return (
     <div className="bg-gradient-to-br from-amber-100 via-white to-rose-100 border border-amber-200 rounded-2xl shadow-sm p-6 space-y-4">
       <header className="flex flex-col gap-1 text-gray-900">
@@ -94,6 +99,41 @@ function DailyFortuneCard({ dailyFortune }: DailyFortuneCardProps): JSX.Element 
             <p className="text-xs font-semibold text-slate-600 tracking-wide">CARE</p>
             <p>{dailyFortune.cautionText}</p>
           </div>
+        </div>
+      </div>
+      <div className="bg-white/80 border border-amber-200 rounded-xl p-4 space-y-3">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide">Lucky Lotto</p>
+          <p className="text-xs text-gray-500">오늘의 기운을 바탕으로 추천된 번호입니다.</p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {lucky.numbers.map((num) => (
+            <span
+              key={num}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-amber-200 to-rose-200 text-gray-900 font-semibold shadow-sm"
+            >
+              {num}
+            </span>
+          ))}
+        </div>
+        <p className="text-xs text-center text-gray-600">
+          보너스 번호 <span className="font-semibold text-rose-500">{lucky.bonus}</span>
+        </p>
+        <div className="text-xs text-gray-600 space-y-1.5">
+          <p className="font-semibold text-gray-700">추천 이유</p>
+          <p>
+            {dailyFortune.pillarName} ({dailyFortune.yinYang}·{dailyFortune.elementLabel}) 일진과 당신 사주의 가장 강한
+            {` ${strongestElement} `}기운을 조합해 상승 흐름을 끌어올릴 수 있는 조합으로 골랐어요.
+          </p>
+          <p className="text-[11px] leading-relaxed text-gray-500">
+            에너지 포인트: {dailyFortune.energyText}
+          </p>
+          <p className="text-[11px] leading-relaxed text-gray-500">
+            실천 가이드: {dailyFortune.actionText}
+          </p>
+          <p className="text-[11px] leading-relaxed text-gray-500">
+            균형 메모: {dailyFortune.cautionText}
+          </p>
         </div>
       </div>
     </div>
@@ -179,17 +219,17 @@ export function SajuResult({ result, elementBars, interpretation, dailyFortune }
           <div className="bg-rose-50 border border-rose-100 rounded-xl p-4 space-y-2">
             <p className="text-sm text-gray-600">음력 기준</p>
             <p className="text-base font-semibold text-gray-900">{result.pillars.year.name}년 ({result.meta.lunarDate})</p>
-            {result.pillars.month?.isLeapMonth && (
+            {result.pillars.month?.isLeapMonth ? (
               <p className="text-xs text-rose-500">※ 윤달에 해당하는 날짜입니다.</p>
-            )}
-            {!result.meta.hasTime && (
+            ) : null}
+            {!result.meta.hasTime ? (
               <p className="text-xs text-rose-500">※ 태어난 시간을 입력하면 시주까지 확인할 수 있습니다.</p>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
 
-      {dailyFortune ? <DailyFortuneCard dailyFortune={dailyFortune} /> : null}
+      {dailyFortune ? <DailyFortuneCard dailyFortune={dailyFortune} result={result} /> : null}
 
       <div className="grid gap-4 md:grid-cols-2">
         {(Object.entries(result.pillars) as Array<[PillarKey, Pillar | null]>).map(([key, pillar]) => {
