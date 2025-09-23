@@ -3,85 +3,279 @@ import { useMemo, useState } from 'react'
 type Dimension = 'EI' | 'SN' | 'TF' | 'JP'
 type MbtiLetter = 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P'
 type MbtiType = `${'E' | 'I'}${'S' | 'N'}${'T' | 'F'}${'J' | 'P'}`
+type ResponseValue = -2 | -1 | 0 | 1 | 2
 
 interface MbtiQuestion {
   id: string
   dimension: Dimension
   prompt: string
-  options: Array<{ label: string; value: MbtiLetter }>
+  options: Array<{ label: string; detail: string; value: ResponseValue }>
+}
+
+const DIMENSION_PAIRS: Record<Dimension, [MbtiLetter, MbtiLetter]> = {
+  EI: ['E', 'I'],
+  SN: ['S', 'N'],
+  TF: ['T', 'F'],
+  JP: ['J', 'P']
+}
+
+const DIMENSION_LABEL: Record<Dimension, string> = {
+  EI: '에너지 방향 (외향-내향)',
+  SN: '정보 수집 (감각-직관)',
+  TF: '판단 기준 (사고-감정)',
+  JP: '생활 양식 (계획-유연)'
+}
+
+const DIMENSION_SHORT_LABEL: Record<MbtiLetter, string> = {
+  E: 'E (외향)',
+  I: 'I (내향)',
+  S: 'S (감각)',
+  N: 'N (직관)',
+  T: 'T (사고)',
+  F: 'F (감정)',
+  J: 'J (계획)',
+  P: 'P (유연)'
 }
 
 const QUESTIONS: MbtiQuestion[] = [
   {
     id: 'q1',
     dimension: 'EI',
-    prompt: '새로운 사람들과 만나는 모임이 있을 때 어떤 편인가요?',
+    prompt: '새로운 모임에서 가장 편안한 위치는 어디인가요?',
     options: [
-      { label: '새로운 사람들과 에너지를 주고받으며 신나게 어울린다', value: 'E' },
-      { label: '짧게 참여하거나 상황을 지켜보고 조용히 빠져나온다', value: 'I' }
+      { label: '에너지 넘치는 중심', detail: '자연스럽게 대화를 주도하며 사람들을 연결한다', value: 2 },
+      { label: '적극적으로 어울리는 편', detail: '대화에 잘 섞이며 다양한 사람과 이야기 나눈다', value: 1 },
+      { label: '상황을 봐가며 참여', detail: '필요할 때 이야기하고 과도하게 나서지는 않는다', value: 0 },
+      { label: '가까운 사람과 조용히', detail: '믿음이 가는 소수와 깊이 있는 대화를 나눈다', value: -1 },
+      { label: '관찰하며 천천히 적응', detail: '분위기를 살피고 자연스럽게 끼어들 기회를 기다린다', value: -2 }
     ]
   },
   {
     id: 'q2',
     dimension: 'EI',
-    prompt: '휴식 시간이 생기면 어떤 활동을 선택하나요?',
+    prompt: '긴 하루를 보낸 뒤, 에너지를 가장 잘 회복하는 방법은?',
     options: [
-      { label: '친구에게 연락하거나 함께할 사람을 찾는다', value: 'E' },
-      { label: '혼자만의 시간을 보내며 리프레시한다', value: 'I' }
+      { label: '새로운 활동 찾기', detail: '즐거운 이벤트나 모임을 계획하며 기운을 충전한다', value: 2 },
+      { label: '친구와 수다 떨기', detail: '가까운 사람들과 만나 이야기를 나누며 스트레스를 푼다', value: 1 },
+      { label: '상황에 따라 유동적', detail: '혼자 혹은 함께, 그날의 컨디션에 맞춘다', value: 0 },
+      { label: '혼자만의 힐링', detail: '조용한 공간에서 좋아하는 취미를 즐긴다', value: -1 },
+      { label: '완전한 고독', detail: '연락을 최소화하고 생각을 정리할 시간을 확보한다', value: -2 }
     ]
   },
   {
     id: 'q3',
-    dimension: 'SN',
-    prompt: '새로운 정보를 받아들일 때 어떤 방식이 더 편한가요?',
+    dimension: 'EI',
+    prompt: '새로운 아이디어를 발견했을 때의 반응은?',
     options: [
-      { label: '구체적인 사례와 경험을 통해 이해하는 편이다', value: 'S' },
-      { label: '핵심 개념과 가능성을 상상하며 이해하는 편이다', value: 'N' }
+      { label: '즉시 공유', detail: '곧바로 주변에 알리고 함께 실험해 본다', value: 2 },
+      { label: '빠른 토론', detail: '몇몇 지인에게 의견을 물으며 아이디어를 다듬는다', value: 1 },
+      { label: '일단 정리', detail: '핵심만 정리해 두고 상황을 지켜본다', value: 0 },
+      { label: '조용한 분석', detail: '혼자 충분히 검토한 뒤 필요하면 공유한다', value: -1 },
+      { label: '개인 기록', detail: '일기나 메모 등 개인적인 공간에 담아둔다', value: -2 }
     ]
   },
   {
     id: 'q4',
-    dimension: 'SN',
-    prompt: '아이디어 회의에서 자신을 더 잘 나타내는 모습은?',
+    dimension: 'EI',
+    prompt: '새로운 팀에 합류했을 때 스스로를 어떻게 소개하나요?',
     options: [
-      { label: '현실적으로 실행 가능한 계획을 제시한다', value: 'S' },
-      { label: '새로운 가능성과 창의적 방향을 제안한다', value: 'N' }
+      { label: '밝은 첫인사', detail: '가볍게 농담도 건네며 분위기를 빠르게 띄운다', value: 2 },
+      { label: '대화 주도', detail: '먼저 질문을 던지며 서로 알아가는 시간을 만든다', value: 1 },
+      { label: '필요한 만큼', detail: '업무와 관련된 정보 위주로 차분히 소개한다', value: 0 },
+      { label: '선 관찰 후 대화', detail: '구성원을 살핀 뒤 자연스러운 타이밍을 기다린다', value: -1 },
+      { label: '간결한 소개', detail: '최소한의 정보만 전하고 상황에 익숙해질 시간을 갖는다', value: -2 }
     ]
   },
   {
     id: 'q5',
-    dimension: 'TF',
-    prompt: '중요한 결정을 내릴 때 더 믿는 것은?',
+    dimension: 'SN',
+    prompt: '새로운 프로젝트를 시작할 때 가장 먼저 떠올리는 것은?',
     options: [
-      { label: '논리적인 이유와 일관된 원칙', value: 'T' },
-      { label: '사람들의 감정과 조화로운 분위기', value: 'F' }
+      { label: '구체적인 실행 리스트', detail: '필요한 자원과 일정부터 세부적으로 정리한다', value: 2 },
+      { label: '현실적인 체크포인트', detail: '무엇이 가능한지, 위험 요소는 무엇인지 파악한다', value: 1 },
+      { label: '전체 그림 확인', detail: '목표와 과정, 리스크를 균형 있게 바라본다', value: 0 },
+      { label: '새로운 가능성 탐색', detail: '기존과 다른 방식으로 접근할 아이디어를 구상한다', value: -1 },
+      { label: '큰 비전 상상', detail: '장기적인 영향과 확장성을 먼저 그림으로 그린다', value: -2 }
     ]
   },
   {
     id: 'q6',
-    dimension: 'TF',
-    prompt: '팀원과 의견이 다를 때 보이는 반응은?',
+    dimension: 'SN',
+    prompt: '정보를 이해할 때 더 신뢰하는 방식은?',
     options: [
-      { label: '객관적인 근거를 제시하며 설득한다', value: 'T' },
-      { label: '상대의 감정을 살피며 공감부터 표현한다', value: 'F' }
+      { label: '눈으로 확인된 사실', detail: '데이터와 증거가 분명할 때 가장 안심한다', value: 2 },
+      { label: '경험에서 나온 패턴', detail: '이미 겪어본 사례를 통해 판단한다', value: 1 },
+      { label: '상황에 따른 선택', detail: '사실과 가능성을 균형 있게 고려한다', value: 0 },
+      { label: '가능성의 흐름', detail: '눈앞의 사실보다는 다음 단계로 이어질 변화를 상상한다', value: -1 },
+      { label: '미래의 시나리오', detail: '지금은 보이지 않아도 확장될 방향을 중시한다', value: -2 }
     ]
   },
   {
     id: 'q7',
-    dimension: 'JP',
-    prompt: '프로젝트 마감이 다가올 때 더 편한 진행 방식은?',
+    dimension: 'SN',
+    prompt: '회의에서 나온 추상적인 아이디어를 들었을 때의 반응은?',
     options: [
-      { label: '앞서 계획한 일정대로 관리하며 마무리한다', value: 'J' },
-      { label: '유연하게 우선순위를 바꾸며 마감 직전 몰입한다', value: 'P' }
+      { label: '현실성 검증', detail: '예산과 일정 등 실행 가능성을 즉시 따져본다', value: 2 },
+      { label: '사례 찾기', detail: '과거 유사한 경험이나 벤치마킹 자료를 조사한다', value: 1 },
+      { label: '균형 잡힌 논의', detail: '아이디어와 실행력을 모두 고려해 의견을 보탠다', value: 0 },
+      { label: '확장 아이디어 제시', detail: '아이디어가 발전할 새로운 방향을 상상한다', value: -1 },
+      { label: '미래 가치 강조', detail: '장기적 파급력과 혁신 가능성을 중심으로 이야기한다', value: -2 }
     ]
   },
   {
     id: 'q8',
-    dimension: 'JP',
-    prompt: '여행을 떠날 때의 준비 스타일은?',
+    dimension: 'SN',
+    prompt: '새로운 기술을 배울 때의 접근법은?',
     options: [
-      { label: '동선과 숙소, 해야 할 일을 미리 정리한다', value: 'J' },
-      { label: '대략적인 방향만 잡고 상황에 맞춰 움직인다', value: 'P' }
+      { label: '매뉴얼부터 숙지', detail: '기본 규칙과 사용 방법을 꼼꼼히 익힌다', value: 2 },
+      { label: '실습과 반복', detail: '직접 사용하며 몸으로 익히는 편이다', value: 1 },
+      { label: '필요한 부분만 선별', detail: '현재 상황에 맞춰 필요한 만큼 학습한다', value: 0 },
+      { label: '실험적인 활용', detail: '새로운 방식으로 응용하면서 이해한다', value: -1 },
+      { label: '원리 파악', detail: '동작 원리와 미래 응용 가능성을 먼저 탐구한다', value: -2 }
+    ]
+  },
+  {
+    id: 'q9',
+    dimension: 'TF',
+    prompt: '팀 갈등 상황에서 먼저 떠올리는 해결책은?',
+    options: [
+      { label: '명확한 기준 제시', detail: '규칙과 목표를 다시 확인하며 판단한다', value: 2 },
+      { label: '논리적 설득', detail: '객관적인 근거로 설득을 시도한다', value: 1 },
+      { label: '상황별 조율', detail: '사실과 감정을 모두 고려해 해결책을 찾는다', value: 0 },
+      { label: '감정 케어', detail: '각자의 감정을 우선적으로 이해하고 다독인다', value: -1 },
+      { label: '공감과 화해', detail: '분위기를 부드럽게 만들며 신뢰 회복을 돕는다', value: -2 }
+    ]
+  },
+  {
+    id: 'q10',
+    dimension: 'TF',
+    prompt: '중요한 결정을 내릴 때 가장 믿는 것은?',
+    options: [
+      { label: '원칙과 사실', detail: '객관적인 데이터와 논리 구조가 탄탄한 근거', value: 2 },
+      { label: '장단점 분석', detail: '이성적으로 비교하며 최선의 선택을 찾는다', value: 1 },
+      { label: '상황에 따른 균형', detail: '논리와 감정을 모두 검토한다', value: 0 },
+      { label: '사람들의 감정', detail: '관련된 사람들이 느낄 감정과 관계를 고려한다', value: -1 },
+      { label: '조화로운 분위기', detail: '모두가 편안하고 만족할 선택을 중시한다', value: -2 }
+    ]
+  },
+  {
+    id: 'q11',
+    dimension: 'TF',
+    prompt: '피드백을 줄 때 어떤 방식이 더 자연스러운가요?',
+    options: [
+      { label: '직접적이고 솔직하게', detail: '문제를 명확히 지적하고 해결 방향을 제시한다', value: 2 },
+      { label: '구체적 제안과 함께', detail: '문제를 설명하고 개선 아이디어를 전한다', value: 1 },
+      { label: '균형 잡힌 피드백', detail: '잘한 점과 개선점을 모두 전달한다', value: 0 },
+      { label: '부드럽고 배려 있게', detail: '감정을 상하지 않게 톤을 조절한다', value: -1 },
+      { label: '격려 중심', detail: '장점을 강조하며 긍정적인 분위기를 만든다', value: -2 }
+    ]
+  },
+  {
+    id: 'q12',
+    dimension: 'TF',
+    prompt: '의견이 맞지 않는 동료에게 어떤 말을 건네나요?',
+    options: [
+      { label: '논리적 반박', detail: '근거와 사실로 내 주장을 명확히 한다', value: 2 },
+      { label: '대안 제시', detail: '더 나은 해결책을 찾기 위해 토론한다', value: 1 },
+      { label: '공동 해결 모색', detail: '각자의 입장을 비교하며 타협점을 찾는다', value: 0 },
+      { label: '감정 이해 표현', detail: '상대의 감정을 먼저 공감하고 입장을 전한다', value: -1 },
+      { label: '관계 회복 우선', detail: '갈등을 최소화하며 관계를 유지하는 데 집중한다', value: -2 }
+    ]
+  },
+  {
+    id: 'q13',
+    dimension: 'JP',
+    prompt: '하루 일정을 계획할 때의 스타일은?',
+    options: [
+      { label: '시간 단위 계획', detail: '세부 일정과 우선순위를 구체적으로 정한다', value: 2 },
+      { label: '할 일 리스트', detail: '해야 할 일을 정리하고 순서대로 처리한다', value: 1 },
+      { label: '대략적 가이드', detail: '해야 할 일을 정리하되 일정은 유연하게 둔다', value: 0 },
+      { label: '즉흥적 선택', detail: '그때그때 상황에 따라 진행한다', value: -1 },
+      { label: '자유로운 흐름', detail: '일정에 얽매이지 않고 자연스러운 흐름을 따른다', value: -2 }
+    ]
+  },
+  {
+    id: 'q14',
+    dimension: 'JP',
+    prompt: '마감이 다가올 때 보이는 모습은?',
+    options: [
+      { label: '이미 다 끝냈다', detail: '미리 준비해 여유 있게 검토한다', value: 2 },
+      { label: '계획대로 진행', detail: '일정에 맞춰 착실히 마무리한다', value: 1 },
+      { label: '필요에 따라 조정', detail: '상황에 따라 계획과 즉흥을 섞어 대응한다', value: 0 },
+      { label: '몰입해서 마무리', detail: '마감 직전 집중력을 끌어올린다', value: -1 },
+      { label: '압박감 속에서 번뜩', detail: '시간 압박이 있어야 최고의 결과를 낸다', value: -2 }
+    ]
+  },
+  {
+    id: 'q15',
+    dimension: 'JP',
+    prompt: '예상치 못한 변화가 생겼을 때의 반응은?',
+    options: [
+      { label: '대비 플랜 활용', detail: '이미 준비해 둔 대안 계획을 즉시 실행한다', value: 2 },
+      { label: '우선순위 재정비', detail: '영향도를 따져 새 일정을 세운다', value: 1 },
+      { label: '상황 파악 후 결정', detail: '잠시 상황을 지켜보고 필요 시 조정한다', value: 0 },
+      { label: '유연하게 수용', detail: '변화에 맞춰 자연스럽게 움직인다', value: -1 },
+      { label: '즉흥적 해결', detail: '그때 떠오르는 아이디어로 문제를 풀어낸다', value: -2 }
+    ]
+  },
+  {
+    id: 'q16',
+    dimension: 'JP',
+    prompt: '여행을 떠날 때의 준비 패턴은?',
+    options: [
+      { label: '세부 일정 완벽 준비', detail: '하루 단위로 시간표를 세우고 필요한 것을 사전에 점검한다', value: 2 },
+      { label: '필수 요소 체크', detail: '숙소, 교통, 핵심 일정 위주로 미리 예매한다', value: 1 },
+      { label: '핵심만 계획', detail: '가보고 싶은 장소와 대략적인 동선만 정한다', value: 0 },
+      { label: '자유 여행', detail: '그날의 기분과 상황에 맞춰 즉흥적으로 움직인다', value: -1 },
+      { label: '현지에서 흡수', detail: '현지에서 얻는 정보와 영감으로 즉석에서 결정한다', value: -2 }
+    ]
+  },
+  {
+    id: 'q17',
+    dimension: 'EI',
+    prompt: '새로운 관계를 만들 때 가장 중요한 태도는?',
+    options: [
+      { label: '먼저 다가가기', detail: '눈에 띄는 에너지로 먼저 인사하고 대화를 시작한다', value: 2 },
+      { label: '기회를 만들기', detail: '공통 관심사를 찾아 자연스럽게 대화를 이어간다', value: 1 },
+      { label: '상대에 맞추기', detail: '상황을 보아가며 필요한 만큼만 소통한다', value: 0 },
+      { label: '반응 살피기', detail: '상대의 시그널을 기다리며 천천히 다가간다', value: -1 },
+      { label: '깊이 있는 연결', detail: '시간을 두고 천천히 신뢰를 쌓는 편이다', value: -2 }
+    ]
+  },
+  {
+    id: 'q18',
+    dimension: 'SN',
+    prompt: '문제를 해결할 때 가장 먼저 하는 일은?',
+    options: [
+      { label: '현실 조건 파악', detail: '사용 가능한 자원과 제약을 구체적으로 정리한다', value: 2 },
+      { label: '직접 시도', detail: '작은 실험을 통해 즉각적인 피드백을 확인한다', value: 1 },
+      { label: '다각도로 분석', detail: '사실과 아이디어를 균형 있게 비교한다', value: 0 },
+      { label: '아이디어 확장', detail: '대안을 폭넓게 탐색하며 새로운 연결고리를 찾는다', value: -1 },
+      { label: '큰 그림 재정의', detail: '문제가 가지는 의미와 장기적 방향을 재점검한다', value: -2 }
+    ]
+  },
+  {
+    id: 'q19',
+    dimension: 'TF',
+    prompt: '칭찬을 들었을 때 더 기쁜 말은?',
+    options: [
+      { label: '정확하고 논리적이야', detail: '분석력과 결정의 타당성을 인정받을 때', value: 2 },
+      { label: '객관적으로 뛰어나', detail: '성과와 실력을 이유로 칭찬받을 때', value: 1 },
+      { label: '신뢰할 수 있어', detail: '능력과 인간미 모두를 인정받을 때', value: 0 },
+      { label: '배려가 느껴져', detail: '사람을 존중하고 감정을 세심하게 챙겼다는 말을 들을 때', value: -1 },
+      { label: '따뜻한 사람이야', detail: '주변에 긍정적인 영향을 주었다는 말을 들을 때', value: -2 }
+    ]
+  },
+  {
+    id: 'q20',
+    dimension: 'JP',
+    prompt: '장기 프로젝트를 관리할 때 선호하는 방식은?',
+    options: [
+      { label: '정기 점검과 보고', detail: '체계적인 체크리스트와 일정으로 관리한다', value: 2 },
+      { label: '마일스톤 기반', detail: '중요한 단계마다 점검하며 유연하게 조정한다', value: 1 },
+      { label: '센터를 유지', detail: '큰 줄기를 유지하며 필요할 때 세부를 조정한다', value: 0 },
+      { label: '유연한 흐름', detail: '필요한 순간에 집중해 몰입하며 진행한다', value: -1 },
+      { label: '감각적인 추진', detail: '영감이 올 때 강하게 추진하고 흐름을 따른다', value: -2 }
     ]
   }
 ]
@@ -185,62 +379,21 @@ const SUMMARIES: Record<MbtiType, { title: string; description: string; strength
   }
 }
 
-const DIMENSION_LABEL: Record<Dimension, string> = {
-  EI: '에너지 방향 (외향-내향)',
-  SN: '정보 수집 (감각-직관)',
-  TF: '판단 기준 (사고-감정)',
-  JP: '생활 양식 (계획-유연)'
-}
-
-type Tally = Record<MbtiLetter, number>
-
-const INITIAL_TALLY: Tally = {
-  E: 0,
-  I: 0,
-  S: 0,
-  N: 0,
-  T: 0,
-  F: 0,
-  J: 0,
-  P: 0
-}
-
-const DIMENSION_PAIRS: Record<Dimension, [MbtiLetter, MbtiLetter]> = {
-  EI: ['E', 'I'],
-  SN: ['S', 'N'],
-  TF: ['T', 'F'],
-  JP: ['J', 'P']
-}
-
-const DIMENSION_SHORT_LABEL: Record<MbtiLetter, string> = {
-  E: 'E (외향)',
-  I: 'I (내향)',
-  S: 'S (감각)',
-  N: 'N (직관)',
-  T: 'T (사고)',
-  F: 'F (감정)',
-  J: 'J (계획)',
-  P: 'P (유연)'
-}
-
 interface ResultState {
   type: MbtiType
-  tally: Tally
-}
-
-const buildTypeFromTally = (tally: Tally): MbtiType => {
-  const pick = ([a, b]: [MbtiLetter, MbtiLetter]) => (tally[a] >= tally[b] ? a : b)
-  return `${pick(DIMENSION_PAIRS.EI)}${pick(DIMENSION_PAIRS.SN)}${pick(DIMENSION_PAIRS.TF)}${pick(DIMENSION_PAIRS.JP)}` as MbtiType
+  totals: Record<Dimension, number>
+  positives: Record<Dimension, number>
+  negatives: Record<Dimension, number>
 }
 
 export function MbtiTest(): JSX.Element {
-  const [answers, setAnswers] = useState<Record<string, MbtiLetter>>({})
+  const [answers, setAnswers] = useState<Record<string, ResponseValue>>({})
   const [result, setResult] = useState<ResultState | null>(null)
   const [error, setError] = useState<string>('')
 
   const unansweredCount = QUESTIONS.length - Object.keys(answers).length
 
-  const handleSelect = (questionId: string, value: MbtiLetter) => {
+  const handleSelect = (questionId: string, value: ResponseValue) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }))
     if (error) setError('')
   }
@@ -252,16 +405,30 @@ export function MbtiTest(): JSX.Element {
       return
     }
 
-    const tally = QUESTIONS.reduce<Tally>((acc, question) => {
-      const answer = answers[question.id]
-      if (answer) {
-        acc[answer] += 1
-      }
-      return acc
-    }, { ...INITIAL_TALLY })
+    const totals: Record<Dimension, number> = { EI: 0, SN: 0, TF: 0, JP: 0 }
+    const positives: Record<Dimension, number> = { EI: 0, SN: 0, TF: 0, JP: 0 }
+    const negatives: Record<Dimension, number> = { EI: 0, SN: 0, TF: 0, JP: 0 }
 
-    const type = buildTypeFromTally(tally)
-    setResult({ type, tally })
+    QUESTIONS.forEach((question) => {
+      const value = answers[question.id]
+      if (value === undefined) return
+
+      totals[question.dimension] += value
+      if (value > 0) {
+        positives[question.dimension] += value
+      } else if (value < 0) {
+        negatives[question.dimension] += Math.abs(value)
+      }
+    })
+
+    const type = (Object.keys(DIMENSION_PAIRS) as Dimension[])
+      .map((dimension) => {
+        const [first, second] = DIMENSION_PAIRS[dimension]
+        return totals[dimension] >= 0 ? first : second
+      })
+      .join('') as MbtiType
+
+    setResult({ type, totals, positives, negatives })
   }
 
   const handleReset = () => {
@@ -275,8 +442,8 @@ export function MbtiTest(): JSX.Element {
 
     return (Object.keys(DIMENSION_PAIRS) as Dimension[]).map((dimension) => {
       const [first, second] = DIMENSION_PAIRS[dimension]
-      const firstScore = result.tally[first]
-      const secondScore = result.tally[second]
+      const firstScore = result.positives[dimension]
+      const secondScore = result.negatives[dimension]
       const total = firstScore + secondScore
       const firstRatio = total === 0 ? 50 : Math.round((firstScore / total) * 100)
 
@@ -287,7 +454,8 @@ export function MbtiTest(): JSX.Element {
         firstScore,
         secondScore,
         firstRatio,
-        secondRatio: 100 - firstRatio
+        secondRatio: 100 - firstRatio,
+        net: result.totals[dimension]
       }
     })
   }, [result])
@@ -299,7 +467,7 @@ export function MbtiTest(): JSX.Element {
       <header className="space-y-2">
         <h2 className="text-lg font-semibold text-gray-900">MBTI 성향 진단</h2>
         <p className="text-sm text-gray-600">
-          총 8개의 질문을 통해 현재의 성향을 간단히 살펴보세요. 모든 문항에 응답하면 결과를 확인할 수 있습니다.
+          총 20개의 질문을 통해 현재의 성향을 세밀하게 살펴보세요. 각 문항은 강도에 따라 선택할 수 있으며, 모든 문항에 응답하면 결과를 확인할 수 있습니다.
         </p>
       </header>
 
@@ -311,16 +479,18 @@ export function MbtiTest(): JSX.Element {
               <legend className="text-sm font-medium text-gray-900">
                 {index + 1}. {question.prompt}
               </legend>
-              <div className="grid gap-3 md:grid-cols-2">
-                {question.options.map((option) => {
-                  const inputId = `${question.id}-${option.value}`
+              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                {question.options.map((option, optionIndex) => {
+                  const inputId = `${question.id}-${optionIndex}`
                   const checked = answer === option.value
                   return (
                     <label
-                      key={option.value}
+                      key={optionIndex}
                       htmlFor={inputId}
-                      className={`flex items-start gap-3 rounded-lg border px-3 py-2 text-sm transition ${
-                        checked ? 'border-indigo-400 bg-indigo-50 text-indigo-700' : 'border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50'
+                      className={`flex h-full gap-3 rounded-lg border px-3 py-2 text-sm transition ${
+                        checked
+                          ? 'border-indigo-400 bg-indigo-50 text-indigo-700'
+                          : 'border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50'
                       }`}
                     >
                       <input
@@ -332,7 +502,10 @@ export function MbtiTest(): JSX.Element {
                         onChange={() => handleSelect(question.id, option.value)}
                         className="mt-1 h-4 w-4 text-indigo-500 focus:ring-indigo-400"
                       />
-                      <span>{option.label}</span>
+                      <div className="space-y-1">
+                        <span className="font-medium">{option.label}</span>
+                        <p className="text-xs text-gray-500">{option.detail}</p>
+                      </div>
                     </label>
                   )
                 })}
@@ -347,7 +520,7 @@ export function MbtiTest(): JSX.Element {
         <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>
       ) : null}
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={handleSubmit}
@@ -403,7 +576,7 @@ export function MbtiTest(): JSX.Element {
                     <div className="flex items-center justify-between text-xs text-indigo-700">
                       <span>{DIMENSION_SHORT_LABEL[item.first]}</span>
                       <span>
-                        {item.firstScore} : {item.secondScore} ({item.firstRatio}% vs {item.secondRatio}%)
+                        {item.firstScore.toFixed(1)} : {item.secondScore.toFixed(1)} ({item.firstRatio}% vs {item.secondRatio}%)
                       </span>
                     </div>
                     <div className="h-2 rounded-full bg-indigo-100">
@@ -412,6 +585,7 @@ export function MbtiTest(): JSX.Element {
                         style={{ width: `${item.firstRatio}%` }}
                       />
                     </div>
+                    <p className="text-xs text-indigo-600">순점수 {item.net >= 0 ? '+' : ''}{item.net}</p>
                   </dd>
                 </div>
               ))}
@@ -422,4 +596,3 @@ export function MbtiTest(): JSX.Element {
     </section>
   )
 }
-
