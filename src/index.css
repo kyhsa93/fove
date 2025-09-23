@@ -1,9 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-/* App-specific tweaks (optional) */
+@source "../index.html";
+@source "./**/*.{ts,tsx,js,jsx,html}";
+
+/* App-specific tweaks */
 :root {
   color-scheme: light;
 }
-
