@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import type { Gender } from '../lib/saju'
 
 interface SajuFormProps {
