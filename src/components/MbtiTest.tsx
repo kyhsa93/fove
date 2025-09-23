@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
 
-type Dimension = 'EI' | 'SN' | 'TF' | 'JP'
-type MbtiLetter = 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P'
-type MbtiType = `${'E' | 'I'}${'S' | 'N'}${'T' | 'F'}${'J' | 'P'}`
-type ResponseValue = -2 | -1 | 0 | 1 | 2
+export type Dimension = 'EI' | 'SN' | 'TF' | 'JP'
+export type MbtiLetter = 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P'
+export type MbtiType = `${'E' | 'I'}${'S' | 'N'}${'T' | 'F'}${'J' | 'P'}`
+export type ResponseValue = -2 | -1 | 0 | 1 | 2
 
 interface MbtiQuestion {
   id: string
@@ -35,6 +35,13 @@ const DIMENSION_SHORT_LABEL: Record<MbtiLetter, string> = {
   F: 'F (감정)',
   J: 'J (계획)',
   P: 'P (유연)'
+}
+
+interface MbtiSummary {
+  title: string
+  description: string
+  strengths: string[]
+  cautions: string[]
 }
 
 const QUESTIONS: MbtiQuestion[] = [
@@ -280,7 +287,7 @@ const QUESTIONS: MbtiQuestion[] = [
   }
 ]
 
-const SUMMARIES: Record<MbtiType, { title: string; description: string; strengths: string[]; cautions: string[] }> = {
+const SUMMARIES: Record<MbtiType, MbtiSummary> = {
   ENFJ: {
     title: '따뜻한 조력자',
     description: '사람들의 가능성을 북돋고 가치를 함께 만들 때 큰 만족을 느낍니다.',
@@ -379,16 +386,21 @@ const SUMMARIES: Record<MbtiType, { title: string; description: string; strength
   }
 }
 
-interface ResultState {
+export interface MbtiResult {
   type: MbtiType
   totals: Record<Dimension, number>
   positives: Record<Dimension, number>
   negatives: Record<Dimension, number>
+  summary: MbtiSummary
 }
 
-export function MbtiTest(): JSX.Element {
+interface MbtiTestProps {
+  onResultChange?: (result: MbtiResult | null) => void
+}
+
+export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
   const [answers, setAnswers] = useState<Record<string, ResponseValue>>({})
-  const [result, setResult] = useState<ResultState | null>(null)
+  const [result, setResult] = useState<MbtiResult | null>(null)
   const [error, setError] = useState<string>('')
 
   const unansweredCount = QUESTIONS.length - Object.keys(answers).length
@@ -428,13 +440,23 @@ export function MbtiTest(): JSX.Element {
       })
       .join('') as MbtiType
 
-    setResult({ type, totals, positives, negatives })
+    const nextResult: MbtiResult = {
+      type,
+      totals,
+      positives,
+      negatives,
+      summary: SUMMARIES[type]
+    }
+
+    setResult(nextResult)
+    onResultChange?.(nextResult)
   }
 
   const handleReset = () => {
     setAnswers({})
     setResult(null)
     setError('')
+    onResultChange?.(null)
   }
 
   const dimensionBreakdown = useMemo(() => {
@@ -460,7 +482,7 @@ export function MbtiTest(): JSX.Element {
     })
   }, [result])
 
-  const summary = result ? SUMMARIES[result.type] : null
+  const summary = result?.summary ?? null
 
   return (
     <section className="bg-white/80 backdrop-blur-sm border border-indigo-100 shadow-sm rounded-2xl p-6 space-y-6">
