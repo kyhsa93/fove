@@ -1,3 +1,4 @@
+import { JSX } from 'react'
 import {
   BRANCH_YINYANG,
   ELEMENT_LABELS,

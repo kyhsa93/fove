@@ -1,3 +1,5 @@
+import { JSX } from "react";
+
 export function SajuResultPlaceholder(): JSX.Element {
   return (
     <section className="bg-white/70 border border-dashed border-amber-200 rounded-2xl p-8 text-center text-sm text-gray-600">

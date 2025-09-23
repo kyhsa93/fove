@@ -57,7 +57,8 @@ import type {
   SajuResult,
   Summary,
   InterpretationCategory,
-  YearPillarInfo
+  YearPillarInfo,
+  HourInfo
 } from './types'
 
 function mod(n: number, m: number): number {

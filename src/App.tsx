@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { JSX, useState } from 'react'
 import { SajuForm } from './components/SajuForm'
 import { SajuResult } from './components/SajuResult'
 import { SajuResultPlaceholder } from './components/SajuResultPlaceholder'

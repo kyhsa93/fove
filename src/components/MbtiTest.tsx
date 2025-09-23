@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { JSX, useMemo, useState } from 'react'
 
 export type Dimension = 'EI' | 'SN' | 'TF' | 'JP'
 export type MbtiLetter = 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P'
