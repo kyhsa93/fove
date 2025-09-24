@@ -10,7 +10,9 @@
     "build": "vite build",
     "preview": "vite preview --port 5173",
     "start": "vite",
-    "lint": "eslint . --ext .ts,.tsx,.js,.jsx,.html --fix"
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx,.html --fix",
+    "postbuild": "node scripts/generate-sitemap.mjs",
+    "sitemap": "node scripts/generate-sitemap.mjs"
   },
   "dependencies": {
     "react": "^19.1.1",
