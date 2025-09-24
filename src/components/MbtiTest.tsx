@@ -1,4 +1,4 @@
-import { JSX, useMemo, useState } from 'react'
+import { JSX, useEffect, useMemo, useRef, useState } from 'react'
 
 export type Dimension = 'EI' | 'SN' | 'TF' | 'JP'
 export type MbtiLetter = 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P'
@@ -35,6 +35,31 @@ const DIMENSION_SHORT_LABEL: Record<MbtiLetter, string> = {
   F: 'F (감정)',
   J: 'J (계획)',
   P: 'P (유연)'
+}
+
+const MBTI_STORAGE_KEY = 'dotimage:mbti-answers'
+const RESPONSE_VALUES: ResponseValue[] = [-2, -1, 0, 1, 2]
+
+const loadPersistedAnswers = (): Record<string, ResponseValue> => {
+  if (typeof window === 'undefined') {
+    return {}
+  }
+
+  try {
+    const raw = window.localStorage.getItem(MBTI_STORAGE_KEY)
+    if (!raw) return {}
+
+    const parsed = JSON.parse(raw) as Record<string, unknown>
+    return Object.entries(parsed).reduce<Record<string, ResponseValue>>((acc, [key, value]) => {
+      if (typeof value === 'number' && RESPONSE_VALUES.includes(value as ResponseValue)) {
+        acc[key] = value as ResponseValue
+      }
+      return acc
+    }, {})
+  } catch (error) {
+    console.warn('Failed to load saved MBTI answers:', error)
+    return {}
+  }
 }
 
 interface MbtiSummary {
@@ -398,12 +423,57 @@ interface MbtiTestProps {
   onResultChange?: (result: MbtiResult | null) => void
 }
 
+function computeMbtiResultFromAnswers(answers: Record<string, ResponseValue>): MbtiResult | null {
+  const totals: Record<Dimension, number> = { EI: 0, SN: 0, TF: 0, JP: 0 }
+  const positives: Record<Dimension, number> = { EI: 0, SN: 0, TF: 0, JP: 0 }
+  const negatives: Record<Dimension, number> = { EI: 0, SN: 0, TF: 0, JP: 0 }
+
+  for (const question of QUESTIONS) {
+    const value = answers[question.id]
+    if (value === undefined) {
+      return null
+    }
+
+    totals[question.dimension] += value
+    if (value > 0) {
+      positives[question.dimension] += value
+    } else if (value < 0) {
+      negatives[question.dimension] += Math.abs(value)
+    }
+  }
+
+  const type = (Object.keys(DIMENSION_PAIRS) as Dimension[])
+    .map((dimension) => {
+      const [first, second] = DIMENSION_PAIRS[dimension]
+      return totals[dimension] >= 0 ? first : second
+    })
+    .join('') as MbtiType
+
+  const summary = SUMMARIES[type]
+
+  return {
+    type,
+    totals,
+    positives,
+    negatives,
+    summary
+  }
+}
+
 export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
-  const [answers, setAnswers] = useState<Record<string, ResponseValue>>({})
+  const persistedAnswers = useMemo(loadPersistedAnswers, [])
+
+  const [answers, setAnswers] = useState<Record<string, ResponseValue>>(persistedAnswers)
   const [result, setResult] = useState<MbtiResult | null>(null)
   const [error, setError] = useState<string>('')
 
-  const unansweredCount = QUESTIONS.length - Object.keys(answers).length
+  const hydrationGuardRef = useRef(true)
+
+  const answeredCount = QUESTIONS.reduce((count, question) => {
+    return answers[question.id] !== undefined ? count + 1 : count
+  }, 0)
+
+  const unansweredCount = QUESTIONS.length - answeredCount
 
   const handleSelect = (questionId: string, value: ResponseValue) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }))
@@ -414,40 +484,19 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
     if (unansweredCount > 0) {
       setError(`아직 ${unansweredCount}개의 문항이 남아 있습니다.`)
       setResult(null)
+      onResultChange?.(null)
       return
     }
 
-    const totals: Record<Dimension, number> = { EI: 0, SN: 0, TF: 0, JP: 0 }
-    const positives: Record<Dimension, number> = { EI: 0, SN: 0, TF: 0, JP: 0 }
-    const negatives: Record<Dimension, number> = { EI: 0, SN: 0, TF: 0, JP: 0 }
-
-    QUESTIONS.forEach((question) => {
-      const value = answers[question.id]
-      if (value === undefined) return
-
-      totals[question.dimension] += value
-      if (value > 0) {
-        positives[question.dimension] += value
-      } else if (value < 0) {
-        negatives[question.dimension] += Math.abs(value)
-      }
-    })
-
-    const type = (Object.keys(DIMENSION_PAIRS) as Dimension[])
-      .map((dimension) => {
-        const [first, second] = DIMENSION_PAIRS[dimension]
-        return totals[dimension] >= 0 ? first : second
-      })
-      .join('') as MbtiType
-
-    const nextResult: MbtiResult = {
-      type,
-      totals,
-      positives,
-      negatives,
-      summary: SUMMARIES[type]
+    const nextResult = computeMbtiResultFromAnswers(answers)
+    if (!nextResult) {
+      setError('결과 계산 중 문제가 발생했습니다. 다시 시도해 주세요.')
+      setResult(null)
+      onResultChange?.(null)
+      return
     }
 
+    setError('')
     setResult(nextResult)
     onResultChange?.(nextResult)
   }
@@ -458,6 +507,32 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
     setError('')
     onResultChange?.(null)
   }
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    if (answeredCount === 0) {
+      window.localStorage.removeItem(MBTI_STORAGE_KEY)
+      return
+    }
+
+    try {
+      window.localStorage.setItem(MBTI_STORAGE_KEY, JSON.stringify(answers))
+    } catch (storageError) {
+      console.warn('Failed to persist MBTI answers:', storageError)
+    }
+  }, [answers, answeredCount])
+
+  useEffect(() => {
+    if (!hydrationGuardRef.current) return
+    hydrationGuardRef.current = false
+
+    const initialResult = computeMbtiResultFromAnswers(answers)
+    if (initialResult) {
+      setResult(initialResult)
+      onResultChange?.(initialResult)
+    }
+  }, [answers, onResultChange])
 
   const dimensionBreakdown = useMemo(() => {
     if (!result) return []
