@@ -8,7 +8,7 @@ if (!fs.existsSync(distDir)) {
   fs.mkdirSync(distDir, { recursive: true })
 }
 
-const baseUrlRaw = process.env.SITE_BASE_URL ?? 'https://dotimage.local'
+const baseUrlRaw = process.env.SITE_BASE_URL ?? 'https://kyhsa93.github.io'
 const baseUrl = baseUrlRaw.endsWith('/') ? baseUrlRaw.slice(0, -1) : baseUrlRaw
 const now = new Date().toISOString()
 
