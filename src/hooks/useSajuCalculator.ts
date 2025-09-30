@@ -67,6 +67,7 @@ export interface UseSajuCalculatorState {
   interpretation: InterpretationCategory[]
   dailyFortune: DailyFortune | null
   todayKey: string
+  isLoading: boolean
   setBirthDate: (value: string) => void
   setBirthTime: (value: string) => void
   setGender: (value: Gender) => void
@@ -81,22 +82,42 @@ export function useSajuCalculator(): UseSajuCalculatorState {
   const [result, setResult] = useState<SajuResult | null>(null)
   const [error, setError] = useState<string>('')
   const [todayKey, setTodayKey] = useState<string>(() => getTodayKey())
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     if (!birthDate) {
       setResult(null)
       setError('')
+      setIsLoading(false)
       return
     }
 
-    try {
-      const data = calculateSaju(birthDate, birthTime, gender)
-      setResult(data)
-      setError('')
-    } catch (err) {
-      const message = err instanceof Error ? err.message : '사주를 계산하는 동안 문제가 발생했습니다.'
-      setResult(null)
-      setError(message)
+    let cancelled = false
+    setIsLoading(true)
+    const timer = window.setTimeout(() => {
+      if (cancelled) return
+      try {
+        const data = calculateSaju(birthDate, birthTime, gender)
+        if (!cancelled) {
+          setResult(data)
+          setError('')
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : '사주를 계산하는 동안 문제가 발생했습니다.'
+        if (!cancelled) {
+          setResult(null)
+          setError(message)
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false)
+        }
+      }
+    }, 180)
+
+    return () => {
+      cancelled = true
+      window.clearTimeout(timer)
     }
   }, [birthDate, birthTime, gender])
 
@@ -158,6 +179,7 @@ export function useSajuCalculator(): UseSajuCalculatorState {
     interpretation,
     dailyFortune,
     todayKey,
+    isLoading,
     setBirthDate,
     setBirthTime,
     setGender

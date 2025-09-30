@@ -1,14 +1,42 @@
-import { JSX, useState } from 'react'
+import { JSX, useEffect, useMemo, useState } from 'react'
 import { SajuForm } from './components/SajuForm'
 import { SajuResult } from './components/SajuResult'
-import { SajuResultPlaceholder } from './components/SajuResultPlaceholder'
 import { MbtiTest, type MbtiResult } from './components/MbtiTest'
-import { CombinedFortuneCard, CombinedLottoCard } from './components/FortuneAndLotto'
+import { CombinedFortuneCard, CombinedLottoCard, CrossInsightCard } from './components/FortuneAndLotto'
+import { ResultCardSkeleton } from './components/ResultCard'
 import { useSajuCalculator } from './hooks/useSajuCalculator'
+import { useResultHistory, type ResultKind, type StoredResultEntry } from './hooks/useResultHistory'
+import { useToast } from './components/ToastProvider'
+
+const recommendedFlows = [
+  {
+    id: 'fortune' as const,
+    title: '오늘의 운세',
+    description: '사주 정보와 MBTI 성향을 조합한 맞춤 일일 운세로 하루의 리듬을 미리 체크해 보세요.',
+    accent: 'border-rose-100 hover:border-rose-200 focus-within:border-rose-300 bg-rose-50/60',
+    buttonClass: 'bg-rose-500 hover:bg-rose-600 focus-visible:ring-rose-400'
+  },
+  {
+    id: 'mbti' as const,
+    title: 'MBTI 성향',
+    description: '20개의 직관적인 질문으로 현재의 심리적 성향과 강점을 파악하고 맞춤형 가이드를 받아 보세요.',
+    accent: 'border-indigo-100 hover:border-indigo-200 focus-within:border-indigo-300 bg-indigo-50/60',
+    buttonClass: 'bg-indigo-500 hover:bg-indigo-600 focus-visible:ring-indigo-400'
+  },
+  {
+    id: 'saju' as const,
+    title: '사주 풀이',
+    description: '생년월일과 태어난 시간을 입력하면 자동으로 팔자와 오행 밸런스를 계산해 드립니다.',
+    accent: 'border-amber-100 hover:border-amber-200 focus-within:border-amber-300 bg-amber-50/60',
+    buttonClass: 'bg-amber-500 hover:bg-amber-600 focus-visible:ring-amber-400'
+  }
+]
 
 export default function App(): JSX.Element {
   const [activeTool, setActiveTool] = useState<'saju' | 'mbti' | 'fortune' | 'lotto'>('saju')
   const [mbtiResult, setMbtiResult] = useState<MbtiResult | null>(null)
+  const { history, favorites } = useResultHistory()
+  const { showToast } = useToast()
   const {
     birthDate,
     birthTime,
@@ -18,10 +46,64 @@ export default function App(): JSX.Element {
     elementBars,
     interpretation,
     dailyFortune,
+    isLoading,
     setBirthDate,
     setBirthTime,
     setGender
   } = useSajuCalculator()
+
+  useEffect(() => {
+    if (error) {
+      showToast(error, 'error')
+    }
+  }, [error, showToast])
+
+  const kindToTool: Record<ResultKind, typeof activeTool> = {
+    saju: 'saju',
+    mbti: 'mbti',
+    fortune: 'fortune',
+    lotto: 'lotto',
+    cross: 'fortune'
+  }
+
+  const handleEntryNavigate = (entry: StoredResultEntry) => {
+    const next = kindToTool[entry.kind] ?? 'saju'
+    setActiveTool(next)
+  }
+
+  const formatTimestamp = (value: number) => {
+    if (!value) return '방금'
+    try {
+      return new Intl.DateTimeFormat('ko-KR', {
+        month: 'numeric',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(new Date(value))
+    } catch {
+      return ''
+    }
+  }
+
+  const recentEntries = useMemo(() => history.slice(0, 6), [history])
+  const favoriteEntries = useMemo(() => favorites.slice(0, 6), [favorites])
+
+  const renderSummaryCard = (entry: StoredResultEntry) => (
+    <button
+      key={entry.id}
+      type="button"
+      onClick={() => handleEntryNavigate(entry)}
+      className="flex h-full flex-col justify-between rounded-2xl border border-slate-100 bg-white/80 p-4 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+    >
+      <div className="space-y-2">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{entry.badge ?? entry.kind.toUpperCase()}</p>
+        <p className="text-sm font-semibold text-slate-900">{entry.title}</p>
+        {entry.subtitle ? <p className="text-xs text-slate-500">{entry.subtitle}</p> : null}
+        <p className="text-xs leading-relaxed text-slate-600">{entry.summary}</p>
+      </div>
+      <p className="mt-3 text-[10px] text-slate-400">{formatTimestamp(entry.timestamp)}</p>
+    </button>
+  )
 
   const toolHeadline =
     activeTool === 'saju'
@@ -41,6 +123,9 @@ export default function App(): JSX.Element {
           : '사주 기반 추천 번호에 MBTI 성향 가중치를 더한 로또 번호를 제공합니다.'
 
   const renderFortuneView = () => {
+    if (isLoading) {
+      return <ResultCardSkeleton />
+    }
     if (!result) {
       return (
         <div className="rounded-2xl border border-amber-100 bg-white/60 p-6 text-sm text-gray-700">
@@ -55,19 +140,25 @@ export default function App(): JSX.Element {
         </div>
       )
     }
+    const showCross = Boolean(mbtiResult)
     return (
       <div className="space-y-4">
         <CombinedFortuneCard dailyFortune={dailyFortune} mbtiResult={mbtiResult} />
-        {!mbtiResult ? (
+        {showCross && mbtiResult ? (
+          <CrossInsightCard dailyFortune={dailyFortune} mbtiResult={mbtiResult} />
+        ) : (
           <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 p-4 text-sm text-indigo-900/80">
-            MBTI 검사를 완료하면 에너지·실천 가이드가 개인 성향에 맞춰 더 정교하게 제공됩니다.
+            MBTI 검사를 완료하면 에너지와 행동 가이드가 성향에 맞춰 더 정교하게 제공됩니다.
           </div>
-        ) : null}
+        )}
       </div>
     )
   }
 
   const renderLottoView = () => {
+    if (isLoading) {
+      return <ResultCardSkeleton />
+    }
     if (!result) {
       return (
         <div className="rounded-2xl border border-amber-100 bg-white/60 p-6 text-sm text-gray-700">
@@ -101,6 +192,54 @@ export default function App(): JSX.Element {
           <h1 className="text-3xl font-bold text-gray-900">{toolHeadline}</h1>
           <p className="text-sm text-gray-600">{toolDescription}</p>
         </header>
+
+        {recentEntries.length ? (
+          <section className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">최근 결과</h2>
+              <span className="text-xs text-gray-500">최대 30개가 자동 저장됩니다.</span>
+            </div>
+            <div className="grid gap-3 md:grid-cols-3">
+              {recentEntries.map(renderSummaryCard)}
+            </div>
+          </section>
+        ) : null}
+
+        {favoriteEntries.length ? (
+          <section className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">내 즐겨찾기</h2>
+              <span className="text-xs text-gray-500">하트 버튼으로 빠르게 저장할 수 있어요.</span>
+            </div>
+            <div className="grid gap-3 md:grid-cols-3">
+              {favoriteEntries.map(renderSummaryCard)}
+            </div>
+          </section>
+        ) : null}
+
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">추천 흐름</h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            {recommendedFlows.map((flow) => (
+              <article
+                key={flow.id}
+                className={`rounded-2xl border bg-white/70 p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg focus-within:-translate-y-1 focus-within:shadow-lg ${flow.accent}`}
+              >
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-gray-900">{flow.title}</h3>
+                  <p className="text-sm leading-relaxed text-gray-600">{flow.description}</p>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTool(flow.id)}
+                    className={`inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-white shadow-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${flow.buttonClass}`}
+                  >
+                    바로 시작
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
 
         <nav className="flex flex-wrap justify-center gap-3">
           <button
@@ -159,21 +298,17 @@ export default function App(): JSX.Element {
               onBirthTimeChange={setBirthTime}
               onGenderChange={setGender}
             />
+            <span className="sr-only" aria-live="assertive">
+              {error}
+            </span>
 
-            {error ? (
-              <div className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</div>
-            ) : null}
-
-            {result ? (
-              <SajuResult
-                result={result}
-                elementBars={elementBars}
-                interpretation={interpretation}
-                mbtiResult={mbtiResult}
-              />
-            ) : (
-              <SajuResultPlaceholder />
-            )}
+            <SajuResult
+              result={result}
+              elementBars={elementBars}
+              interpretation={interpretation}
+              mbtiResult={mbtiResult}
+              isLoading={isLoading}
+            />
           </>
         ) : null}
 

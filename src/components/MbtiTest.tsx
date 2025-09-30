@@ -1,4 +1,9 @@
 import { JSX, useEffect, useMemo, useRef, useState } from 'react'
+import { ResultCard } from './ResultCard'
+import { useResultHistory } from '../hooks/useResultHistory'
+import { useToast } from './ToastProvider'
+import { ActionCardDeck, type ActionCardData } from './ActionCards'
+import { TooltipLabel } from './TooltipLabel'
 
 export type Dimension = 'EI' | 'SN' | 'TF' | 'JP'
 export type MbtiLetter = 'E' | 'I' | 'S' | 'N' | 'T' | 'F' | 'J' | 'P'
@@ -62,7 +67,7 @@ const loadPersistedAnswers = (): Record<string, ResponseValue> => {
   }
 }
 
-interface MbtiSummary {
+export interface MbtiSummary {
   title: string
   description: string
   strengths: string[]
@@ -419,6 +424,39 @@ export interface MbtiResult {
   summary: MbtiSummary
 }
 
+const MBTI_RELATION_TIPS: Record<string, string> = {
+  EJ: '회의 전 5분을 투자해 목적과 기대치를 공유하면 팀의 흐름이 빨라집니다.',
+  EP: '즉흥 아이디어를 나눌 짧은 체크인 시간을 만들면 사람들과 호흡이 맞습니다.',
+  IJ: '필요한 정보와 마감 시점을 명확히 안내하면 파트너가 안심합니다.',
+  IP: '상대에게 생각할 여유를 주면서 핵심 메시지를 간결하게 전달하세요.'
+}
+
+function buildMbtiActionCards(result: MbtiResult): ActionCardData[] {
+  const summary = result.summary
+  const primaryStrength = summary.strengths[0] ?? '자신만의 강점'
+  const primaryCaution = summary.cautions[0] ?? '과도한 자기비판'
+  const relationKey = `${result.type[0]}${result.type[3]}`
+  const relationTip = MBTI_RELATION_TIPS[relationKey] ?? '상대의 페이스를 존중하며 오늘의 목표를 나누세요.'
+
+  return [
+    {
+      title: '오늘 해볼 것',
+      description: `${primaryStrength}을(를) 살릴 수 있는 활동을 오늘 일정에 30분이라도 배치해 보세요.`,
+      tone: 'do'
+    },
+    {
+      title: '피해야 할 것',
+      description: `${primaryCaution} 신호가 오면 잠시 호흡을 고르고 시선을 바꿔 주세요.`,
+      tone: 'avoid'
+    },
+    {
+      title: '대인관계/업무 팁',
+      description: relationTip,
+      tone: 'relation'
+    }
+  ]
+}
+
 interface MbtiTestProps {
   onResultChange?: (result: MbtiResult | null) => void
 }
@@ -461,13 +499,17 @@ function computeMbtiResultFromAnswers(answers: Record<string, ResponseValue>): M
 }
 
 export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
+  const { addEntry } = useResultHistory()
+  const { showToast } = useToast()
   const persistedAnswers = useMemo(loadPersistedAnswers, [])
 
   const [answers, setAnswers] = useState<Record<string, ResponseValue>>(persistedAnswers)
   const [result, setResult] = useState<MbtiResult | null>(null)
   const [error, setError] = useState<string>('')
+  const [isProcessing, setIsProcessing] = useState<boolean>(false)
 
   const hydrationGuardRef = useRef(true)
+  const submitTimerRef = useRef<number | null>(null)
 
   const answeredCount = QUESTIONS.reduce((count, question) => {
     return answers[question.id] !== undefined ? count + 1 : count
@@ -482,29 +524,50 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
 
   const handleSubmit = () => {
     if (unansweredCount > 0) {
-      setError(`아직 ${unansweredCount}개의 문항이 남아 있습니다.`)
+      const message = `아직 ${unansweredCount}개의 문항이 남아 있습니다.`
+      setError(message)
       setResult(null)
       onResultChange?.(null)
+      showToast(message, 'error')
       return
     }
 
-    const nextResult = computeMbtiResultFromAnswers(answers)
-    if (!nextResult) {
-      setError('결과 계산 중 문제가 발생했습니다. 다시 시도해 주세요.')
-      setResult(null)
-      onResultChange?.(null)
-      return
+    if (submitTimerRef.current) {
+      window.clearTimeout(submitTimerRef.current)
     }
 
-    setError('')
-    setResult(nextResult)
-    onResultChange?.(nextResult)
+    setIsProcessing(true)
+
+    submitTimerRef.current = window.setTimeout(() => {
+      const nextResult = computeMbtiResultFromAnswers(answers)
+      if (!nextResult) {
+        const message = '결과 계산 중 문제가 발생했습니다. 다시 시도해 주세요.'
+        setError(message)
+        setResult(null)
+        onResultChange?.(null)
+        showToast(message, 'error')
+        setIsProcessing(false)
+        submitTimerRef.current = null
+        return
+      }
+
+      setError('')
+      setResult(nextResult)
+      onResultChange?.(nextResult)
+      setIsProcessing(false)
+      submitTimerRef.current = null
+    }, 220)
   }
 
   const handleReset = () => {
+    if (submitTimerRef.current) {
+      window.clearTimeout(submitTimerRef.current)
+      submitTimerRef.current = null
+    }
     setAnswers({})
     setResult(null)
     setError('')
+    setIsProcessing(false)
     onResultChange?.(null)
   }
 
@@ -522,6 +585,14 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
       console.warn('Failed to persist MBTI answers:', storageError)
     }
   }, [answers, answeredCount])
+
+  useEffect(() => {
+    return () => {
+      if (submitTimerRef.current) {
+        window.clearTimeout(submitTimerRef.current)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (!hydrationGuardRef.current) return
@@ -559,137 +630,241 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
 
   const summary = result?.summary ?? null
 
-  return (
-    <section className="bg-white/80 backdrop-blur-sm border border-indigo-100 shadow-sm rounded-2xl p-6 space-y-6">
-      <header className="space-y-2">
-        <h2 className="text-lg font-semibold text-gray-900">MBTI 성향 진단</h2>
-        <p className="text-sm text-gray-600">
-          총 20개의 질문을 통해 현재의 성향을 세밀하게 살펴보세요. 각 문항은 강도에 따라 선택할 수 있으며, 모든 문항에 응답하면 결과를 확인할 수 있습니다.
-        </p>
-      </header>
+  const actionCards = result ? buildMbtiActionCards(result) : []
 
+  const dominantDimensionInfo = useMemo(() => {
+    if (!result) return null
+    const [dimension, value] = (Object.entries(result.totals) as Array<[Dimension, number]>)
+      .sort((a, b) => Math.abs(b[1]) - Math.abs(a[1]))[0] ?? []
+    if (!dimension || value === undefined) return null
+    const [first, second] = DIMENSION_PAIRS[dimension]
+    const label = DIMENSION_LABEL[dimension]
+    const direction = value >= 0 ? DIMENSION_SHORT_LABEL[first] : DIMENSION_SHORT_LABEL[second]
+    return { label, direction }
+  }, [result])
+
+  const metrics = useMemo(() => {
+    if (!result || !summary) return []
+    return [
+      { label: '유형', value: `${result.type} · ${summary.title}` },
+      dominantDimensionInfo ? { label: dominantDimensionInfo.label, value: dominantDimensionInfo.direction } : null,
+      { label: '핵심 강점', value: summary.strengths[0] ?? '강점을 확인해 보세요.' }
+    ].filter(Boolean) as Array<{ label: string; value: string }>
+  }, [result, summary, dominantDimensionInfo])
+
+  const historyEntry = useMemo(() => {
+    if (!result || !summary) return null
+    return {
+      id: `mbti:${result.type}`,
+      kind: 'mbti' as const,
+      title: 'MBTI 성향',
+      subtitle: `${result.type} · ${summary.title}`,
+      summary: summary.description,
+      timestamp: Date.now(),
+      badge: 'MBTI INSIGHT'
+    }
+  }, [result, summary])
+
+  const placeholderEntry = useMemo(
+    () => ({
+      id: 'mbti:placeholder',
+      kind: 'mbti' as const,
+      title: 'MBTI 성향',
+      summary: '모든 문항에 응답하면 상세한 성향 분석이 제공됩니다.',
+      timestamp: 0,
+      badge: 'MBTI INSIGHT'
+    }),
+    []
+  )
+
+  useEffect(() => {
+    if (historyEntry && !isProcessing) {
+      addEntry(historyEntry)
+    }
+  }, [historyEntry, addEntry, isProcessing])
+
+  const analysisTab = useMemo(() => {
+    if (!result || !summary) return null
+
+    return (
       <div className="space-y-5">
-        {QUESTIONS.map((question, index) => {
-          const answer = answers[question.id]
-          return (
-            <fieldset key={question.id} className="space-y-3 rounded-xl border border-indigo-100 bg-white/80 p-4 shadow-sm">
-              <legend className="text-sm font-medium text-gray-900">
-                {index + 1}. {question.prompt}
-              </legend>
-              <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-                {question.options.map((option, optionIndex) => {
-                  const inputId = `${question.id}-${optionIndex}`
-                  const checked = answer === option.value
-                  return (
-                    <label
-                      key={optionIndex}
-                      htmlFor={inputId}
-                      className={`flex h-full gap-3 rounded-lg border px-3 py-2 text-sm transition ${
-                        checked
-                          ? 'border-indigo-400 bg-indigo-50 text-indigo-700'
-                          : 'border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50'
-                      }`}
-                    >
-                      <input
-                        id={inputId}
-                        type="radio"
-                        name={question.id}
-                        value={option.value}
-                        checked={checked}
-                        onChange={() => handleSelect(question.id, option.value)}
-                        className="mt-1 h-4 w-4 text-indigo-500 focus:ring-indigo-400"
-                      />
-                      <div className="space-y-1">
-                        <span className="font-medium">{option.label}</span>
-                        <p className="text-xs text-gray-500">{option.detail}</p>
-                      </div>
-                    </label>
-                  )
-                })}
-              </div>
-              <p className="text-xs text-gray-500">{DIMENSION_LABEL[question.dimension]}</p>
-            </fieldset>
-          )
-        })}
-      </div>
+        <div className="rounded-xl border border-indigo-200 bg-white/80 p-4 text-sm text-indigo-900/80">
+          <p className="text-sm font-semibold text-indigo-800">이 결과는 이렇게 읽어보세요</p>
+          <ol className="mt-2 space-y-1 list-decimal pl-5">
+            <li>요약 타이틀로 오늘의 에너지 방향을 먼저 파악하세요.</li>
+            <li>강점·성장 포인트를 비교해 균형 잡힌 행동을 계획해 보세요.</li>
+            <li>성향 지표와 실천 카드를 참고해 구체적인 행동으로 연결하세요.</li>
+          </ol>
+        </div>
 
-      {error ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">{error}</div>
-      ) : null}
-
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          type="button"
-          onClick={handleSubmit}
-          className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-5 py-2 text-sm font-medium text-white transition hover:bg-indigo-600"
-        >
-          결과 보기
-        </button>
-        <button
-          type="button"
-          onClick={handleReset}
-          className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-5 py-2 text-sm font-medium text-gray-600 transition hover:border-indigo-300 hover:text-indigo-600"
-        >
-          다시 시작
-        </button>
-        <span className="text-xs text-gray-500">남은 문항 {unansweredCount}개</span>
-      </div>
-
-      {result && summary ? (
-        <section className="space-y-4 rounded-2xl border border-indigo-100 bg-indigo-50/60 p-6">
-          <header className="space-y-1">
-            <p className="text-xs font-medium uppercase tracking-[0.12em] text-indigo-500">당신의 성향</p>
-            <h3 className="text-2xl font-bold text-indigo-800">{result.type}</h3>
-            <p className="text-sm text-indigo-700">{summary.title}</p>
-          </header>
-          <p className="text-sm text-indigo-900/80">{summary.description}</p>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2 rounded-xl border border-indigo-200 bg-white/70 p-4">
-              <h4 className="text-sm font-semibold text-indigo-800">강점</h4>
-              <ul className="list-disc space-y-1 pl-5 text-sm text-indigo-900/80">
-                {summary.strengths.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="space-y-2 rounded-xl border border-indigo-200 bg-white/70 p-4">
-              <h4 className="text-sm font-semibold text-indigo-800">성장 포인트</h4>
-              <ul className="list-disc space-y-1 pl-5 text-sm text-indigo-900/80">
-                {summary.cautions.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className="space-y-3 rounded-xl border border-indigo-200 bg-white/80 p-4">
-            <h4 className="text-sm font-semibold text-indigo-800">성향 지표</h4>
-            <dl className="grid gap-3 md:grid-cols-2">
-              {dimensionBreakdown.map((item) => (
-                <div key={item.dimension} className="space-y-1">
-                  <dt className="text-xs font-medium text-indigo-500">{DIMENSION_LABEL[item.dimension]}</dt>
-                  <dd className="flex flex-col gap-1 text-sm text-indigo-900/80">
-                    <div className="flex items-center justify-between text-xs text-indigo-700">
-                      <span>{DIMENSION_SHORT_LABEL[item.first]}</span>
-                      <span>
-                        {item.firstScore.toFixed(1)} : {item.secondScore.toFixed(1)} ({item.firstRatio}% vs {item.secondRatio}%)
-                      </span>
-                    </div>
-                    <div className="h-2 rounded-full bg-indigo-100">
-                      <div
-                        className="h-2 rounded-full bg-indigo-500"
-                        style={{ width: `${item.firstRatio}%` }}
-                      />
-                    </div>
-                    <p className="text-xs text-indigo-600">순점수 {item.net >= 0 ? '+' : ''}{item.net}</p>
-                  </dd>
-                </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="space-y-2 rounded-xl border border-indigo-200 bg-white/70 p-4">
+            <h4 className="text-sm font-semibold text-indigo-800">
+              <TooltipLabel text="강점" description="질문 응답에서 가장 일관되게 드러난 자원입니다." />
+            </h4>
+            <ul className="list-disc space-y-1 pl-5 text-sm text-indigo-900/80">
+              {summary.strengths.map((item) => (
+                <li key={item}>{item}</li>
               ))}
-            </dl>
+            </ul>
           </div>
-        </section>
-      ) : null}
+          <div className="space-y-2 rounded-xl border border-indigo-200 bg-white/70 p-4">
+            <h4 className="text-sm font-semibold text-indigo-800">
+              <TooltipLabel text="성장 포인트" description="균형을 위해 의식하면 좋은 보완 지점입니다." />
+            </h4>
+            <ul className="list-disc space-y-1 pl-5 text-sm text-indigo-900/80">
+              {summary.cautions.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="space-y-3 rounded-xl border border-indigo-200 bg-white/80 p-4">
+          <h4 className="text-sm font-semibold text-indigo-800">
+            <TooltipLabel text="성향 지표" description="각 차원에서 어떤 방향으로 치우쳤는지 시각화했습니다." />
+          </h4>
+          <dl className="grid gap-3 md:grid-cols-2">
+            {dimensionBreakdown.map((item) => (
+              <div key={item.dimension} className="space-y-1">
+                <dt className="text-xs font-medium text-indigo-500">
+                  <TooltipLabel
+                    text={DIMENSION_LABEL[item.dimension]}
+                    description="해당 차원에서 0에 가까울수록 균형, 값이 클수록 앞쪽 글자의 경향이 강합니다."
+                    className="text-indigo-500"
+                  />
+                </dt>
+                <dd className="flex flex-col gap-1 text-sm text-indigo-900/80">
+                  <div className="flex items-center justify-between text-xs text-indigo-700">
+                    <span>{DIMENSION_SHORT_LABEL[item.first]}</span>
+                    <span>
+                      {item.firstScore.toFixed(1)} : {item.secondScore.toFixed(1)} ({item.firstRatio}% vs {item.secondRatio}%)
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full bg-indigo-100">
+                    <div className="h-2 rounded-full bg-indigo-500" style={{ width: `${item.firstRatio}%` }} />
+                  </div>
+                  <p className="text-xs text-indigo-600">
+                    <TooltipLabel
+                      text={`순점수 ${item.net >= 0 ? '+' : ''}${item.net}`}
+                      description="양수면 앞 글자(E, S, T, J)가, 음수면 뒷 글자(I, N, F, P)가 우세합니다."
+                    />
+                  </p>
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </div>
+    )
+  }, [result, summary, dimensionBreakdown])
+
+  const adviceTab = useMemo(() => {
+    if (!result) return null
+
+    return (
+      <div className="space-y-5">
+        <ActionCardDeck cards={actionCards} />
+        <div className="rounded-xl border border-indigo-100 bg-indigo-50/60 p-4 text-sm text-indigo-900/80">
+          <p className="font-medium text-indigo-700">오늘 활용 메모</p>
+          <p className="mt-1 text-xs text-indigo-600">
+            강점 카드에서 고른 행동을 30분만이라도 실행하고, 성장 포인트는 짧은 체크인으로 마무리해 보세요. 관계 팁을 팀/가족 일정에 바로 적용해도 좋습니다.
+          </p>
+        </div>
+      </div>
+    )
+  }, [result, actionCards])
+
+  const tabs = useMemo(() => {
+    if (!analysisTab && !adviceTab) return []
+    const next = [] as Array<{ id: string; label: string; content: JSX.Element }>
+    if (analysisTab) next.push({ id: 'analysis', label: '해석', content: analysisTab })
+    if (adviceTab) next.push({ id: 'advice', label: '조언', content: adviceTab })
+    return next
+  }, [analysisTab, adviceTab])
+
+  const summaryText = summary ? summary.description : '20개의 질문에 응답하면 성향 요약과 행동 가이드를 확인할 수 있습니다.'
+  const entryForCard = historyEntry ?? placeholderEntry
+
+  return (
+    <section className="space-y-6">
+      <div className="space-y-6 rounded-2xl border border-indigo-100 bg-white/80 p-6 shadow-sm backdrop-blur-sm">
+        <header className="space-y-2">
+          <h2 className="text-lg font-semibold text-gray-900">MBTI 성향 진단</h2>
+          <p className="text-sm text-gray-600">
+            총 20개의 질문을 통해 현재의 성향을 세밀하게 살펴보세요. 각 문항은 강도에 따라 선택할 수 있으며, 모든 문항에 응답하면 결과를 확인할 수 있습니다.
+          </p>
+        </header>
+
+        <div className="space-y-5">
+          {QUESTIONS.map((question, index) => {
+            const answer = answers[question.id]
+            return (
+              <fieldset key={question.id} className="space-y-3 rounded-xl border border-indigo-100 bg-white/80 p-4 shadow-sm">
+                <legend className="text-sm font-medium text-gray-900">
+                  {index + 1}. {question.prompt}
+                </legend>
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                  {question.options.map((option, optionIndex) => {
+                    const inputId = `${question.id}-${optionIndex}`
+                    const checked = answer === option.value
+                    return (
+                      <label
+                        key={optionIndex}
+                        htmlFor={inputId}
+                        className={`flex h-full gap-3 rounded-lg border px-3 py-2 text-sm transition ${
+                          checked
+                            ? 'border-indigo-400 bg-indigo-50 text-indigo-700'
+                            : 'border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50'
+                        }`}
+                      >
+                        <input
+                          id={inputId}
+                          type="radio"
+                          name={question.id}
+                          value={option.value}
+                          checked={checked}
+                          onChange={() => handleSelect(question.id, option.value)}
+                          className="mt-1 h-4 w-4 text-indigo-500 focus:ring-indigo-400"
+                        />
+                        <div className="space-y-1">
+                          <span className="font-medium">{option.label}</span>
+                          <p className="text-xs text-gray-500">{option.detail}</p>
+                        </div>
+                      </label>
+                    )
+                  })}
+                </div>
+                <p className="text-xs text-gray-500">{DIMENSION_LABEL[question.dimension]}</p>
+              </fieldset>
+            )
+          })}
+        </div>
+
+        <span className="sr-only" aria-live="assertive">
+          {error}
+        </span>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-5 py-2 text-sm font-medium text-white transition hover:bg-indigo-600"
+          >
+            결과 보기
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-5 py-2 text-sm font-medium text-gray-600 transition hover:border-indigo-300 hover:text-indigo-600"
+          >
+            다시 시작
+          </button>
+          <span className="text-xs text-gray-500">남은 문항 {unansweredCount}개</span>
+        </div>
+      </div>
+
+      <ResultCard entry={entryForCard} metrics={metrics} summary={summaryText} tabs={tabs} loading={isProcessing} />
     </section>
   )
 }
