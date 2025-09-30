@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type JSX, type ReactNode } from 'react'
 import { useResultHistory, type StoredResultEntry } from '../hooks/useResultHistory'
+import { useToast } from './ToastProvider'
 
 interface ResultMetric {
   label: string
@@ -24,6 +25,7 @@ interface ResultCardProps {
 
 export function ResultCard({ entry, metrics = [], summary, tabs = [], footer, actions, loading = false }: ResultCardProps): JSX.Element {
   const { toggleFavorite, isFavorite } = useResultHistory()
+  const { showToast } = useToast()
   const [activeTab, setActiveTab] = useState<string>(tabs[0]?.id ?? '')
   const favorite = isFavorite(entry.id)
 
@@ -39,6 +41,58 @@ export function ResultCard({ entry, metrics = [], summary, tabs = [], footer, ac
     return tabs.find((tab) => tab.id === fallbackId) ?? tabs[0]
   }, [tabs, activeTab])
 
+  const shareUrl = useMemo(() => {
+    if (typeof window === 'undefined') return ''
+    const url = new URL(window.location.href)
+    url.searchParams.set('tool', entry.kind)
+    return url.toString()
+  }, [entry.kind])
+
+  const handleCopyLink = async () => {
+    if (!shareUrl) return
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl)
+      } else {
+        const textarea = document.createElement('textarea')
+        textarea.value = shareUrl
+        textarea.setAttribute('readonly', '')
+        textarea.style.position = 'absolute'
+        textarea.style.left = '-9999px'
+        document.body.appendChild(textarea)
+        textarea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textarea)
+      }
+      showToast('링크를 복사했습니다.', 'success')
+    } catch (copyError) {
+      console.warn('Failed to copy link', copyError)
+      showToast('링크 복사에 실패했어요. 다시 시도해 주세요.', 'error')
+    }
+  }
+
+  const handleShare = async () => {
+    if (!shareUrl) {
+      handleCopyLink()
+      return
+    }
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: entry.title,
+          text: summary ?? entry.summary ?? '',
+          url: shareUrl
+        })
+      } catch (shareError) {
+        if (shareError instanceof Error && shareError.name === 'AbortError') return
+        console.warn('Failed to invoke share dialog', shareError)
+        handleCopyLink()
+      }
+    } else {
+      handleCopyLink()
+    }
+  }
+
   if (loading) {
     return <ResultCardSkeleton />
   }
@@ -53,19 +107,40 @@ export function ResultCard({ entry, metrics = [], summary, tabs = [], footer, ac
           <h2 className="text-2xl font-bold text-slate-900">{entry.title}</h2>
           {entry.subtitle ? <p className="text-sm text-slate-600">{entry.subtitle}</p> : null}
         </div>
-        <button
-          type="button"
-          onClick={() => toggleFavorite(entry)}
-          className={`inline-flex h-9 w-9 items-center justify-center rounded-full border text-base transition ${
-            favorite
-              ? 'border-rose-200 bg-rose-50 text-rose-500 hover:bg-rose-100'
-              : 'border-slate-200 bg-white text-slate-400 hover:bg-slate-100 hover:text-rose-500'
-          }`}
-          aria-pressed={favorite}
-          aria-label={favorite ? '즐겨찾기 해제' : '즐겨찾기에 추가'}
-        >
-          {favorite ? '♥' : '♡'}
-        </button>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2 py-1 text-xs text-slate-500">
+            <button
+              type="button"
+              onClick={handleShare}
+              className="inline-flex items-center gap-1 rounded-full px-2 py-1 font-medium transition hover:bg-slate-100 hover:text-slate-700"
+            >
+              <span aria-hidden="true">📤</span>
+              공유
+            </button>
+            <span className="h-4 w-px bg-slate-200" aria-hidden="true" />
+            <button
+              type="button"
+              onClick={handleCopyLink}
+              className="inline-flex items-center gap-1 rounded-full px-2 py-1 font-medium transition hover:bg-slate-100 hover:text-slate-700"
+            >
+              <span aria-hidden="true">🔗</span>
+              링크 복사
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={() => toggleFavorite(entry)}
+            className={`inline-flex h-9 w-9 items-center justify-center rounded-full border text-base transition ${
+              favorite
+                ? 'border-rose-200 bg-rose-50 text-rose-500 hover:bg-rose-100'
+                : 'border-slate-200 bg-white text-slate-400 hover:bg-slate-100 hover:text-rose-500'
+            }`}
+            aria-pressed={favorite}
+            aria-label={favorite ? '즐겨찾기 해제' : '즐겨찾기에 추가'}
+          >
+            {favorite ? '♥' : '♡'}
+          </button>
+        </div>
       </header>
 
       {metrics.length ? (

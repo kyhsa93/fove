@@ -37,6 +37,15 @@ export default function App(): JSX.Element {
   const [mbtiResult, setMbtiResult] = useState<MbtiResult | null>(null)
   const { history, favorites } = useResultHistory()
   const { showToast } = useToast()
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    const toolParam = params.get('tool')
+    if (toolParam && ['saju', 'mbti', 'fortune', 'lotto'].includes(toolParam)) {
+      setActiveTool(toolParam as typeof activeTool)
+    }
+  }, [])
   const {
     birthDate,
     birthTime,
@@ -57,6 +66,60 @@ export default function App(): JSX.Element {
       showToast(error, 'error')
     }
   }, [error, showToast])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    params.set('tool', activeTool)
+    const nextUrl = `${window.location.pathname}?${params.toString()}`
+    window.history.replaceState({}, '', nextUrl)
+  }, [activeTool])
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    const metaMap = {
+      saju: {
+        title: '사주 풀이 · 오행 밸런스 가이드',
+        description: '생년월일과 태어난 시간으로 사주팔자와 오행 분포, 활용 가이드를 확인하세요.',
+        image: 'https://kyhsa93.github.io/social-card-saju.png'
+      },
+      mbti: {
+        title: 'MBTI 성향 진단 · 강점과 성장 포인트',
+        description: '20문항 MBTI 검사로 성향, 강점, 성장 포인트와 실천 카드를 받아보세요.',
+        image: 'https://kyhsa93.github.io/social-card-mbti.png'
+      },
+      fortune: {
+        title: '오늘의 운세 · 사주+MBTI 교차 해석',
+        description: '사주와 MBTI를 조합한 오늘의 운세와 맞춤 행동 가이드를 확인하세요.',
+        image: 'https://kyhsa93.github.io/social-card-fortune.png'
+      },
+      lotto: {
+        title: '사주 기반 로또 번호 추천',
+        description: '사주 오행과 오늘의 기운을 반영한 맞춤 로또 번호를 확인하세요.',
+        image: 'https://kyhsa93.github.io/social-card-lotto.png'
+      }
+    } as const
+    const data = metaMap[activeTool]
+    const setMeta = (key: string, value: string, attr: 'name' | 'property' = 'property') => {
+      if (!value) return
+      let element = document.head.querySelector(`meta[${attr}="${key}"]`) as HTMLMetaElement | null
+      if (!element) {
+        element = document.createElement('meta')
+        element.setAttribute(attr, key)
+        document.head.appendChild(element)
+      }
+      element.setAttribute('content', value)
+    }
+    setMeta('og:title', data.title)
+    setMeta('og:description', data.description)
+    setMeta('og:image', data.image)
+    if (typeof window !== 'undefined') {
+      setMeta('og:url', window.location.href)
+    }
+    setMeta('twitter:title', data.title, 'name')
+    setMeta('twitter:description', data.description, 'name')
+    setMeta('twitter:image', data.image, 'name')
+  }, [activeTool])
 
   const kindToTool: Record<ResultKind, typeof activeTool> = {
     saju: 'saju',
