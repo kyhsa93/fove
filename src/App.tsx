@@ -1,6 +1,5 @@
 import { JSX, useCallback, useEffect, useMemo, useState } from 'react'
 import HomePage from './pages/HomePage'
-import AboutPage from './pages/AboutPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfServicePage from './pages/TermsOfServicePage'
 import ContactPage from './pages/ContactPage'
@@ -17,10 +16,6 @@ const routes: Record<RoutePath, RouteConfig> = {
   '/': {
     component: HomePage,
     title: 'DotImage · 사주 & MBTI 교차 인사이트'
-  },
-  '/about': {
-    component: AboutPage,
-    title: 'DotImage 소개'
   },
   '/privacy-policy': {
     component: PrivacyPolicyPage,

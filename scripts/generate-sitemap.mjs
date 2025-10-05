@@ -14,7 +14,6 @@ const now = new Date().toISOString()
 
 const routes = [
   { path: '/', changefreq: 'weekly', priority: '1.0' },
-  { path: '/about', changefreq: 'monthly', priority: '0.6' },
   { path: '/privacy-policy', changefreq: 'yearly', priority: '0.4' },
   { path: '/terms-of-service', changefreq: 'yearly', priority: '0.4' },
   { path: '/contact', changefreq: 'monthly', priority: '0.5' }
