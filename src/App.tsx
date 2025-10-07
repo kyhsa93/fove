@@ -1,5 +1,7 @@
 import { JSX, useCallback, useEffect, useMemo, useState } from 'react'
-import HomePage from './pages/HomePage'
+import SajuPage from './pages/SajuPage'
+import MbtiPage from './pages/MbtiPage'
+import FortuneLottoPage from './pages/FortuneLottoPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfServicePage from './pages/TermsOfServicePage'
 import ContactPage from './pages/ContactPage'
@@ -14,8 +16,20 @@ type RouteConfig = {
 
 const routes: Record<RoutePath, RouteConfig> = {
   '/': {
-    component: HomePage,
-    title: 'DotImage · 사주 & MBTI 교차 인사이트'
+    component: SajuPage,
+    title: 'DotImage · 사주 풀이'
+  },
+  '/saju': {
+    component: SajuPage,
+    title: 'DotImage · 사주 풀이'
+  },
+  '/mbti': {
+    component: MbtiPage,
+    title: 'DotImage · MBTI 성향 진단'
+  },
+  '/fortune': {
+    component: FortuneLottoPage,
+    title: 'DotImage · 오늘의 운세 & 로또 추천'
   },
   '/privacy-policy': {
     component: PrivacyPolicyPage,
@@ -31,7 +45,7 @@ const routes: Record<RoutePath, RouteConfig> = {
   }
 }
 
-const routeKeys: RoutePath[] = ['/', ...footerLinks.map((link) => link.path)]
+const routeKeys = Object.keys(routes) as RoutePath[]
 
 const normalizePath = (rawPath: string): RoutePath => {
   if (!rawPath) return '/'
@@ -78,8 +92,15 @@ export default function App(): JSX.Element {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [currentPath])
 
-  const CurrentPage = useMemo(() => routes[currentPath]?.component ?? HomePage, [currentPath])
-  const backgroundClass = currentPath === '/' ? 'bg-gradient-to-b from-amber-50 via-white to-rose-50' : 'bg-slate-100'
+  const CurrentPage = useMemo(() => routes[currentPath]?.component ?? SajuPage, [currentPath])
+  const backgroundClass =
+    currentPath === '/' || currentPath === '/saju'
+      ? 'bg-gradient-to-b from-amber-50 via-white to-rose-50'
+      : currentPath === '/mbti'
+        ? 'bg-gradient-to-b from-indigo-50 via-white to-slate-100'
+        : currentPath === '/fortune'
+          ? 'bg-gradient-to-b from-rose-50 via-white to-emerald-50'
+          : 'bg-slate-100'
 
   return (
     <div className={`flex min-h-screen flex-col text-slate-900 ${backgroundClass}`}>
