@@ -331,7 +331,6 @@ export function SajuResult({ result, elementBars, interpretation, mbtiResult, is
     : '생년월일과 태어난 시간을 입력하면 오행 분포와 해석이 제공됩니다.'
 
   const activeEntry = historyEntry ?? placeholderEntry
-  const showSkeleton = isLoading && !result
 
-  return <ResultCard entry={activeEntry} metrics={metrics} summary={summaryText} tabs={tabs} loading={showSkeleton} />
+  return <ResultCard entry={activeEntry} metrics={metrics} summary={summaryText} tabs={tabs} />
 }
