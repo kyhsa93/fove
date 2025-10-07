@@ -27,6 +27,41 @@ const SUPPORT_LINKS = [
   }
 ] as const
 
+const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
+  {
+    question: '오늘의 운세는 어떤 기준으로 생성되나요?',
+    answer: [
+      'DotImage의 운세는 사주 계산 결과와 계절, 음양 흐름을 조합해 하루의 에너지 방향을 해석합니다.',
+      '전통적인 일진 해석을 기반으로 하되, 현대적인 생활 패턴에 맞게 행동 팁을 재구성했습니다.',
+      '날마다 새롭게 계산되므로 중요한 일정이 있을 때는 아침에 확인해 두는 것이 좋습니다.'
+    ]
+  },
+  {
+    question: '로또 추천 번호는 어떻게 구성되나요?',
+    answer: [
+      '사주의 오행 분포와 오늘의 기운을 함께 분석해 균형 잡힌 번호 조합을 추천합니다.',
+      'MBTI 결과가 저장되어 있으면 성향 가중치를 적용해 직관형과 분석형에 맞는 패턴을 다르게 제시합니다.',
+      '추천 번호는 참고용이므로, 책임 있는 소비 습관과 함께 즐거운 이벤트처럼 활용해 주세요.'
+    ]
+  },
+  {
+    question: '사주 정보를 다시 입력해야 하나요?',
+    answer: [
+      '사주 입력값은 브라우저 로컬 저장소에 보관되므로 같은 기기에서는 자동으로 불러옵니다.',
+      '정보가 변경되었거나 초기화하고 싶다면 사주 페이지에서 값을 지운 뒤 새롭게 입력하면 됩니다.',
+      '보안이 걱정되는 공용 기기에서는 사용 후 브라우저 저장소를 정리하기를 권장합니다.'
+    ]
+  },
+  {
+    question: '운세와 로또 결과를 함께 활용하는 방법이 있을까요?',
+    answer: [
+      '먼저 운세 카드에서 오늘의 컨디션과 추천 행동을 확인해 하루 계획을 세워보세요.',
+      '이후 로또 추천 번호를 참고해 소소한 즐거움을 더하면 하루의 리듬을 더욱 긍정적으로 만들 수 있습니다.',
+      '저장된 기록을 주간 단위로 살펴보면 자신에게 맞는 행운 패턴을 발견하는 데 도움이 됩니다.'
+    ]
+  }
+]
+
 const formatTimestamp = (value: number) => {
   if (!value) return '방금'
   try {
@@ -209,6 +244,22 @@ export default function FortuneLottoPage(): JSX.Element {
           <div className="space-y-3">
             <h2 className="text-xl font-semibold text-gray-900">로또 추천 번호</h2>
             {renderLottoSection()}
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">자주 묻는 질문</h2>
+          <div className="space-y-4">
+            {FAQ_ITEMS.map((item) => (
+              <article key={item.question} className="rounded-2xl border border-slate-100 bg-white/80 p-5 shadow-sm space-y-3">
+                <h3 className="text-base font-semibold text-gray-900">{item.question}</h3>
+                <div className="space-y-2 text-sm leading-relaxed text-gray-600">
+                  {item.answer.map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
+                </div>
+              </article>
+            ))}
           </div>
         </section>
       </div>

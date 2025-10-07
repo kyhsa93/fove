@@ -23,6 +23,41 @@ const SUPPORT_LINKS = [
   }
 ] as const
 
+const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
+  {
+    question: '20문항 MBTI 검사는 얼마나 정확한가요?',
+    answer: [
+      'DotImage MBTI 검사는 핵심 성향을 빠르게 파악할 수 있도록 설계된 20문항 간편 버전입니다.',
+      '정식 검사처럼 세밀한 지표를 모두 다루지는 않지만, 일상에서 행동 패턴을 확인하기에는 충분한 정보를 제공합니다.',
+      '더 깊이 있는 분석이 필요하다면 결과를 참고 자료로 삼고, 전문 상담이나 정식 검사를 병행하는 것을 권장합니다.'
+    ]
+  },
+  {
+    question: '답변을 변경하면 결과가 새로 저장되나요?',
+    answer: [
+      '문항에 답변할 때마다 브라우저 로컬 저장소에 자동으로 저장되기 때문에 다음 방문에서도 이어서 진행할 수 있습니다.',
+      '전체 문항을 다시 제출하면 최신 결과가 히스토리에 덮어쓰이므로, 변화된 상태를 기록하기 좋아요.',
+      '다만 브라우저의 저장 데이터를 삭제하면 기록이 초기화되니 중요한 변화는 별도로 기록해 두세요.'
+    ]
+  },
+  {
+    question: 'MBTI 결과를 어떻게 활용하면 좋을까요?',
+    answer: [
+      '강점 카드와 성장 포인트를 비교해 오늘 실천할 행동을 1~2가지 선택해 보세요.',
+      '현실적인 목표를 정하면 성향의 장점을 활용하고 약점을 보완하는 데 도움이 됩니다.',
+      '또한 사주 혹은 오늘의 운세 페이지와 연동해 하루 계획을 세우면 보다 균형 잡힌 인사이트를 얻을 수 있습니다.'
+    ]
+  },
+  {
+    question: '팀이나 친구와 함께 사용할 수 있나요?',
+    answer: [
+      '한 기기에서 여러 사람이 사용할 경우, 제출 직후 히스토리에서 즐겨찾기로 추가해 두면 기록이 섞이지 않습니다.',
+      '결과 카드의 요약을 공유하면 서로의 성향을 이해하고 협업 방식에 대해 이야기하기 좋습니다.',
+      '공유가 끝난 뒤에는 개인정보 보호를 위해 브라우저 저장소를 정리하는 것을 권장합니다.'
+    ]
+  }
+]
+
 const formatTimestamp = (value: number) => {
   if (!value) return '방금'
   try {
@@ -123,6 +158,22 @@ export default function MbtiPage(): JSX.Element {
                   >
                     바로 이동
                   </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">자주 묻는 질문</h2>
+          <div className="space-y-4">
+            {FAQ_ITEMS.map((item) => (
+              <article key={item.question} className="rounded-2xl border border-slate-100 bg-white/80 p-5 shadow-sm space-y-3">
+                <h3 className="text-base font-semibold text-gray-900">{item.question}</h3>
+                <div className="space-y-2 text-sm leading-relaxed text-gray-600">
+                  {item.answer.map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
                 </div>
               </article>
             ))}

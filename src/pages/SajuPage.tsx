@@ -38,7 +38,42 @@ const FEATURE_LINKS: Array<{
     description: '사주 기반 오늘의 운세와 로또 번호 추천을 한 번에 확인할 수 있습니다.',
     accent: 'border-rose-100 hover:border-rose-200 focus-within:border-rose-300 bg-rose-50/60',
     buttonClass: 'bg-rose-500 hover:bg-rose-600 focus-visible:ring-rose-400',
-    path: '/fortune'
+  path: '/fortune'
+}
+]
+
+const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
+  {
+    question: '사주 계산을 위해 꼭 태어난 시간을 입력해야 하나요?',
+    answer: [
+      '가능하면 정확한 태어난 시간을 입력하는 것이 가장 좋은데, 사주의 네 가지 기둥 중 시주가 빠지면 디테일한 해석이 제한되기 때문입니다.',
+      '다만 시간을 모르는 경우라도 생년월일 정보만으로 기본적인 오행 분포와 음양 흐름은 계산할 수 있습니다.',
+      '시간을 모를 때는 가장 가까운 구간을 추정해 입력해 보고, 결과의 변화 폭을 참고 자료로 활용해 주세요.'
+    ]
+  },
+  {
+    question: '사주 결과가 매일 달라지나요?',
+    answer: [
+      '사주는 태어난 순간의 기운을 기반으로 계산되기 때문에 기본적인 구조는 변하지 않습니다.',
+      '다만 오늘의 운세와 같이 일진을 반영한 해석은 매일 달라질 수 있어 사주 결과와 함께 확인하는 것이 좋습니다.',
+      'DotImage에서는 사주 결과와 오늘의 운세가 연동되므로 두 페이지를 오가며 균형 있게 참고해 보세요.'
+    ]
+  },
+  {
+    question: '입력한 사주 정보는 안전하게 보관되나요?',
+    answer: [
+      '사주 계산을 위해 입력한 정보는 사용자의 브라우저 로컬 저장소에만 보관되며, 서버로 전송되지 않습니다.',
+      '브라우저를 바꾸거나 저장 기록을 삭제하면 데이터가 초기화되므로 중요한 내용은 따로 기록하는 것이 좋습니다.',
+      '공용 기기를 사용할 때는 개인정보 보호를 위해 결과 확인 후 브라우저 저장소를 비우는 것을 권장합니다.'
+    ]
+  },
+  {
+    question: '사주 해석을 어떻게 활용하면 좋을까요?',
+    answer: [
+      '사주는 특정 결론을 내리기보다는 현재의 에너지 흐름을 이해하는 참고 자료로 활용하는 것이 가장 건강합니다.',
+      '강한 오행과 부족한 오행을 비교해 오늘 필요한 활동이나 컨디션 조절에 활용해 보세요.',
+      'DotImage의 추천 카드와 함께 메모를 남기면 개인적인 패턴을 발견하는 데 도움이 됩니다.'
+    ]
   }
 ]
 
@@ -156,6 +191,22 @@ export default function SajuPage(): JSX.Element {
         </span>
 
         <SajuResult result={result} elementBars={elementBars} interpretation={interpretation} mbtiResult={null} isLoading={isLoading} />
+
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">자주 묻는 질문</h2>
+          <div className="space-y-4">
+            {FAQ_ITEMS.map((item) => (
+              <article key={item.question} className="rounded-2xl border border-slate-100 bg-white/80 p-5 shadow-sm space-y-3">
+                <h3 className="text-base font-semibold text-gray-900">{item.question}</h3>
+                <div className="space-y-2 text-sm leading-relaxed text-gray-600">
+                  {item.answer.map((paragraph, index) => (
+                    <p key={index}>{paragraph}</p>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
       </div>
     </section>
   )
