@@ -12,7 +12,7 @@ const SUPPORT_LINKS = [
   {
     id: 'saju',
     title: '사주 풀이',
-    description: '기본 사주 정보를 먼저 계산하면 오늘의 운세를 정확하게 받아볼 수 있어요.',
+    description: '기본 사주 정보를 먼저 계산하면 오늘의 운세를 정확하게 받아볼 수 있어요. 초기에는 오늘 날짜와 현재 시간이 자동으로 채워집니다.',
     accent: 'border-amber-100 hover:border-amber-200 focus-within:border-amber-300 bg-amber-50/60',
     buttonClass: 'bg-amber-500 hover:bg-amber-600 focus-visible:ring-amber-400',
     path: '/'
@@ -20,7 +20,7 @@ const SUPPORT_LINKS = [
   {
     id: 'mbti',
     title: 'MBTI 성향',
-    description: 'MBTI 결과를 저장하면 오늘의 운세와 추천 번호가 성향에 맞춰 정교해집니다.',
+    description: 'MBTI 결과를 저장하면 오늘의 운세와 추천 번호가 성향에 맞춰 정교해집니다. 저장된 답변이 없다면 무작위 초기값으로 바로 검사할 수 있습니다.',
     accent: 'border-indigo-100 hover:border-indigo-200 focus-within:border-indigo-300 bg-indigo-50/60',
     buttonClass: 'bg-indigo-500 hover:bg-indigo-600 focus-visible:ring-indigo-400',
     path: '/mbti'
@@ -177,7 +177,9 @@ export default function FortuneLottoPage(): JSX.Element {
       <div className="mx-auto max-w-4xl space-y-8 px-4">
         <header className="space-y-2 text-center">
           <h1 className="text-3xl font-bold text-gray-900">오늘의 운세 & 로또 추천</h1>
-          <p className="text-sm text-gray-600">사주 기반으로 오늘의 흐름을 읽고, 행운의 번호까지 한 번에 받아보세요.</p>
+          <p className="text-sm text-gray-600">
+            사주 기반으로 오늘의 흐름을 읽고, 행운의 번호까지 한 번에 받아보세요. 사주 입력값이 비어 있으면 오늘 날짜와 현재 시간이 자동으로 채워지고 성별은 남성으로 시작하므로 바로 확인할 수 있으며, MBTI 결과가 없다면 MBTI 페이지에서 무작위 초깃값으로 빠르게 검사한 뒤 연동해 보세요.
+          </p>
         </header>
 
         {recentEntries.length ? (

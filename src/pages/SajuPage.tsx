@@ -19,7 +19,7 @@ const FEATURE_LINKS: Array<{
   {
     id: 'saju',
     title: '사주 풀이',
-    description: '양력 생년월일과 태어난 시간을 입력하면 사주팔자와 오행 밸런스를 자동 계산합니다.',
+    description: '처음 접속하면 오늘 날짜와 현재 시간이 자동으로 채워지고, 기본 성별은 남성으로 설정되어 즉시 사주팔자와 오행 밸런스를 확인할 수 있습니다.',
     accent: 'border-amber-100 hover:border-amber-200 focus-within:border-amber-300 bg-amber-50/60',
     buttonClass: 'bg-amber-500 hover:bg-amber-600 focus-visible:ring-amber-400',
     path: '/'
@@ -27,7 +27,7 @@ const FEATURE_LINKS: Array<{
   {
     id: 'mbti',
     title: 'MBTI 성향',
-    description: '20개의 문항으로 현재의 심리적 성향을 파악하고 맞춤형 가이드를 받아보세요.',
+    description: '20개의 문항으로 현재의 심리적 성향을 파악하고 맞춤형 가이드를 받아보세요. 저장된 답변이 없으면 모든 문항이 무작위로 선택된 상태로 시작합니다.',
     accent: 'border-indigo-100 hover:border-indigo-200 focus-within:border-indigo-300 bg-indigo-50/60',
     buttonClass: 'bg-indigo-500 hover:bg-indigo-600 focus-visible:ring-indigo-400',
     path: '/mbti'
@@ -35,11 +35,11 @@ const FEATURE_LINKS: Array<{
   {
     id: 'fortune',
     title: '오늘의 운세 · 로또',
-    description: '사주 기반 오늘의 운세와 로또 번호 추천을 한 번에 확인할 수 있습니다.',
+    description: '사주 입력값이 비어 있으면 오늘 날짜와 현재 시간, 남성 기본값이 자동으로 적용되어 운세와 로또 추천을 바로 살펴볼 수 있습니다.',
     accent: 'border-rose-100 hover:border-rose-200 focus-within:border-rose-300 bg-rose-50/60',
     buttonClass: 'bg-rose-500 hover:bg-rose-600 focus-visible:ring-rose-400',
-  path: '/fortune'
-}
+    path: '/fortune'
+  }
 ]
 
 const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
@@ -131,7 +131,9 @@ export default function SajuPage(): JSX.Element {
       <div className="mx-auto max-w-4xl space-y-8 px-4">
         <header className="space-y-2 text-center">
           <h1 className="text-3xl font-bold text-gray-900">사주팔자 간편 조회</h1>
-          <p className="text-sm text-gray-600">생년월일과 태어난 시간을 입력하면 사주팔자, 오행 분포, 활용 가이드를 한눈에 확인할 수 있습니다.</p>
+          <p className="text-sm text-gray-600">
+            생년월일과 태어난 시간을 입력하면 사주팔자, 오행 분포, 활용 가이드를 한눈에 확인할 수 있습니다. 저장된 값이 없을 때는 오늘 날짜와 현재 시간이 자동으로 채워지고 성별은 남성으로 기본 설정되어 있으니 필요에 따라 바로 조정하세요.
+          </p>
         </header>
 
         {recentEntries.length ? (

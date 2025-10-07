@@ -22,30 +22,38 @@ interface PersistedSajuInputs {
   gender: Gender
 }
 
-const DEFAULT_SAJU_INPUTS: PersistedSajuInputs = {
-  birthDate: '',
-  birthTime: '',
-  gender: 'male'
+const pad = (value: number): string => String(value).padStart(2, '0')
+
+const buildDefaultSajuInputs = (): PersistedSajuInputs => {
+  const now = new Date()
+  const birthDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
+  const birthTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`
+  return {
+    birthDate,
+    birthTime,
+    gender: 'male'
+  }
 }
 
 const loadPersistedSajuInputs = (): PersistedSajuInputs => {
   if (typeof window === 'undefined') {
-    return DEFAULT_SAJU_INPUTS
+    return buildDefaultSajuInputs()
   }
 
   try {
     const raw = window.localStorage.getItem(SAJU_STORAGE_KEY)
-    if (!raw) return DEFAULT_SAJU_INPUTS
+    if (!raw) return buildDefaultSajuInputs()
 
     const parsed = JSON.parse(raw) as Partial<PersistedSajuInputs>
+    const defaults = buildDefaultSajuInputs()
     return {
-      birthDate: typeof parsed.birthDate === 'string' ? parsed.birthDate : '',
-      birthTime: typeof parsed.birthTime === 'string' ? parsed.birthTime : '',
+      birthDate: typeof parsed.birthDate === 'string' && parsed.birthDate ? parsed.birthDate : defaults.birthDate,
+      birthTime: typeof parsed.birthTime === 'string' && parsed.birthTime ? parsed.birthTime : defaults.birthTime,
       gender: parsed.gender === 'female' ? 'female' : 'male'
     }
   } catch (error) {
     console.warn('Failed to load saved saju inputs:', error)
-    return DEFAULT_SAJU_INPUTS
+    return buildDefaultSajuInputs()
   }
 }
 

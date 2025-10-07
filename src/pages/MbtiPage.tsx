@@ -8,7 +8,7 @@ const SUPPORT_LINKS = [
   {
     id: 'saju',
     title: '사주 풀이',
-    description: '사주팔자와 오행 밸런스를 확인하고 오늘의 흐름을 이해하세요.',
+    description: '사주팔자와 오행 밸런스를 확인하고 오늘의 흐름을 이해하세요. 기본값이 없으면 오늘 날짜와 현재 시간이 자동으로 입력됩니다.',
     accent: 'border-amber-100 hover:border-amber-200 focus-within:border-amber-300 bg-amber-50/60',
     buttonClass: 'bg-amber-500 hover:bg-amber-600 focus-visible:ring-amber-400',
     path: '/'
@@ -16,7 +16,7 @@ const SUPPORT_LINKS = [
   {
     id: 'fortune',
     title: '오늘의 운세 · 로또',
-    description: '사주와 MBTI를 조합해 하루의 에너지와 추천 번호를 받아보세요.',
+    description: '사주와 MBTI를 조합해 하루의 에너지와 추천 번호를 받아보세요. 사주 입력이 비어 있으면 오늘 날짜와 시간이 자동으로 채워지고, MBTI는 무작위 값으로 시작합니다.',
     accent: 'border-rose-100 hover:border-rose-200 focus-within:border-rose-300 bg-rose-50/60',
     buttonClass: 'bg-rose-500 hover:bg-rose-600 focus-visible:ring-rose-400',
     path: '/fortune'
@@ -108,7 +108,9 @@ export default function MbtiPage(): JSX.Element {
       <div className="mx-auto max-w-4xl space-y-8 px-4">
         <header className="space-y-2 text-center">
           <h1 className="text-3xl font-bold text-gray-900">MBTI 성향 진단</h1>
-          <p className="text-sm text-gray-600">직관적인 20문항을 통해 오늘의 심리적 성향과 행동 가이드를 확인하세요.</p>
+          <p className="text-sm text-gray-600">
+            직관적인 20문항을 통해 오늘의 심리적 성향과 행동 가이드를 확인하세요. 저장된 답변이 없다면 모든 문항이 무작위로 선택된 상태로 시작되므로, 초깃값을 참고한 뒤 원하는 항목만 빠르게 수정할 수 있습니다.
+          </p>
         </header>
 
         <article className="rounded-2xl border border-indigo-100 bg-white/80 p-6 text-left shadow-sm">

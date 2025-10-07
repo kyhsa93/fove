@@ -62,7 +62,7 @@ export function SajuForm({
       <header className="space-y-2">
         <h2 className="text-lg font-semibold text-gray-900">기본 정보 입력</h2>
         <p className="text-sm text-amber-700 bg-amber-50/80 border border-amber-100 rounded-xl px-3 py-2">
-          생년월일은 반드시 입력해야 정확한 사주 계산이 가능합니다. 태어난 시간이 기억나지 않는다면 우선 비워 두고 결과를 확인한 뒤, 시간 정보를 보완해 다시 계산해 보세요.
+          생년월일은 반드시 입력해야 정확한 사주 계산이 가능합니다. 저장된 값이 없다면 오늘 날짜와 현재 시간이 기본으로 채워지며, 태어난 시간이 기억나지 않는다면 우선 비워 두고 결과를 확인한 뒤 시간 정보를 보완해 다시 계산해 보세요.
         </p>
       </header>
 

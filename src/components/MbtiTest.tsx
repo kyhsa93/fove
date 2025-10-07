@@ -67,6 +67,14 @@ const loadPersistedAnswers = (): Record<string, ResponseValue> => {
   }
 }
 
+const buildRandomAnswers = (): Record<string, ResponseValue> => {
+  return QUESTIONS.reduce<Record<string, ResponseValue>>((acc, question) => {
+    const randomIndex = Math.floor(Math.random() * RESPONSE_VALUES.length)
+    acc[question.id] = RESPONSE_VALUES[randomIndex]
+    return acc
+  }, {})
+}
+
 export interface MbtiSummary {
   title: string
   description: string
@@ -503,7 +511,9 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
   const { showToast } = useToast()
   const persistedAnswers = useMemo(loadPersistedAnswers, [])
 
-  const [answers, setAnswers] = useState<Record<string, ResponseValue>>(persistedAnswers)
+  const [answers, setAnswers] = useState<Record<string, ResponseValue>>(() => {
+    return Object.keys(persistedAnswers).length ? persistedAnswers : buildRandomAnswers()
+  })
   const [result, setResult] = useState<MbtiResult | null>(null)
   const [error, setError] = useState<string>('')
   const [isProcessing, setIsProcessing] = useState<boolean>(false)
