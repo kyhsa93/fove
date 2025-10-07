@@ -165,7 +165,7 @@ export default function MbtiPage(): JSX.Element {
             ))}
           </div>
         </section>
-
+        <MbtiTest onResultChange={setActiveResult} />
         <section className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">자주 묻는 질문</h2>
           <div className="space-y-4">
@@ -181,8 +181,6 @@ export default function MbtiPage(): JSX.Element {
             ))}
           </div>
         </section>
-
-        <MbtiTest onResultChange={setActiveResult} />
       </div>
     </section>
   )
