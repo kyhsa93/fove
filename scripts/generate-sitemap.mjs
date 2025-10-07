@@ -13,10 +13,13 @@ const baseUrl = baseUrlRaw.endsWith('/') ? baseUrlRaw.slice(0, -1) : baseUrlRaw
 const now = new Date().toISOString()
 
 const routes = [
-  { path: '/', changefreq: 'weekly', priority: '1.0' },
-  { path: '/privacy-policy', changefreq: 'yearly', priority: '0.4' },
-  { path: '/terms-of-service', changefreq: 'yearly', priority: '0.4' },
-  { path: '/contact', changefreq: 'monthly', priority: '0.5' }
+  { path: '/', changefreq: 'daily', priority: '1.0' },
+  { path: '/saju', changefreq: 'daily', priority: '0.9' },
+  { path: '/mbti', changefreq: 'daily', priority: '0.9' },
+  { path: '/fortune', changefreq: 'daily', priority: '0.8' },
+  { path: '/privacy-policy', changefreq: 'daily', priority: '0.4' },
+  { path: '/terms-of-service', changefreq: 'daily', priority: '0.4' },
+  { path: '/contact', changefreq: 'daily', priority: '0.5' }
 ]
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>\n` +
