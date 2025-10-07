@@ -17,14 +17,6 @@ const FEATURE_LINKS: Array<{
   path: RoutePath
 }> = [
   {
-    id: 'saju',
-    title: '사주 풀이',
-    description: '처음 접속하면 오늘 날짜와 현재 시간이 자동으로 채워지고, 기본 성별은 남성으로 설정되어 즉시 사주팔자와 오행 밸런스를 확인할 수 있습니다.',
-    accent: 'border-amber-100 hover:border-amber-200 focus-within:border-amber-300 bg-amber-50/60',
-    buttonClass: 'bg-amber-500 hover:bg-amber-600 focus-visible:ring-amber-400',
-    path: '/'
-  },
-  {
     id: 'mbti',
     title: 'MBTI 성향',
     description: '20개의 문항으로 현재의 심리적 성향을 파악하고 맞춤형 가이드를 받아보세요. 저장된 답변이 없으면 모든 문항이 무작위로 선택된 상태로 시작합니다.',
@@ -157,8 +149,8 @@ export default function SajuPage(): JSX.Element {
         ) : null}
 
         <section className="space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">DotImage 기능 살펴보기</h2>
-          <div className="grid gap-4 md:grid-cols-3">
+          <h2 className="text-lg font-semibold text-gray-900">다른 기능 살펴보기</h2>
+          <div className="grid gap-4 md:grid-cols-2">
             {FEATURE_LINKS.map((flow) => (
               <article
                 key={flow.id}
