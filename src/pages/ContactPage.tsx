@@ -18,10 +18,10 @@ export default function ContactPage(): JSX.Element {
             <div className="rounded-2xl border border-rose-100 bg-rose-50/60 p-6 text-slate-700">
               <p className="text-sm">Email</p>
               <a
-                href="mailto:hello@dotimage.app"
+                href="mailto:hello@fove.app"
                 className="text-lg font-semibold text-rose-600 hover:underline"
               >
-                hello@dotimage.app
+                hello@fove.app
               </a>
             </div>
           </section>

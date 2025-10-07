@@ -20,8 +20,8 @@ interface ResultHistoryContextValue {
   isFavorite: (id: string) => boolean
 }
 
-const HISTORY_STORAGE_KEY = 'dotimage:result-history'
-const FAVORITES_STORAGE_KEY = 'dotimage:result-favorites'
+const HISTORY_STORAGE_KEY = 'fove:result-history'
+const FAVORITES_STORAGE_KEY = 'fove:result-favorites'
 const MAX_HISTORY = 30
 
 const ResultHistoryContext = createContext<ResultHistoryContextValue | undefined>(undefined)

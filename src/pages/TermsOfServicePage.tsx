@@ -8,7 +8,7 @@ export default function TermsOfServicePage(): JSX.Element {
           <span className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-500/80">Terms</span>
           <h1 className="text-3xl font-bold text-slate-900">Terms of Service</h1>
           <p className="text-base leading-relaxed text-slate-600">
-            Thank you for using DotImage. These terms outline the basic rules that help us provide a reliable, transparent experience for everyone.
+            Thank you for using Fove. These terms outline the basic rules that help us provide a reliable, transparent experience for everyone.
           </p>
         </header>
 
@@ -16,7 +16,7 @@ export default function TermsOfServicePage(): JSX.Element {
           <section className="space-y-2">
             <h2 className="text-lg font-semibold text-slate-900">1. Service Description</h2>
             <p>
-              DotImage offers tools such as fortune readings, MBTI tests, and daily guidance. The insights are for informational purposes only, and decisions based on them remain the responsibility of the user.
+              Fove offers tools such as fortune readings, MBTI tests, and daily guidance. The insights are for informational purposes only, and decisions based on them remain the responsibility of the user.
             </p>
           </section>
 
@@ -39,14 +39,14 @@ export default function TermsOfServicePage(): JSX.Element {
           <section className="space-y-2">
             <h2 className="text-lg font-semibold text-slate-900">4. Limitation of Liability</h2>
             <p>
-              DotImage is a free service. We are not liable for data loss, interpretation errors, or other issues arising from use of the app, though we will work to restore the service quickly if problems occur.
+              Fove is a free service. We are not liable for data loss, interpretation errors, or other issues arising from use of the app, though we will work to restore the service quickly if problems occur.
             </p>
           </section>
 
           <section className="space-y-2">
             <h2 className="text-lg font-semibold text-slate-900">5. Updates to the Terms</h2>
             <p>
-              When these terms change, we will notify users at least seven days in advance. Continued use of DotImage after the effective date means you agree to the updated terms.
+              When these terms change, we will notify users at least seven days in advance. Continued use of Fove after the effective date means you agree to the updated terms.
             </p>
           </section>
         </div>

@@ -42,7 +42,7 @@ const DIMENSION_SHORT_LABEL: Record<MbtiLetter, string> = {
   P: 'P (유연)'
 }
 
-const MBTI_STORAGE_KEY = 'dotimage:mbti-answers'
+const MBTI_STORAGE_KEY = 'fove:mbti-answers'
 const RESPONSE_VALUES: ResponseValue[] = [-2, -1, 0, 1, 2]
 
 const loadPersistedAnswers = (): Record<string, ResponseValue> => {

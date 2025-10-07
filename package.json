@@ -1,5 +1,5 @@
 {
-  "name": "dotimage",
+  "name": "fove",
   "private": true,
   "version": "0.2.0",
   "description": "Dot image generator with Vite, React, Tailwind",

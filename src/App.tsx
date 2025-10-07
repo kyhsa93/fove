@@ -17,31 +17,31 @@ type RouteConfig = {
 const routes: Record<RoutePath, RouteConfig> = {
   '/': {
     component: SajuPage,
-    title: 'DotImage · 사주 풀이'
+    title: 'Fove · 사주 풀이'
   },
   '/saju': {
     component: SajuPage,
-    title: 'DotImage · 사주 풀이'
+    title: 'Fove · 사주 풀이'
   },
   '/mbti': {
     component: MbtiPage,
-    title: 'DotImage · MBTI 성향 진단'
+    title: 'Fove · MBTI 성향 진단'
   },
   '/fortune': {
     component: FortuneLottoPage,
-    title: 'DotImage · 오늘의 운세 & 로또 추천'
+    title: 'Fove · 오늘의 운세 & 로또 추천'
   },
   '/privacy-policy': {
     component: PrivacyPolicyPage,
-    title: 'DotImage 개인정보 처리방침'
+    title: 'Fove 개인정보 처리방침'
   },
   '/terms-of-service': {
     component: TermsOfServicePage,
-    title: 'DotImage 이용약관'
+    title: 'Fove 이용약관'
   },
   '/contact': {
     component: ContactPage,
-    title: 'DotImage 문의하기'
+    title: 'Fove 문의하기'
   }
 }
 

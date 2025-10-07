@@ -14,7 +14,7 @@ import {
 
 const ONE_MINUTE = 60 * 1000
 
-const SAJU_STORAGE_KEY = 'dotimage:saju-inputs'
+const SAJU_STORAGE_KEY = 'fove:saju-inputs'
 
 interface PersistedSajuInputs {
   birthDate: string

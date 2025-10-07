@@ -38,7 +38,7 @@ export function Footer({ currentPath, onNavigate }: FooterProps): JSX.Element {
           })}
         </nav>
 
-        <p className="text-xs text-slate-400">© {year} DotImage. All rights reserved.</p>
+        <p className="text-xs text-slate-400">© {year} Fove. All rights reserved.</p>
       </div>
     </footer>
   )

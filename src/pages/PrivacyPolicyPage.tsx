@@ -8,7 +8,7 @@ export default function PrivacyPolicyPage(): JSX.Element {
           <span className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-500/80">Privacy</span>
           <h1 className="text-3xl font-bold text-slate-900">Privacy Policy</h1>
           <p className="text-base leading-relaxed text-slate-600">
-            DotImage collects only the minimum information required to run the service, and all data stays on your device. This policy explains what information we handle and how we protect it.
+            Fove collects only the minimum information required to run the service, and all data stays on your device. This policy explains what information we handle and how we protect it.
           </p>
         </header>
 
@@ -26,14 +26,14 @@ export default function PrivacyPolicyPage(): JSX.Element {
           <section className="space-y-2">
             <h2 className="text-lg font-semibold text-slate-900">2. Retention & Deletion</h2>
             <p>
-              DotImage does not require an account. Every piece of information is stored unencrypted in your browser’s local storage. Clearing your browser cache or choosing reset in the app instantly removes the data.
+              Fove does not require an account. Every piece of information is stored unencrypted in your browser’s local storage. Clearing your browser cache or choosing reset in the app instantly removes the data.
             </p>
           </section>
 
           <section className="space-y-2">
             <h2 className="text-lg font-semibold text-slate-900">3. Third-Party Services</h2>
             <p>
-              DotImage currently integrates with no analytics tools, ad networks, or third-party APIs. If this changes, we will post a notice and request consent again before collecting anything new.
+              Fove currently integrates with no analytics tools, ad networks, or third-party APIs. If this changes, we will post a notice and request consent again before collecting anything new.
             </p>
           </section>
 
