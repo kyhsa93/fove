@@ -238,6 +238,12 @@ export function SajuResult({ result, elementBars, interpretation, mbtiResult, is
   const analysisTab = useMemo(() => {
     if (!result) return null
 
+    const elementGap = result.summary.strongest.count - result.summary.weakest.count
+    const luckyRange = result.pillars.hour?.range
+    const actionDo = actionCards[0]?.description ?? ''
+    const actionAvoid = actionCards[1]?.description ?? ''
+    const relationHint = actionCards[2]?.description ?? ''
+
     return (
       <div className="space-y-5">
         <div className="grid gap-4 md:grid-cols-2">
@@ -258,6 +264,36 @@ export function SajuResult({ result, elementBars, interpretation, mbtiResult, is
               <p className="text-xs text-rose-500">※ 태어난 시간을 입력하면 시주까지 확인할 수 있습니다.</p>
             ) : null}
           </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-100 bg-white/85 p-4 text-sm leading-relaxed text-slate-700">
+          <h3 className="text-sm font-semibold text-slate-800">핵심 해설</h3>
+          <dl className="mt-3 grid gap-3 md:grid-cols-2">
+            <div className="space-y-1">
+              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">왜 이런 결과가 나왔나요?</dt>
+              <dd>
+                강한 {strongestLabel}와 부족한 {weakestLabel} 차이가 {elementGap}개라 오늘의 중심 기운이 형성되었습니다.
+              </dd>
+            </div>
+            <div className="space-y-1">
+              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">이 결과의 의미는?</dt>
+              <dd>{result.summary.yinYangMessage}</dd>
+            </div>
+            <div className="space-y-1">
+              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">오늘 해볼 것</dt>
+              <dd>{actionDo}</dd>
+            </div>
+            <div className="space-y-1">
+              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">주의·길한 시간대</dt>
+              <dd>
+                {actionAvoid} {luckyRange ? `길한 시간대는 ${luckyRange}가 중심이니 중요한 일정을 이때 맞춰 보세요.` : '태어난 시간을 입력하면 길한 시간대까지 안내해 드립니다.'}
+              </dd>
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">관계 힌트</dt>
+              <dd>{relationHint}</dd>
+            </div>
+          </dl>
         </div>
 
         <div className="rounded-2xl border border-amber-100 bg-amber-50/70 p-4 text-sm text-amber-900/80">

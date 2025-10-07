@@ -136,7 +136,7 @@ export default function FortuneLottoPage(): JSX.Element {
     }
     return (
       <div className="space-y-4">
-        <CombinedFortuneCard dailyFortune={dailyFortune} mbtiResult={null} />
+        <CombinedFortuneCard dailyFortune={dailyFortune} sajuResult={result} mbtiResult={null} />
         <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 p-4 text-sm text-indigo-900/80">
           MBTI 페이지에서 검사를 완료하면 성향에 맞춘 교차 인사이트가 함께 제공됩니다.
         </div>

@@ -696,6 +696,16 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
   const analysisTab = useMemo(() => {
     if (!result || !summary) return null
 
+    const topDimension = [...dimensionBreakdown].sort((a, b) => Math.abs(b.net) - Math.abs(a.net))[0]
+    const dominantScore = topDimension ? Math.abs(topDimension.net) : 0
+    const reasonText =
+      topDimension && dominantDimensionInfo
+        ? `${dominantDimensionInfo.label}에서 ${dominantDimensionInfo.direction} 응답이 ${dominantScore}점 앞서 ${result.type} 유형이 형성되었어요.`
+        : '모든 차원이 균형에 가까워 현재는 중립적인 흐름이 드러납니다.'
+    const actionDo = actionCards[0]?.description ?? ''
+    const actionAvoid = actionCards[1]?.description ?? ''
+    const relationHint = actionCards[2]?.description ?? ''
+
     return (
       <div className="space-y-5">
         <div className="rounded-xl border border-indigo-200 bg-white/80 p-4 text-sm text-indigo-900/80">
@@ -705,6 +715,32 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
             <li>강점·성장 포인트를 비교해 균형 잡힌 행동을 계획해 보세요.</li>
             <li>성향 지표와 실천 카드를 참고해 구체적인 행동으로 연결하세요.</li>
           </ol>
+        </div>
+
+        <div className="rounded-xl border border-indigo-100 bg-white/85 p-4 text-sm leading-relaxed text-indigo-900/80">
+          <h3 className="text-sm font-semibold text-indigo-700">핵심 해설</h3>
+          <dl className="mt-3 grid gap-3 md:grid-cols-2">
+            <div className="space-y-1">
+              <dt className="text-xs font-medium uppercase tracking-wide text-indigo-500">왜 이런 결과가 나왔나요?</dt>
+              <dd>{reasonText}</dd>
+            </div>
+            <div className="space-y-1">
+              <dt className="text-xs font-medium uppercase tracking-wide text-indigo-500">이 결과의 의미는?</dt>
+              <dd>{summary.description}</dd>
+            </div>
+            <div className="space-y-1">
+              <dt className="text-xs font-medium uppercase tracking-wide text-indigo-500">오늘 해볼 것</dt>
+              <dd>{actionDo}</dd>
+            </div>
+            <div className="space-y-1">
+              <dt className="text-xs font-medium uppercase tracking-wide text-indigo-500">주의할 점</dt>
+              <dd>{actionAvoid}</dd>
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <dt className="text-xs font-medium uppercase tracking-wide text-indigo-500">관계 힌트</dt>
+              <dd>{relationHint}</dd>
+            </div>
+          </dl>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">

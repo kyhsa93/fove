@@ -346,10 +346,11 @@ export function mergeLottoWithMbti(
 
 interface CombinedFortuneCardProps {
   dailyFortune: DailyFortune
+  sajuResult?: SajuResult | null
   mbtiResult?: MbtiResult | null
 }
 
-export function CombinedFortuneCard({ dailyFortune, mbtiResult }: CombinedFortuneCardProps): JSX.Element {
+export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: CombinedFortuneCardProps): JSX.Element {
   const { addEntry } = useResultHistory()
   const { dateLabel, pillarName, elementLabel, yinYang } = dailyFortune
   const combinedTexts = useMemo(() => buildCombinedFortuneText(dailyFortune, mbtiResult), [dailyFortune, mbtiResult])
@@ -384,6 +385,14 @@ export function CombinedFortuneCard({ dailyFortune, mbtiResult }: CombinedFortun
   }, [historyEntry, addEntry])
 
   const analysisTab = useMemo(() => {
+    const luckyRange = sajuResult?.pillars.hour?.range
+    const strongestLabel = sajuResult ? `${sajuResult.summary.strongest.element} (${sajuResult.summary.strongest.count}개)` : null
+    const reasonText = sajuResult
+      ? `${pillarName} 일진이 ${elementLabel} 기운을 강조하고, 개인 사주의 강점인 ${strongestLabel ?? '개인 오행'} 흐름이 맞물렸습니다.`
+      : `${pillarName} 일진이 ${elementLabel} 기운을 중심으로 하루의 방향을 잡고 있습니다.`
+    const cautionText = `${combinedTexts.caution}${luckyRange ? ` 길한 시간대는 ${luckyRange}입니다.` : ' 태어난 시간을 입력하면 길한 시간대를 안내해 드립니다.'}`
+    const relationHint = actionCards[2]?.description ?? ''
+
     return (
       <div className="space-y-5 text-sm leading-relaxed text-slate-700">
         <div className="grid gap-4 md:grid-cols-3">
@@ -407,6 +416,32 @@ export function CombinedFortuneCard({ dailyFortune, mbtiResult }: CombinedFortun
           </div>
         </div>
 
+        <div className="rounded-xl border border-amber-100 bg-white/80 p-4">
+          <h3 className="text-sm font-semibold text-amber-700">핵심 해설</h3>
+          <dl className="mt-3 grid gap-3 md:grid-cols-2 text-slate-700">
+            <div className="space-y-1">
+              <dt className="text-xs font-medium uppercase tracking-wide text-amber-500">왜 이런 결과가 나왔나요?</dt>
+              <dd>{reasonText}</dd>
+            </div>
+            <div className="space-y-1">
+              <dt className="text-xs font-medium uppercase tracking-wide text-amber-500">이 결과의 의미는?</dt>
+              <dd>{combinedTexts.energy}</dd>
+            </div>
+            <div className="space-y-1">
+              <dt className="text-xs font-medium uppercase tracking-wide text-amber-500">오늘 해볼 것</dt>
+              <dd>{combinedTexts.action}</dd>
+            </div>
+            <div className="space-y-1">
+              <dt className="text-xs font-medium uppercase tracking-wide text-amber-500">주의·길한 시간대</dt>
+              <dd>{cautionText}</dd>
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <dt className="text-xs font-medium uppercase tracking-wide text-amber-500">관계 힌트</dt>
+              <dd>{relationHint}</dd>
+            </div>
+          </dl>
+        </div>
+
         <div className="rounded-xl border border-amber-200/70 bg-amber-50/70 p-4 text-amber-900/80">
           <p className="text-sm font-semibold text-amber-900">이 결과는 이렇게 읽어보세요</p>
           <ul className="mt-2 space-y-1 leading-relaxed">
@@ -417,7 +452,7 @@ export function CombinedFortuneCard({ dailyFortune, mbtiResult }: CombinedFortun
         </div>
       </div>
     )
-  }, [combinedTexts])
+  }, [combinedTexts, pillarName, elementLabel, actionCards, sajuResult])
 
   const adviceTab = useMemo(() => {
     return (
