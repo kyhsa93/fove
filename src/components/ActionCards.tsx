@@ -30,7 +30,7 @@ export function ActionCardDeck({ cards }: ActionCardDeckProps): JSX.Element {
         {cards.map((card) => (
           <article
             key={card.title}
-            className={`rounded-2xl border p-4 text-sm leading-relaxed shadow-sm transition ${toneStyles[card.tone]}`}
+            className={`rounded-2xl border px-2 py-4 text-sm leading-relaxed shadow-sm transition sm:px-4 ${toneStyles[card.tone]}`}
           >
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-gray-500/70">{card.title}</p>
             <p className="mt-2 text-sm">{card.description}</p>

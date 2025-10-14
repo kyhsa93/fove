@@ -103,7 +103,7 @@ export default function FortuneLottoPage(): JSX.Element {
         key={entry.id}
         type="button"
         onClick={() => navigateTo(targetPath)}
-        className="flex h-full flex-col justify-between rounded-2xl border border-slate-100 bg-white/85 p-4 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+        className="flex h-full flex-col justify-between rounded-2xl border border-slate-100 bg-white/85 px-2 py-4 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:px-4"
       >
         <div className="space-y-2">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{entry.badge ?? entry.kind.toUpperCase()}</p>
@@ -122,14 +122,14 @@ export default function FortuneLottoPage(): JSX.Element {
     }
     if (!result) {
       return (
-        <div className="rounded-2xl border border-amber-100 bg-white/60 p-6 text-sm text-gray-700">
+        <div className="rounded-2xl border border-amber-100 bg-white/60 px-2 py-4 text-sm text-gray-700 sm:px-6 sm:py-6">
           사주 정보를 먼저 입력해 주세요. 기본 정보를 입력하면 오늘의 운세가 자동으로 생성됩니다.
         </div>
       )
     }
     if (!dailyFortune) {
       return (
-        <div className="rounded-2xl border border-amber-100 bg-white/60 p-6 text-sm text-gray-700">
+        <div className="rounded-2xl border border-amber-100 bg-white/60 px-2 py-4 text-sm text-gray-700 sm:px-6 sm:py-6">
           오늘의 운세 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.
         </div>
       )
@@ -137,7 +137,7 @@ export default function FortuneLottoPage(): JSX.Element {
     return (
       <div className="space-y-4">
         <CombinedFortuneCard dailyFortune={dailyFortune} sajuResult={result} mbtiResult={null} />
-        <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 p-4 text-sm text-indigo-900/80">
+        <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 px-2 py-4 text-sm text-indigo-900/80 sm:px-4">
           MBTI 페이지에서 검사를 완료하면 성향에 맞춘 교차 인사이트가 함께 제공됩니다.
         </div>
       </div>
@@ -150,14 +150,14 @@ export default function FortuneLottoPage(): JSX.Element {
     }
     if (!result) {
       return (
-        <div className="rounded-2xl border border-emerald-100 bg-white/60 p-6 text-sm text-gray-700">
+        <div className="rounded-2xl border border-emerald-100 bg-white/60 px-2 py-4 text-sm text-gray-700 sm:px-6 sm:py-6">
           사주 정보를 먼저 입력해 주세요. 기본 정보를 입력하면 추천 번호를 생성할 수 있습니다.
         </div>
       )
     }
     if (!dailyFortune) {
       return (
-        <div className="rounded-2xl border border-emerald-100 bg-white/60 p-6 text-sm text-gray-700">
+        <div className="rounded-2xl border border-emerald-100 bg-white/60 px-2 py-4 text-sm text-gray-700 sm:px-6 sm:py-6">
           오늘의 일진 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.
         </div>
       )
@@ -165,7 +165,7 @@ export default function FortuneLottoPage(): JSX.Element {
     return (
       <div className="space-y-4">
         <CombinedLottoCard dailyFortune={dailyFortune} result={result} mbtiResult={null} />
-        <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 p-4 text-sm text-indigo-900/80">
+        <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 px-2 py-4 text-sm text-indigo-900/80 sm:px-4">
           MBTI 성향을 반영한 맞춤 번호는 MBTI 페이지에서 검사를 진행한 뒤 확인할 수 있어요.
         </div>
       </div>
@@ -173,7 +173,7 @@ export default function FortuneLottoPage(): JSX.Element {
   }
 
   return (
-    <section className="py-8">
+    <section className="py-6 sm:py-8">
       <div className="mx-auto max-w-4xl space-y-8 px-4">
         <header className="space-y-2 text-center">
           <h1 className="text-3xl font-bold text-gray-900">오늘의 운세 & 로또 추천</h1>
@@ -208,7 +208,7 @@ export default function FortuneLottoPage(): JSX.Element {
             {SUPPORT_LINKS.map((flow) => (
               <article
                 key={flow.id}
-                className={`rounded-2xl border bg-white/70 p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg focus-within:-translate-y-1 focus-within:shadow-lg ${flow.accent}`}
+                className={`rounded-2xl border bg-white/70 px-2 py-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg focus-within:-translate-y-1 focus-within:shadow-lg sm:px-5 sm:py-5 ${flow.accent}`}
               >
                 <div className="space-y-3">
                   <h3 className="text-lg font-semibold text-gray-900">{flow.title}</h3>
@@ -253,7 +253,7 @@ export default function FortuneLottoPage(): JSX.Element {
           <h2 className="text-lg font-semibold text-gray-900">자주 묻는 질문</h2>
           <div className="space-y-4">
             {FAQ_ITEMS.map((item) => (
-              <article key={item.question} className="rounded-2xl border border-slate-100 bg-white/80 p-5 shadow-sm space-y-3">
+              <article key={item.question} className="rounded-2xl border border-slate-100 bg-white/80 px-2 py-4 shadow-sm space-y-3 sm:px-5 sm:py-5">
                 <h3 className="text-base font-semibold text-gray-900">{item.question}</h3>
                 <div className="space-y-2 text-sm leading-relaxed text-gray-600">
                   {item.answer.map((paragraph, index) => (

@@ -70,7 +70,7 @@ function PillarCard({ pillarKey, pillar }: PillarCardProps): JSX.Element {
   const monthText = pillar.monthLabel ?? (pillar.lunarMonth ? `${pillar.lunarMonth}월` : '-')
 
   return (
-    <article className="bg-white/90 border border-gray-100 rounded-2xl shadow-sm p-5 space-y-3">
+    <article className="bg-white/90 border border-gray-100 rounded-2xl shadow-sm px-2 py-4 space-y-3 sm:px-4 sm:py-5">
       <header className="flex items-baseline justify-between">
         <h3 className="text-md font-semibold text-gray-900">{PILLAR_LABELS[pillarKey]}</h3>
         <span className="text-xs text-gray-500">{focusText}</span>
@@ -129,7 +129,7 @@ interface ElementDistributionProps {
 
 function ElementDistribution({ elementBars, strongestLabel, weakestLabel, yinYangMessage }: ElementDistributionProps): JSX.Element {
   return (
-    <div className="bg-white/90 border border-amber-100 rounded-2xl shadow-sm p-6 space-y-4">
+    <div className="bg-white/90 border border-amber-100 rounded-2xl shadow-sm px-2 py-4 space-y-4 sm:px-6 sm:py-6">
       <h2 className="text-lg font-semibold text-gray-900">
         <TooltipLabel
           text="오행 · 음양 분포"
@@ -168,7 +168,7 @@ function InterpretationSection({ interpretation }: InterpretationSectionProps): 
   if (!interpretation.length) return null
 
   return (
-    <div className="bg-white/90 border border-slate-100 rounded-2xl shadow-sm p-6 space-y-4">
+    <div className="bg-white/90 border border-slate-100 rounded-2xl shadow-sm px-2 py-4 space-y-4 sm:px-6 sm:py-6">
       <h2 className="text-lg font-semibold text-gray-900">
         <TooltipLabel text="심층 해석" description="핵심 키워드를 기반으로 삶의 흐름과 성향을 알기 쉽게 정리했습니다." />
       </h2>
@@ -247,14 +247,14 @@ export function SajuResult({ result, elementBars, interpretation, mbtiResult, is
     return (
       <div className="space-y-5">
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 space-y-2">
+          <div className="bg-amber-50 border border-amber-100 rounded-xl px-2 py-4 space-y-2 sm:px-4">
             <p className="text-sm text-gray-600">양력 기준</p>
             <p className="text-base font-semibold text-gray-900">{result.meta.solarDate}</p>
             <p className="text-sm text-gray-600">서양 별자리: {result.meta.westernZodiac}</p>
             <p className="text-sm text-gray-600">입력한 시간: {result.meta.timeText}</p>
             <p className="text-sm text-gray-600">성별: {result.meta.genderLabel}</p>
           </div>
-          <div className="bg-rose-50 border border-rose-100 rounded-xl p-4 space-y-2">
+          <div className="bg-rose-50 border border-rose-100 rounded-xl px-2 py-4 space-y-2 sm:px-4">
             <p className="text-sm text-gray-600">음력 기준</p>
             <p className="text-base font-semibold text-gray-900">{result.pillars.year.name}년 ({result.meta.lunarDate})</p>
             {result.pillars.month?.isLeapMonth ? (
@@ -266,7 +266,7 @@ export function SajuResult({ result, elementBars, interpretation, mbtiResult, is
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-100 bg-white/85 p-4 text-sm leading-relaxed text-slate-700">
+        <div className="rounded-2xl border border-slate-100 bg-white/85 px-2 py-4 text-sm leading-relaxed text-slate-700 sm:px-4">
           <h3 className="text-sm font-semibold text-slate-800">핵심 해설</h3>
           <dl className="mt-3 grid gap-3 md:grid-cols-2">
             <div className="space-y-1">
@@ -296,7 +296,7 @@ export function SajuResult({ result, elementBars, interpretation, mbtiResult, is
           </dl>
         </div>
 
-        <div className="rounded-2xl border border-amber-100 bg-amber-50/70 p-4 text-sm text-amber-900/80">
+        <div className="rounded-2xl border border-amber-100 bg-amber-50/70 px-2 py-4 text-sm text-amber-900/80 sm:px-4">
           <p className="text-sm font-semibold text-amber-900">이 결과는 이렇게 읽어보세요</p>
           <ul className="mt-2 space-y-1 leading-relaxed">
             <li>1) 기본 해석에서 양력·음력 정보를 확인하고 오늘의 기운을 가볍게 정리하세요.</li>
@@ -305,7 +305,7 @@ export function SajuResult({ result, elementBars, interpretation, mbtiResult, is
           </ul>
         </div>
 
-        <div className="rounded-2xl border border-indigo-100 bg-indigo-50/40 p-4 text-sm text-indigo-900/80">
+        <div className="rounded-2xl border border-indigo-100 bg-indigo-50/40 px-2 py-4 text-sm text-indigo-900/80 sm:px-4">
           오늘의 운세와 로또 번호 추천은 상단 탭에서 확인할 수 있습니다.
           {mbtiResult
             ? ' MBTI 검사 결과를 바탕으로 개인 맞춤형 조합을 제공합니다.'
@@ -337,7 +337,7 @@ export function SajuResult({ result, elementBars, interpretation, mbtiResult, is
     return (
       <div className="space-y-5">
         <ActionCardDeck cards={actionCards} />
-        <div className="bg-white/70 border border-gray-100 rounded-2xl p-5 text-sm text-gray-600 leading-relaxed">
+        <div className="bg-white/70 border border-gray-100 rounded-2xl px-2 py-4 text-sm text-gray-600 leading-relaxed sm:px-5 sm:py-5">
           <p className="font-medium text-gray-800">
             <TooltipLabel text="활용 가이드" description="실제 상담 대신 참고용으로 본인의 흐름을 점검할 때 활용하세요." />
           </p>

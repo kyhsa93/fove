@@ -98,7 +98,7 @@ export function ResultCard({ entry, metrics = [], summary, tabs = [], footer, ac
   }
 
   return (
-    <section className="rounded-3xl border border-slate-100 bg-white/95 p-6 shadow-sm backdrop-blur-sm">
+    <section className="rounded-3xl border border-slate-100 bg-white/95 px-2 py-4 shadow-sm backdrop-blur-sm sm:px-6 sm:py-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-1">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
@@ -146,7 +146,7 @@ export function ResultCard({ entry, metrics = [], summary, tabs = [], footer, ac
       {metrics.length ? (
         <dl className="mt-6 grid gap-4 sm:grid-cols-2">
           {metrics.map((metric) => (
-            <div key={metric.label} className="rounded-2xl border border-slate-100 bg-slate-50/80 px-4 py-3">
+            <div key={metric.label} className="rounded-2xl border border-slate-100 bg-slate-50/80 px-3 py-3 sm:px-4">
               <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">{metric.label}</dt>
               <dd className="mt-1 text-lg font-semibold text-slate-900">{metric.value}</dd>
             </div>
@@ -174,7 +174,7 @@ export function ResultCard({ entry, metrics = [], summary, tabs = [], footer, ac
               </button>
             ))}
           </nav>
-          <div className="rounded-2xl border border-slate-100 bg-white/90 p-5 text-sm leading-relaxed text-slate-700">
+          <div className="rounded-2xl border border-slate-100 bg-white/90 px-3 py-4 text-sm leading-relaxed text-slate-700 sm:px-5 sm:py-5">
             {displayedTab?.content ?? null}
           </div>
         </div>
@@ -188,7 +188,7 @@ export function ResultCard({ entry, metrics = [], summary, tabs = [], footer, ac
 
 export function ResultCardSkeleton(): JSX.Element {
   return (
-    <section className="animate-pulse rounded-3xl border border-slate-100 bg-white/80 p-6 shadow-sm">
+    <section className="animate-pulse rounded-3xl border border-slate-100 bg-white/80 px-2 py-4 shadow-sm sm:px-6 sm:py-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-2">
           <div className="h-3 w-24 rounded bg-slate-200" />

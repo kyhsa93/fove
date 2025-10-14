@@ -105,7 +105,7 @@ export default function SajuPage(): JSX.Element {
         key={entry.id}
         type="button"
         onClick={() => navigateTo(targetPath)}
-        className="flex h-full flex-col justify-between rounded-2xl border border-slate-100 bg-white/85 p-4 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+        className="flex h-full flex-col justify-between rounded-2xl border border-slate-100 bg-white/85 px-2 py-4 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:px-4"
       >
         <div className="space-y-2">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{entry.badge ?? entry.kind.toUpperCase()}</p>
@@ -119,7 +119,7 @@ export default function SajuPage(): JSX.Element {
   }
 
   return (
-    <section className="py-8">
+    <section className="py-6 sm:py-8">
       <div className="mx-auto max-w-4xl space-y-8 px-4">
         <header className="space-y-2 text-center">
           <h1 className="text-3xl font-bold text-gray-900">사주팔자 간편 조회</h1>
@@ -154,7 +154,7 @@ export default function SajuPage(): JSX.Element {
             {FEATURE_LINKS.map((flow) => (
               <article
                 key={flow.id}
-                className={`rounded-2xl border bg-white/70 p-5 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg focus-within:-translate-y-1 focus-within:shadow-lg ${flow.accent}`}
+                className={`rounded-2xl border bg-white/70 px-2 py-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg focus-within:-translate-y-1 focus-within:shadow-lg sm:px-5 sm:py-5 ${flow.accent}`}
               >
                 <div className="space-y-3">
                   <h3 className="text-lg font-semibold text-gray-900">{flow.title}</h3>
@@ -190,7 +190,7 @@ export default function SajuPage(): JSX.Element {
           <h2 className="text-lg font-semibold text-gray-900">자주 묻는 질문</h2>
           <div className="space-y-4">
             {FAQ_ITEMS.map((item) => (
-              <article key={item.question} className="rounded-2xl border border-slate-100 bg-white/80 p-5 shadow-sm space-y-3">
+              <article key={item.question} className="rounded-2xl border border-slate-100 bg-white/80 px-2 py-4 shadow-sm space-y-3 sm:px-5 sm:py-5">
                 <h3 className="text-base font-semibold text-gray-900">{item.question}</h3>
                 <div className="space-y-2 text-sm leading-relaxed text-gray-600">
                   {item.answer.map((paragraph, index) => (

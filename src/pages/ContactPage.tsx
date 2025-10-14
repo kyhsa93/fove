@@ -2,8 +2,8 @@ import { JSX } from 'react'
 
 export default function ContactPage(): JSX.Element {
   return (
-    <section className="mx-auto max-w-3xl px-4 py-16">
-      <div className="space-y-8 rounded-3xl bg-white/90 p-8 shadow-sm ring-1 ring-slate-200/70 backdrop-blur">
+    <section className="mx-auto max-w-3xl px-2 py-12 sm:px-4 sm:py-16">
+      <div className="space-y-8 rounded-3xl bg-white/90 px-2 py-6 shadow-sm ring-1 ring-slate-200/70 backdrop-blur sm:px-8 sm:py-8">
         <header className="space-y-2">
           <span className="text-xs font-semibold uppercase tracking-[0.18em] text-rose-500/80">Contact</span>
           <h1 className="text-3xl font-bold text-slate-900">Get in Touch</h1>
@@ -15,7 +15,7 @@ export default function ContactPage(): JSX.Element {
         <div className="space-y-6 text-sm leading-relaxed text-slate-700">
           <section className="space-y-3">
             <h2 className="text-lg font-semibold text-slate-900">Primary Contact</h2>
-            <div className="rounded-2xl border border-rose-100 bg-rose-50/60 p-6 text-slate-700">
+            <div className="rounded-2xl border border-rose-100 bg-rose-50/60 px-2 py-4 text-slate-700 sm:px-6 sm:py-6">
               <p className="text-sm">Email</p>
               <a
                 href="mailto:hello@fove.app"

@@ -708,7 +708,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
 
     return (
       <div className="space-y-5">
-        <div className="rounded-xl border border-indigo-200 bg-white/80 p-4 text-sm text-indigo-900/80">
+        <div className="rounded-xl border border-indigo-200 bg-white/80 px-2 py-4 text-sm text-indigo-900/80 sm:px-4">
           <p className="text-sm font-semibold text-indigo-800">이 결과는 이렇게 읽어보세요</p>
           <ol className="mt-2 space-y-1 list-decimal pl-5">
             <li>요약 타이틀로 오늘의 에너지 방향을 먼저 파악하세요.</li>
@@ -717,7 +717,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
           </ol>
         </div>
 
-        <div className="rounded-xl border border-indigo-100 bg-white/85 p-4 text-sm leading-relaxed text-indigo-900/80">
+        <div className="rounded-xl border border-indigo-100 bg-white/85 px-2 py-4 text-sm leading-relaxed text-indigo-900/80 sm:px-4">
           <h3 className="text-sm font-semibold text-indigo-700">핵심 해설</h3>
           <dl className="mt-3 grid gap-3 md:grid-cols-2">
             <div className="space-y-1">
@@ -744,7 +744,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2 rounded-xl border border-indigo-200 bg-white/70 p-4">
+          <div className="space-y-2 rounded-xl border border-indigo-200 bg-white/70 px-2 py-4 sm:px-4">
             <h4 className="text-sm font-semibold text-indigo-800">
               <TooltipLabel text="강점" description="질문 응답에서 가장 일관되게 드러난 자원입니다." />
             </h4>
@@ -754,7 +754,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
               ))}
             </ul>
           </div>
-          <div className="space-y-2 rounded-xl border border-indigo-200 bg-white/70 p-4">
+          <div className="space-y-2 rounded-xl border border-indigo-200 bg-white/70 px-2 py-4 sm:px-4">
             <h4 className="text-sm font-semibold text-indigo-800">
               <TooltipLabel text="성장 포인트" description="균형을 위해 의식하면 좋은 보완 지점입니다." />
             </h4>
@@ -766,7 +766,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
           </div>
         </div>
 
-        <div className="space-y-3 rounded-xl border border-indigo-200 bg-white/80 p-4">
+        <div className="space-y-3 rounded-xl border border-indigo-200 bg-white/80 px-2 py-4 sm:px-4">
           <h4 className="text-sm font-semibold text-indigo-800">
             <TooltipLabel text="성향 지표" description="각 차원에서 어떤 방향으로 치우쳤는지 시각화했습니다." />
           </h4>
@@ -811,7 +811,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
     return (
       <div className="space-y-5">
         <ActionCardDeck cards={actionCards} />
-        <div className="rounded-xl border border-indigo-100 bg-indigo-50/60 p-4 text-sm text-indigo-900/80">
+        <div className="rounded-xl border border-indigo-100 bg-indigo-50/60 px-2 py-4 text-sm text-indigo-900/80 sm:px-4">
           <p className="font-medium text-indigo-700">오늘 활용 메모</p>
           <p className="mt-1 text-xs text-indigo-600">
             강점 카드에서 고른 행동을 30분만이라도 실행하고, 성장 포인트는 짧은 체크인으로 마무리해 보세요. 관계 팁을 팀/가족 일정에 바로 적용해도 좋습니다.
@@ -834,7 +834,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
 
   return (
     <section className="space-y-6">
-      <div className="space-y-6 rounded-2xl border border-indigo-100 bg-white/80 p-6 shadow-sm backdrop-blur-sm">
+      <div className="space-y-6 rounded-2xl border border-indigo-100 bg-white/80 px-2 py-4 shadow-sm backdrop-blur-sm sm:px-6 sm:py-6">
         <header className="space-y-2">
           <h2 className="text-lg font-semibold text-gray-900">MBTI 성향 진단</h2>
           <p className="text-sm text-gray-600">
@@ -846,7 +846,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
           {QUESTIONS.map((question, index) => {
             const answer = answers[question.id]
             return (
-              <fieldset key={question.id} className="space-y-3 rounded-xl border border-indigo-100 bg-white/80 p-4 shadow-sm">
+              <fieldset key={question.id} className="space-y-3 rounded-xl border border-indigo-100 bg-white/80 px-2 py-4 shadow-sm sm:px-4">
                 <legend className="text-sm font-medium text-gray-900">
                   {index + 1}. {question.prompt}
                 </legend>

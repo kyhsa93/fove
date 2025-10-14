@@ -58,7 +58,7 @@ export function SajuForm({
   const genderLabel = gender === 'male' ? '남성' : '여성'
 
   return (
-    <section className="bg-white/80 backdrop-blur-sm border border-amber-100 shadow-sm rounded-2xl p-6 space-y-5">
+    <section className="bg-white/80 backdrop-blur-sm border border-amber-100 shadow-sm rounded-2xl px-2 py-4 space-y-5 sm:px-6 sm:py-6">
       <header className="space-y-2">
         <h2 className="text-lg font-semibold text-gray-900">기본 정보 입력</h2>
         <p className="text-sm text-amber-700 bg-amber-50/80 border border-amber-100 rounded-xl px-3 py-2">
@@ -66,7 +66,7 @@ export function SajuForm({
         </p>
       </header>
 
-      <div className="rounded-xl border border-amber-100/60 bg-amber-50/50 p-4 text-sm text-gray-700">
+      <div className="rounded-xl border border-amber-100/60 bg-amber-50/50 px-2 py-4 text-sm text-gray-700 sm:px-4">
         <h3 className="font-medium text-gray-900 mb-2">입력 요약</h3>
         <dl className="grid gap-3 md:grid-cols-3">
           <div className="space-y-0.5">

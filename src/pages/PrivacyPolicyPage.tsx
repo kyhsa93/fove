@@ -2,8 +2,8 @@ import { JSX } from 'react'
 
 export default function PrivacyPolicyPage(): JSX.Element {
   return (
-    <section className="mx-auto max-w-3xl px-4 py-16">
-      <div className="space-y-8 rounded-3xl bg-white/90 p-8 shadow-sm ring-1 ring-slate-200/70 backdrop-blur">
+    <section className="mx-auto max-w-3xl px-2 py-12 sm:px-4 sm:py-16">
+      <div className="space-y-8 rounded-3xl bg-white/90 px-2 py-6 shadow-sm ring-1 ring-slate-200/70 backdrop-blur sm:px-8 sm:py-8">
         <header className="space-y-2">
           <span className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-500/80">Privacy</span>
           <h1 className="text-3xl font-bold text-slate-900">Privacy Policy</h1>

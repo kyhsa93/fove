@@ -416,7 +416,7 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
           </div>
         </div>
 
-        <div className="rounded-xl border border-amber-100 bg-white/80 p-4">
+        <div className="rounded-xl border border-amber-100 bg-white/80 px-2 py-4 sm:px-4">
           <h3 className="text-sm font-semibold text-amber-700">핵심 해설</h3>
           <dl className="mt-3 grid gap-3 md:grid-cols-2 text-slate-700">
             <div className="space-y-1">
@@ -442,7 +442,7 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
           </dl>
         </div>
 
-        <div className="rounded-xl border border-amber-200/70 bg-amber-50/70 p-4 text-amber-900/80">
+        <div className="rounded-xl border border-amber-200/70 bg-amber-50/70 px-2 py-4 text-amber-900/80 sm:px-4">
           <p className="text-sm font-semibold text-amber-900">이 결과는 이렇게 읽어보세요</p>
           <ul className="mt-2 space-y-1 leading-relaxed">
             <li>1) 오늘의 일진으로 기본 기운을 확인하고 ENERGY → ACTION 순으로 읽어보세요.</li>
@@ -459,7 +459,7 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
       <div className="space-y-5 text-sm leading-relaxed text-slate-700">
         <ActionCardDeck cards={actionCards} />
         {mbtiResult && combinedTexts.accent ? (
-          <div className="rounded-xl border border-indigo-100 bg-white/80 p-4 text-indigo-900/80">
+          <div className="rounded-xl border border-indigo-100 bg-white/80 px-2 py-4 text-indigo-900/80 sm:px-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-indigo-500">MBTI Insight</p>
             <p className="mt-1">{combinedTexts.accent}</p>
             <p className="mt-1 text-xs text-indigo-600">핵심 메시지: {mbtiResult.summary.description}</p>
@@ -547,7 +547,7 @@ export function CombinedLottoCard({ dailyFortune, result, mbtiResult }: Combined
         {lucky.influenceSummary ? (
           <p className="text-xs text-center text-indigo-600">{lucky.influenceSummary}</p>
         ) : null}
-        <div className="rounded-xl border border-amber-200/70 bg-amber-50/70 p-4 text-amber-900/80">
+        <div className="rounded-xl border border-amber-200/70 bg-amber-50/70 px-2 py-4 text-amber-900/80 sm:px-4">
           <p className="text-sm font-semibold text-amber-900">이 결과는 이렇게 읽어보세요</p>
           <ul className="mt-2 space-y-1 leading-relaxed">
             <li>1) 추천 번호를 메모하고 마음에 드는 조합을 표시해 두세요.</li>
@@ -624,7 +624,7 @@ export function CrossInsightCard({ dailyFortune, mbtiResult }: CrossInsightCardP
     return (
       <div className="space-y-4 text-sm leading-relaxed text-slate-700">
         <p>{insight.summary}</p>
-        <div className="rounded-xl border border-slate-200 bg-white/80 p-4 text-xs text-slate-600">
+        <div className="rounded-xl border border-slate-200 bg-white/80 px-2 py-4 text-xs text-slate-600 sm:px-4">
           <p className="font-semibold text-slate-700">오늘의 기반 데이터</p>
           <p className="mt-1">에너지 포인트: {dailyFortune.energyText}</p>
           <p>실천 가이드: {dailyFortune.actionText}</p>
