@@ -6,6 +6,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfServicePage from './pages/TermsOfServicePage'
 import ContactPage from './pages/ContactPage'
 import { Footer } from './components/Footer'
+import { Header } from './components/Header'
 import type { RoutePath } from './routes'
 import { footerLinks } from './routes'
 
@@ -104,6 +105,7 @@ export default function App(): JSX.Element {
 
   return (
     <div className={`flex min-h-screen flex-col text-slate-900 ${backgroundClass}`}>
+      <Header currentPath={currentPath} onNavigate={navigate} />
       <main className="flex-1">
         <CurrentPage />
       </main>
