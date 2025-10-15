@@ -13,8 +13,6 @@ export function Header({ currentPath, onNavigate }: HeaderProps): JSX.Element {
     onNavigate(path)
   }
 
-  const normalizedPath = currentPath === '/' ? '/saju' : currentPath
-
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/60 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-4xl items-center justify-between px-3 py-3 sm:px-6">
@@ -31,7 +29,7 @@ export function Header({ currentPath, onNavigate }: HeaderProps): JSX.Element {
 
         <nav className="hidden items-center gap-1 text-sm font-medium text-slate-600 sm:flex" aria-label="주요 페이지">
           {navLinks.map((item) => {
-            const active = currentPath === item.path || (item.path === '/saju' && currentPath === '/')
+            const active = currentPath === item.path
             return (
               <a
                 key={item.path}
@@ -56,7 +54,7 @@ export function Header({ currentPath, onNavigate }: HeaderProps): JSX.Element {
           </label>
           <select
             id="mobile-navigation"
-            value={normalizedPath}
+            value={currentPath}
             onChange={(event) => onNavigate(event.target.value as RoutePath)}
             className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
           >

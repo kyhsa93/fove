@@ -1,4 +1,5 @@
 import { JSX, useCallback, useEffect, useMemo, useState } from 'react'
+import HomePage from './pages/HomePage'
 import SajuPage from './pages/SajuPage'
 import MbtiPage from './pages/MbtiPage'
 import FortuneLottoPage from './pages/FortuneLottoPage'
@@ -17,8 +18,8 @@ type RouteConfig = {
 
 const routes: Record<RoutePath, RouteConfig> = {
   '/': {
-    component: SajuPage,
-    title: 'Fove · 사주 풀이'
+    component: HomePage,
+    title: 'Fove · 하루 인사이트 허브'
   },
   '/saju': {
     component: SajuPage,
@@ -93,15 +94,17 @@ export default function App(): JSX.Element {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [currentPath])
 
-  const CurrentPage = useMemo(() => routes[currentPath]?.component ?? SajuPage, [currentPath])
+  const CurrentPage = useMemo(() => routes[currentPath]?.component ?? HomePage, [currentPath])
   const backgroundClass =
-    currentPath === '/' || currentPath === '/saju'
-      ? 'bg-gradient-to-b from-amber-50 via-white to-rose-50'
-      : currentPath === '/mbti'
-        ? 'bg-gradient-to-b from-indigo-50 via-white to-slate-100'
-        : currentPath === '/fortune'
-          ? 'bg-gradient-to-b from-rose-50 via-white to-emerald-50'
-          : 'bg-slate-100'
+    currentPath === '/'
+      ? 'bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-900'
+      : currentPath === '/saju'
+        ? 'bg-gradient-to-b from-amber-50 via-white to-rose-50'
+        : currentPath === '/mbti'
+          ? 'bg-gradient-to-b from-indigo-50 via-white to-slate-100'
+          : currentPath === '/fortune'
+            ? 'bg-gradient-to-b from-rose-50 via-white to-emerald-50'
+            : 'bg-slate-100'
 
   return (
     <div className={`flex min-h-screen flex-col text-slate-900 ${backgroundClass}`}>
