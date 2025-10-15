@@ -29,7 +29,7 @@ export function Header({ currentPath, onNavigate }: HeaderProps): JSX.Element {
           Fove
         </a>
 
-        <nav className="hidden items-center gap-1 text-sm font-medium text-slate-600 sm:flex">
+        <nav className="hidden items-center gap-1 text-sm font-medium text-slate-600 sm:flex" aria-label="주요 페이지">
           {navLinks.map((item) => {
             const active = currentPath === item.path || (item.path === '/saju' && currentPath === '/')
             return (
@@ -42,6 +42,7 @@ export function Header({ currentPath, onNavigate }: HeaderProps): JSX.Element {
                     ? 'bg-slate-900 text-white shadow-sm'
                     : 'text-slate-600 hover:bg-slate-900/5 hover:text-slate-900'
                 }`}
+                aria-current={active ? 'page' : undefined}
               >
                 {item.label}
               </a>
@@ -50,7 +51,11 @@ export function Header({ currentPath, onNavigate }: HeaderProps): JSX.Element {
         </nav>
 
         <nav className="sm:hidden">
+          <label htmlFor="mobile-navigation" className="sr-only">
+            페이지 이동
+          </label>
           <select
+            id="mobile-navigation"
             value={normalizedPath}
             onChange={(event) => onNavigate(event.target.value as RoutePath)}
             className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
