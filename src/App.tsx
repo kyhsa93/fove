@@ -2,7 +2,7 @@ import { JSX, useCallback, useEffect, useMemo, useState } from 'react'
 import HomePage from './pages/HomePage'
 import SajuPage from './pages/SajuPage'
 import MbtiPage from './pages/MbtiPage'
-import FortuneLottoPage from './pages/FortuneLottoPage'
+import FortunePage from './pages/FortunePage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfServicePage from './pages/TermsOfServicePage'
 import ContactPage from './pages/ContactPage'
@@ -30,8 +30,8 @@ const routes: Record<RoutePath, RouteConfig> = {
     title: 'Fove · MBTI 성향 진단'
   },
   '/fortune': {
-    component: FortuneLottoPage,
-    title: 'Fove · 오늘의 운세 & 로또 추천'
+    component: FortunePage,
+    title: 'Fove · 오늘의 운세'
   },
   '/privacy-policy': {
     component: PrivacyPolicyPage,

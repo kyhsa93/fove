@@ -26,8 +26,8 @@ const FEATURE_LINKS: Array<{
   },
   {
     id: 'fortune',
-    title: '오늘의 운세 · 로또',
-    description: '사주 입력값이 비어 있으면 오늘 날짜와 현재 시간, 남성 기본값이 자동으로 적용되어 운세와 로또 추천을 바로 살펴볼 수 있습니다.',
+    title: '오늘의 운세',
+    description: '사주 입력값이 비어 있으면 오늘 날짜와 현재 시간, 남성 기본값이 자동으로 적용되어 운세를 바로 살펴볼 수 있습니다.',
     accent: 'border-rose-100 hover:border-rose-200 focus-within:border-rose-300 bg-rose-50/60',
     buttonClass: 'bg-rose-500 hover:bg-rose-600 focus-visible:ring-rose-400',
     path: '/fortune'

@@ -17,5 +17,5 @@ export const navLinks: Array<{ path: RoutePath; label: string }> = [
   { path: '/', label: '홈' },
   { path: '/saju', label: '사주' },
   { path: '/mbti', label: 'MBTI' },
-  { path: '/fortune', label: '오늘의 운세·로또' }
+  { path: '/fortune', label: '오늘의 운세' }
 ]

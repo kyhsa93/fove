@@ -15,8 +15,8 @@ const SUPPORT_LINKS = [
   },
   {
     id: 'fortune',
-    title: '오늘의 운세 · 로또',
-    description: '사주와 MBTI를 조합해 하루의 에너지와 추천 번호를 받아보세요. 사주 입력이 비어 있으면 오늘 날짜와 시간이 자동으로 채워지고, MBTI는 무작위 값으로 시작합니다.',
+    title: '오늘의 운세',
+    description: '사주와 MBTI를 조합해 하루의 에너지와 실천 포인트를 받아보세요. 사주 입력이 비어 있으면 오늘 날짜와 시간이 자동으로 채워지고, MBTI는 무작위 값으로 시작합니다.',
     accent: 'border-rose-100 hover:border-rose-200 focus-within:border-rose-300 bg-rose-50/60',
     buttonClass: 'bg-rose-500 hover:bg-rose-600 focus-visible:ring-rose-400',
     path: '/fortune'

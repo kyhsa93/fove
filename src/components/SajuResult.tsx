@@ -306,10 +306,10 @@ export function SajuResult({ result, elementBars, interpretation, mbtiResult, is
         </div>
 
         <div className="rounded-2xl border border-indigo-100 bg-indigo-50/40 px-2 py-4 text-sm text-indigo-900/80 sm:px-4">
-          오늘의 운세와 로또 번호 추천은 상단 탭에서 확인할 수 있습니다.
+          오늘의 운세 카드는 상단 탭에서 확인할 수 있습니다.
           {mbtiResult
-            ? ' MBTI 검사 결과를 바탕으로 개인 맞춤형 조합을 제공합니다.'
-            : ' MBTI 검사를 완료하면 개인 성향까지 반영된 맞춤 추천을 받을 수 있습니다.'}
+            ? ' MBTI 검사 결과를 바탕으로 개인 맞춤형 메시지가 함께 제공됩니다.'
+            : ' MBTI 검사를 완료하면 개인 성향까지 반영된 맞춤 메시지를 받을 수 있습니다.'}
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">

@@ -7,5 +7,3 @@ export {
   buildInterpretation,
   buildElementBars
 } from './calculations'
-export { recommendLottoNumbers } from './luckyNumbers'
-export type { LuckyNumbers } from './luckyNumbers'

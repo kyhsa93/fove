@@ -29,7 +29,7 @@ const HIGHLIGHTS: Array<{ title: string; description: string }> = [
   {
     title: '맞춤 하루 가이드',
     description:
-      '사주 흐름과 오늘의 일진을 결합해 컨디션 포인트, 추천 활동, 로또 번호까지 균형 있게 제안합니다.'
+      '사주 흐름과 오늘의 일진을 결합해 컨디션 포인트와 추천 활동을 균형 있게 제안합니다.'
   },
   {
     title: '심리 유형과의 연동',

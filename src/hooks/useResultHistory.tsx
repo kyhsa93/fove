@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState, type JSX, type ReactNode } from 'react'
 
-export type ResultKind = 'saju' | 'mbti' | 'fortune' | 'lotto' | 'cross'
+export type ResultKind = 'saju' | 'mbti' | 'fortune'
 
 export interface StoredResultEntry {
   id: string
@@ -31,9 +31,16 @@ const safeParse = (value: string | null): StoredResultEntry[] => {
   try {
     const parsed = JSON.parse(value)
     if (!Array.isArray(parsed)) return []
+    const allowedKinds: ResultKind[] = ['saju', 'mbti', 'fortune']
     return parsed
-      .filter((item): item is StoredResultEntry =>
-        typeof item === 'object' && item !== null && typeof item.id === 'string' && typeof item.title === 'string' && typeof item.kind === 'string'
+      .filter(
+        (item): item is StoredResultEntry =>
+          typeof item === 'object' &&
+          item !== null &&
+          typeof item.id === 'string' &&
+          typeof item.title === 'string' &&
+          typeof item.kind === 'string' &&
+          allowedKinds.includes(item.kind as ResultKind)
       )
       .map((item) => ({ ...item, timestamp: typeof item.timestamp === 'number' ? item.timestamp : Date.now() }))
   } catch (error) {

@@ -1,6 +1,6 @@
 import { JSX, useEffect, useMemo } from 'react'
 import { SajuForm } from '../components/SajuForm'
-import { CombinedFortuneCard, CombinedLottoCard } from '../components/FortuneAndLotto'
+import { CombinedFortuneCard } from '../components/FortuneCard'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
 import { useResultHistory, type StoredResultEntry } from '../hooks/useResultHistory'
 import { useToast } from '../components/ToastProvider'
@@ -11,7 +11,7 @@ const SUPPORT_LINKS = [
   {
     id: 'saju',
     title: '사주 풀이',
-    description: '기본 사주 정보를 먼저 계산하면 오늘의 운세를 정확하게 받아볼 수 있어요. 초기에는 오늘 날짜와 현재 시간이 자동으로 채워집니다.',
+    description: '기본 정보를 계산하고 오행 밸런스를 확인하세요. 값이 비어 있으면 오늘 날짜와 현재 시간이 자동으로 입력됩니다.',
     accent: 'border-amber-100 hover:border-amber-200 focus-within:border-amber-300 bg-amber-50/60',
     buttonClass: 'bg-amber-500 hover:bg-amber-600 focus-visible:ring-amber-400',
     path: '/'
@@ -19,7 +19,7 @@ const SUPPORT_LINKS = [
   {
     id: 'mbti',
     title: 'MBTI 성향',
-    description: 'MBTI 결과를 저장하면 오늘의 운세와 추천 번호가 성향에 맞춰 정교해집니다. 저장된 답변이 없다면 무작위 초기값으로 바로 검사할 수 있습니다.',
+    description: 'MBTI 결과를 저장하면 오늘의 운세 카드에 성향 기반 해석이 추가됩니다. 무작위 초깃값으로 시작해 빠르게 수정할 수 있어요.',
     accent: 'border-indigo-100 hover:border-indigo-200 focus-within:border-indigo-300 bg-indigo-50/60',
     buttonClass: 'bg-indigo-500 hover:bg-indigo-600 focus-visible:ring-indigo-400',
     path: '/mbti'
@@ -31,32 +31,32 @@ const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
     question: '오늘의 운세는 어떤 기준으로 생성되나요?',
     answer: [
       'Fove의 운세는 사주 계산 결과와 계절, 음양 흐름을 조합해 하루의 에너지 방향을 해석합니다.',
-      '전통적인 일진 해석을 기반으로 하되, 현대적인 생활 패턴에 맞게 행동 팁을 재구성했습니다.',
-      '날마다 새롭게 계산되므로 중요한 일정이 있을 때는 아침에 확인해 두는 것이 좋습니다.'
-    ]
-  },
-  {
-    question: '로또 추천 번호는 어떻게 구성되나요?',
-    answer: [
-      '사주의 오행 분포와 오늘의 기운을 함께 분석해 균형 잡힌 번호 조합을 추천합니다.',
-      'MBTI 결과가 저장되어 있으면 성향 가중치를 적용해 직관형과 분석형에 맞는 패턴을 다르게 제시합니다.',
-      '추천 번호는 참고용이므로, 책임 있는 소비 습관과 함께 즐거운 이벤트처럼 활용해 주세요.'
+      '전통적인 일진 해석을 기반으로 하되 현대 생활 패턴에 맞게 행동 팁을 재구성했습니다.',
+      '날마다 새롭게 계산되므로 중요한 일정이 있을 때는 아침에 확인해 두는 것이 좋아요.'
     ]
   },
   {
     question: '사주 정보를 다시 입력해야 하나요?',
     answer: [
-      '사주 입력값은 브라우저 로컬 저장소에 보관되므로 같은 기기에서는 자동으로 불러옵니다.',
-      '정보가 변경되었거나 초기화하고 싶다면 사주 페이지에서 값을 지운 뒤 새롭게 입력하면 됩니다.',
-      '보안이 걱정되는 공용 기기에서는 사용 후 브라우저 저장소를 정리하기를 권장합니다.'
+      '입력값은 브라우저 로컬 저장소에 저장되므로 같은 기기에서는 자동으로 불러옵니다.',
+      '정보가 바뀌었거나 초기화하고 싶다면 사주 페이지에서 값을 지운 뒤 새롭게 입력하면 됩니다.',
+      '공용 기기를 사용할 때는 개인정보 보호를 위해 사용 후 브라우저 저장소를 정리하세요.'
     ]
   },
   {
-    question: '운세와 로또 결과를 함께 활용하는 방법이 있을까요?',
+    question: 'MBTI 결과는 어떻게 활용되나요?',
     answer: [
-      '먼저 운세 카드에서 오늘의 컨디션과 추천 행동을 확인해 하루 계획을 세워보세요.',
-      '이후 로또 추천 번호를 참고해 소소한 즐거움을 더하면 하루의 리듬을 더욱 긍정적으로 만들 수 있습니다.',
-      '저장된 기록을 주간 단위로 살펴보면 자신에게 맞는 행운 패턴을 발견하는 데 도움이 됩니다.'
+      'MBTI 결과를 연동하면 오늘의 운세 카드에 성향 기반 행동 팁이 강조됩니다.',
+      'MBTI 페이지에서 20문항 검사를 완료하면 자동으로 저장되고, 필요한 경우 언제든지 수정할 수 있습니다.',
+      '성향 가이드는 참고용이므로 자신에게 맞는 속도로 조절하며 활용해 주세요.'
+    ]
+  },
+  {
+    question: '운세 결과를 기록으로 남길 수 있나요?',
+    answer: [
+      '모든 운세 카드는 자동으로 히스토리에 저장되며 최대 30개까지 보관됩니다.',
+      '하트 버튼으로 즐겨찾기를 설정하면 의미 있는 결과를 따로 모아둘 수 있습니다.',
+      '결과 카드 상단의 공유·링크 복사 버튼으로 오늘의 요약을 간편하게 전달할 수 있습니다.'
     ]
   }
 ]
@@ -75,7 +75,7 @@ const formatTimestamp = (value: number) => {
   }
 }
 
-export default function FortuneLottoPage(): JSX.Element {
+export default function FortunePage(): JSX.Element {
   const { history, favorites } = useResultHistory()
   const { showToast } = useToast()
   const { birthDate, birthTime, gender, result, error, dailyFortune, isLoading, setBirthDate, setBirthTime, setGender } = useSajuCalculator()
@@ -86,14 +86,8 @@ export default function FortuneLottoPage(): JSX.Element {
     }
   }, [error, showToast])
 
-  const recentEntries = useMemo(
-    () => history.filter((item) => item.kind === 'fortune' || item.kind === 'lotto' || item.kind === 'cross').slice(0, 6),
-    [history]
-  )
-  const favoriteEntries = useMemo(
-    () => favorites.filter((item) => item.kind === 'fortune' || item.kind === 'lotto' || item.kind === 'cross').slice(0, 6),
-    [favorites]
-  )
+  const recentEntries = useMemo(() => history.filter((item) => item.kind === 'fortune').slice(0, 6), [history])
+  const favoriteEntries = useMemo(() => favorites.filter((item) => item.kind === 'fortune').slice(0, 6), [favorites])
 
   const renderSummaryCard = (entry: StoredResultEntry) => {
     const targetPath = resultKindToRoute[entry.kind] ?? '/fortune'
@@ -140,45 +134,20 @@ export default function FortuneLottoPage(): JSX.Element {
     )
   }
 
-  const renderLottoSection = () => {
-    if (!result) {
-      return (
-        <div className="rounded-2xl border border-emerald-100 bg-white/60 px-2 py-4 text-sm text-gray-700 sm:px-6 sm:py-6">
-          사주 정보를 먼저 입력해 주세요. 기본 정보를 입력하면 추천 번호를 생성할 수 있습니다.
-        </div>
-      )
-    }
-    if (!dailyFortune) {
-      return (
-        <div className="rounded-2xl border border-emerald-100 bg-white/60 px-2 py-4 text-sm text-gray-700 sm:px-6 sm:py-6">
-          오늘의 일진 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.
-        </div>
-      )
-    }
-    return (
-      <div className="space-y-4">
-        <CombinedLottoCard dailyFortune={dailyFortune} result={result} mbtiResult={null} />
-        <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 px-2 py-4 text-sm text-indigo-900/80 sm:px-4">
-          MBTI 성향을 반영한 맞춤 번호는 MBTI 페이지에서 검사를 진행한 뒤 확인할 수 있어요.
-        </div>
-      </div>
-    )
-  }
-
   return (
     <section className="py-6 sm:py-8">
       <div className="mx-auto max-w-4xl space-y-8 px-4">
         <header className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold text-gray-900">오늘의 운세 & 로또 추천</h1>
+          <h1 className="text-3xl font-bold text-gray-900">오늘의 운세</h1>
           <p className="text-sm text-gray-600">
-            사주 기반으로 오늘의 흐름을 읽고, 행운의 번호까지 한 번에 받아보세요. 사주 입력값이 비어 있으면 오늘 날짜와 현재 시간이 자동으로 채워지고 성별은 남성으로 시작하므로 바로 확인할 수 있으며, MBTI 결과가 없다면 MBTI 페이지에서 무작위 초깃값으로 빠르게 검사한 뒤 연동해 보세요.
+            사주 기반으로 오늘의 흐름과 실천 포인트를 확인하세요. 사주 입력값이 비어 있으면 오늘 날짜와 현재 시간이 자동으로 채워지고 성별은 남성으로 시작하므로 바로 확인할 수 있어요.
           </p>
         </header>
 
         {recentEntries.length ? (
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">최근 운세 · 로또 결과</h2>
+              <h2 className="text-lg font-semibold text-gray-900">최근 운세</h2>
               <span className="text-xs text-gray-500">최대 30개까지 자동 저장됩니다.</span>
             </div>
             <div className="grid gap-3 md:grid-cols-3">{recentEntries.map(renderSummaryCard)}</div>
@@ -231,15 +200,15 @@ export default function FortuneLottoPage(): JSX.Element {
           {error}
         </span>
 
-        <section className="space-y-5">
-          <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">오늘의 운세</h2>
-            {renderFortuneSection()}
-          </div>
-          <div className="space-y-3">
-            <h2 className="text-xl font-semibold text-gray-900">로또 추천 번호</h2>
-            {renderLottoSection()}
-          </div>
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold text-gray-900">오늘의 운세 카드</h2>
+          {isLoading ? (
+            <div className="rounded-2xl border border-amber-100 bg-white/60 px-2 py-4 text-sm text-gray-700 sm:px-6 sm:py-6">
+              계산 중이에요. 잠시만 기다려 주세요.
+            </div>
+          ) : (
+            renderFortuneSection()
+          )}
         </section>
 
         <section className="space-y-4">
