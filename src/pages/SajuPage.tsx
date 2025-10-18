@@ -128,25 +128,33 @@ export default function SajuPage(): JSX.Element {
           </p>
         </header>
 
-        {recentEntries.length ? (
-          <section className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">최근 결과</h2>
-              <span className="text-xs text-gray-500">최대 30개까지 자동 저장됩니다.</span>
-            </div>
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">최근 결과</h2>
+            <span className="text-xs text-gray-500">최대 30개까지 자동 저장됩니다.</span>
+          </div>
+          {recentEntries.length ? (
             <div className="grid gap-3 md:grid-cols-3">{recentEntries.map(renderSummaryCard)}</div>
-          </section>
-        ) : null}
-
-        {favoriteEntries.length ? (
-          <section className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">내 즐겨찾기</h2>
-              <span className="text-xs text-gray-500">하트 버튼으로 주요 결과를 보관하세요.</span>
+          ) : (
+            <div className="rounded-2xl border border-amber-100 bg-white/70 px-3 py-4 text-sm text-gray-600">
+              아직 계산한 사주가 없습니다. 위 폼에 생년월일과 시간을 입력하면 첫 결과가 자동으로 저장돼요.
             </div>
+          )}
+        </section>
+
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">내 즐겨찾기</h2>
+            <span className="text-xs text-gray-500">하트 버튼으로 주요 결과를 보관하세요.</span>
+          </div>
+          {favoriteEntries.length ? (
             <div className="grid gap-3 md:grid-cols-3">{favoriteEntries.map(renderSummaryCard)}</div>
-          </section>
-        ) : null}
+          ) : (
+            <div className="rounded-2xl border border-indigo-100 bg-white/70 px-3 py-4 text-sm text-gray-600">
+              즐겨찾기한 기록이 없습니다. 의미 있는 리포트는 카드 상단의 하트 아이콘을 눌러 보관해 두세요.
+            </div>
+          )}
+        </section>
 
         <section className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">다른 기능 살펴보기</h2>

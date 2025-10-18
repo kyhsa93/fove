@@ -144,25 +144,33 @@ export default function FortunePage(): JSX.Element {
           </p>
         </header>
 
-        {recentEntries.length ? (
-          <section className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">최근 운세</h2>
-              <span className="text-xs text-gray-500">최대 30개까지 자동 저장됩니다.</span>
-            </div>
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">최근 운세</h2>
+            <span className="text-xs text-gray-500">최대 30개까지 자동 저장됩니다.</span>
+          </div>
+          {recentEntries.length ? (
             <div className="grid gap-3 md:grid-cols-3">{recentEntries.map(renderSummaryCard)}</div>
-          </section>
-        ) : null}
-
-        {favoriteEntries.length ? (
-          <section className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">즐겨찾기</h2>
-              <span className="text-xs text-gray-500">특별한 결과는 하트 버튼으로 저장해 두세요.</span>
+          ) : (
+            <div className="rounded-2xl border border-amber-100 bg-white/70 px-3 py-4 text-sm text-gray-600">
+              아직 저장된 운세가 없습니다. 하단에서 사주 정보를 입력하면 첫 번째 운세 카드가 자동으로 기록됩니다.
             </div>
+          )}
+        </section>
+
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">즐겨찾기</h2>
+            <span className="text-xs text-gray-500">특별한 결과는 하트 버튼으로 저장해 두세요.</span>
+          </div>
+          {favoriteEntries.length ? (
             <div className="grid gap-3 md:grid-cols-3">{favoriteEntries.map(renderSummaryCard)}</div>
-          </section>
-        ) : null}
+          ) : (
+            <div className="rounded-2xl border border-indigo-100 bg-white/70 px-3 py-4 text-sm text-gray-600">
+              즐겨찾기한 운세가 없습니다. 의미 있는 카드 상단의 하트 버튼을 눌러 두면 언제든 빠르게 다시 확인할 수 있어요.
+            </div>
+          )}
+        </section>
 
         <section className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">다른 기능과 함께 활용하기</h2>
@@ -203,8 +211,8 @@ export default function FortunePage(): JSX.Element {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold text-gray-900">오늘의 운세 카드</h2>
           {isLoading ? (
-            <div className="rounded-2xl border border-amber-100 bg-white/60 px-2 py-4 text-sm text-gray-700 sm:px-6 sm:py-6">
-              계산 중이에요. 잠시만 기다려 주세요.
+            <div className="rounded-2xl border border-amber-100 bg-white/60 px-3 py-5 text-sm leading-relaxed text-gray-700 sm:px-6 sm:py-6">
+              운세 데이터를 정리하고 있습니다. 1~2초 정도 소요되며, 이 과정에서도 입력 값은 자동으로 저장되니 다른 페이지로 이동해도 안전합니다.
             </div>
           ) : (
             renderFortuneSection()
