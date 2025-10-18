@@ -20,10 +20,9 @@ interface ResultCardProps {
   tabs?: ResultTab[]
   footer?: ReactNode
   actions?: ReactNode
-  loading?: boolean
 }
 
-export function ResultCard({ entry, metrics = [], summary, tabs = [], footer, actions, loading = false }: ResultCardProps): JSX.Element {
+export function ResultCard({ entry, metrics = [], summary, tabs = [], footer, actions }: ResultCardProps): JSX.Element {
   const { toggleFavorite, isFavorite } = useResultHistory()
   const { showToast } = useToast()
   const [activeTab, setActiveTab] = useState<string>(tabs[0]?.id ?? '')
@@ -91,10 +90,6 @@ export function ResultCard({ entry, metrics = [], summary, tabs = [], footer, ac
     } else {
       handleCopyLink()
     }
-  }
-
-  if (loading) {
-    return <ResultCardSkeleton />
   }
 
   return (
@@ -182,31 +177,6 @@ export function ResultCard({ entry, metrics = [], summary, tabs = [], footer, ac
 
       {actions ? <div className="mt-6">{actions}</div> : null}
       {footer ? <div className="mt-6 text-xs text-slate-500">{footer}</div> : null}
-    </section>
-  )
-}
-
-export function ResultCardSkeleton(): JSX.Element {
-  return (
-    <section className="animate-pulse rounded-3xl border border-slate-100 bg-white/80 px-2 py-4 shadow-sm sm:px-6 sm:py-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-2">
-          <div className="h-3 w-24 rounded bg-slate-200" />
-          <div className="h-6 w-40 rounded bg-slate-200" />
-          <div className="h-4 w-32 rounded bg-slate-200" />
-        </div>
-        <div className="h-9 w-9 rounded-full border border-slate-200 bg-slate-100" />
-      </div>
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <div className="h-20 rounded-2xl bg-slate-100" />
-        <div className="h-20 rounded-2xl bg-slate-100" />
-      </div>
-      <div className="mt-6 space-y-2">
-        <div className="h-4 w-full rounded bg-slate-100" />
-        <div className="h-4 w-5/6 rounded bg-slate-100" />
-        <div className="h-4 w-3/4 rounded bg-slate-100" />
-      </div>
-      <div className="mt-6 h-40 rounded-2xl bg-slate-100" />
     </section>
   )
 }

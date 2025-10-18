@@ -1,7 +1,6 @@
 import { JSX, useEffect, useMemo } from 'react'
 import { SajuForm } from '../components/SajuForm'
 import { CombinedFortuneCard, CombinedLottoCard } from '../components/FortuneAndLotto'
-import { ResultCardSkeleton } from '../components/ResultCard'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
 import { useResultHistory, type StoredResultEntry } from '../hooks/useResultHistory'
 import { useToast } from '../components/ToastProvider'
@@ -117,9 +116,6 @@ export default function FortuneLottoPage(): JSX.Element {
   }
 
   const renderFortuneSection = () => {
-    if (isLoading) {
-      return <ResultCardSkeleton />
-    }
     if (!result) {
       return (
         <div className="rounded-2xl border border-amber-100 bg-white/60 px-2 py-4 text-sm text-gray-700 sm:px-6 sm:py-6">
@@ -145,9 +141,6 @@ export default function FortuneLottoPage(): JSX.Element {
   }
 
   const renderLottoSection = () => {
-    if (isLoading) {
-      return <ResultCardSkeleton />
-    }
     if (!result) {
       return (
         <div className="rounded-2xl border border-emerald-100 bg-white/60 px-2 py-4 text-sm text-gray-700 sm:px-6 sm:py-6">

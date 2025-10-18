@@ -910,7 +910,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
         </div>
       </div>
 
-      <ResultCard entry={entryForCard} metrics={metrics} summary={summaryText} tabs={tabs} loading={isProcessing} />
+      <ResultCard entry={entryForCard} metrics={metrics} summary={summaryText} tabs={tabs} />
     </section>
   )
 }
