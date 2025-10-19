@@ -12,14 +12,16 @@ const baseUrlRaw = process.env.SITE_BASE_URL ?? 'https://kyhsa93.github.io'
 const baseUrl = baseUrlRaw.endsWith('/') ? baseUrlRaw.slice(0, -1) : baseUrlRaw
 const now = new Date().toISOString()
 
+const routePrefix = '/fove'
+
 const routes = [
-  { path: '/', changefreq: 'daily', priority: '1.0' },
-  { path: '/saju', changefreq: 'daily', priority: '0.9' },
-  { path: '/mbti', changefreq: 'daily', priority: '0.9' },
-  { path: '/fortune', changefreq: 'daily', priority: '0.8' },
-  { path: '/privacy-policy', changefreq: 'daily', priority: '0.4' },
-  { path: '/terms-of-service', changefreq: 'daily', priority: '0.4' },
-  { path: '/contact', changefreq: 'daily', priority: '0.5' }
+  { path: `${routePrefix}`, changefreq: 'daily', priority: '1.0' },
+  { path: `${routePrefix}/saju`, changefreq: 'daily', priority: '0.9' },
+  { path: `${routePrefix}/mbti`, changefreq: 'daily', priority: '0.9' },
+  { path: `${routePrefix}/fortune`, changefreq: 'daily', priority: '0.8' },
+  { path: `${routePrefix}/privacy-policy`, changefreq: 'daily', priority: '0.4' },
+  { path: `${routePrefix}/terms-of-service`, changefreq: 'daily', priority: '0.4' },
+  { path: `${routePrefix}/contact`, changefreq: 'daily', priority: '0.5' }
 ]
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>\n` +

@@ -1,20 +1,21 @@
 import { JSX } from 'react'
 import type { RoutePath } from '../routes'
+import { ROUTE_PATHS } from '../routes'
 import { navigateTo } from '../lib/router'
 
 const PRIMARY_ACTIONS: Array<{ path: RoutePath; label: string; description: string }> = [
   {
-    path: '/saju',
+    path: ROUTE_PATHS.saju,
     label: '사주 풀이 시작하기',
     description: '생년월일과 시간을 입력하고 개인 사주 리포트를 받아보세요.'
   },
   {
-    path: '/fortune',
+    path: ROUTE_PATHS.fortune,
     label: '오늘의 운세 보기',
     description: '사주 정보와 계절 흐름을 조합한 데일리 가이드를 확인하세요.'
   },
   {
-    path: '/mbti',
+    path: ROUTE_PATHS.mbti,
     label: 'MBTI 성향 진단',
     description: '20개의 문항으로 심리적 경향을 측정하고 사주 결과와 함께 분석합니다.'
   }

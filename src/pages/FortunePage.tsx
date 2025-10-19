@@ -6,15 +6,24 @@ import { useResultHistory, type StoredResultEntry } from '../hooks/useResultHist
 import { useToast } from '../components/ToastProvider'
 import { navigateTo } from '../lib/router'
 import { resultKindToRoute } from '../lib/resultRoutes'
+import type { RoutePath } from '../routes'
+import { ROUTE_PATHS } from '../routes'
 
-const SUPPORT_LINKS = [
+const SUPPORT_LINKS: Array<{
+  id: string
+  title: string
+  description: string
+  accent: string
+  buttonClass: string
+  path: RoutePath
+}> = [
   {
     id: 'saju',
     title: '사주 풀이',
     description: '기본 정보를 계산하고 오행 밸런스를 확인하세요. 값이 비어 있으면 오늘 날짜와 현재 시간이 자동으로 입력됩니다.',
     accent: 'border-amber-100 hover:border-amber-200 focus-within:border-amber-300 bg-amber-50/60',
     buttonClass: 'bg-amber-500 hover:bg-amber-600 focus-visible:ring-amber-400',
-    path: '/'
+    path: ROUTE_PATHS.saju
   },
   {
     id: 'mbti',
@@ -22,9 +31,9 @@ const SUPPORT_LINKS = [
     description: 'MBTI 결과를 저장하면 오늘의 운세 카드에 성향 기반 해석이 추가됩니다. 무작위 초깃값으로 시작해 빠르게 수정할 수 있어요.',
     accent: 'border-indigo-100 hover:border-indigo-200 focus-within:border-indigo-300 bg-indigo-50/60',
     buttonClass: 'bg-indigo-500 hover:bg-indigo-600 focus-visible:ring-indigo-400',
-    path: '/mbti'
+    path: ROUTE_PATHS.mbti
   }
-] as const
+]
 
 const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
   {
@@ -90,7 +99,7 @@ export default function FortunePage(): JSX.Element {
   const favoriteEntries = useMemo(() => favorites.filter((item) => item.kind === 'fortune').slice(0, 6), [favorites])
 
   const renderSummaryCard = (entry: StoredResultEntry) => {
-    const targetPath = resultKindToRoute[entry.kind] ?? '/fortune'
+    const targetPath = resultKindToRoute[entry.kind] ?? ROUTE_PATHS.fortune
     return (
       <button
         key={entry.id}

@@ -5,6 +5,7 @@ import { useSajuCalculator } from '../hooks/useSajuCalculator'
 import { useResultHistory, type StoredResultEntry } from '../hooks/useResultHistory'
 import { useToast } from '../components/ToastProvider'
 import type { RoutePath } from '../routes'
+import { ROUTE_PATHS } from '../routes'
 import { navigateTo } from '../lib/router'
 import { resultKindToRoute } from '../lib/resultRoutes'
 
@@ -22,7 +23,7 @@ const FEATURE_LINKS: Array<{
     description: '20개의 문항으로 현재의 심리적 성향을 파악하고 맞춤형 가이드를 받아보세요. 저장된 답변이 없으면 모든 문항이 무작위로 선택된 상태로 시작합니다.',
     accent: 'border-indigo-100 hover:border-indigo-200 focus-within:border-indigo-300 bg-indigo-50/60',
     buttonClass: 'bg-indigo-500 hover:bg-indigo-600 focus-visible:ring-indigo-400',
-    path: '/mbti'
+    path: ROUTE_PATHS.mbti
   },
   {
     id: 'fortune',
@@ -30,7 +31,7 @@ const FEATURE_LINKS: Array<{
     description: '사주 입력값이 비어 있으면 오늘 날짜와 현재 시간, 남성 기본값이 자동으로 적용되어 운세를 바로 살펴볼 수 있습니다.',
     accent: 'border-rose-100 hover:border-rose-200 focus-within:border-rose-300 bg-rose-50/60',
     buttonClass: 'bg-rose-500 hover:bg-rose-600 focus-visible:ring-rose-400',
-    path: '/fortune'
+    path: ROUTE_PATHS.fortune
   }
 ]
 
@@ -99,7 +100,7 @@ export default function SajuPage(): JSX.Element {
   const favoriteEntries = useMemo(() => favorites.slice(0, 6), [favorites])
 
   const renderSummaryCard = (entry: StoredResultEntry) => {
-    const targetPath = resultKindToRoute[entry.kind] ?? '/'
+    const targetPath = resultKindToRoute[entry.kind] ?? ROUTE_PATHS.home
     return (
       <button
         key={entry.id}

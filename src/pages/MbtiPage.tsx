@@ -3,15 +3,24 @@ import { MbtiTest, type MbtiResult } from '../components/MbtiTest'
 import { useResultHistory, type StoredResultEntry } from '../hooks/useResultHistory'
 import { navigateTo } from '../lib/router'
 import { resultKindToRoute } from '../lib/resultRoutes'
+import type { RoutePath } from '../routes'
+import { ROUTE_PATHS } from '../routes'
 
-const SUPPORT_LINKS = [
+const SUPPORT_LINKS: Array<{
+  id: string
+  title: string
+  description: string
+  accent: string
+  buttonClass: string
+  path: RoutePath
+}> = [
   {
     id: 'saju',
     title: '사주 풀이',
     description: '사주팔자와 오행 밸런스를 확인하고 오늘의 흐름을 이해하세요. 기본값이 없으면 오늘 날짜와 현재 시간이 자동으로 입력됩니다.',
     accent: 'border-amber-100 hover:border-amber-200 focus-within:border-amber-300 bg-amber-50/60',
     buttonClass: 'bg-amber-500 hover:bg-amber-600 focus-visible:ring-amber-400',
-    path: '/'
+    path: ROUTE_PATHS.saju
   },
   {
     id: 'fortune',
@@ -19,9 +28,9 @@ const SUPPORT_LINKS = [
     description: '사주와 MBTI를 조합해 하루의 에너지와 실천 포인트를 받아보세요. 사주 입력이 비어 있으면 오늘 날짜와 시간이 자동으로 채워지고, MBTI는 무작위 값으로 시작합니다.',
     accent: 'border-rose-100 hover:border-rose-200 focus-within:border-rose-300 bg-rose-50/60',
     buttonClass: 'bg-rose-500 hover:bg-rose-600 focus-visible:ring-rose-400',
-    path: '/fortune'
+    path: ROUTE_PATHS.fortune
   }
-] as const
+]
 
 const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
   {
@@ -80,7 +89,7 @@ export default function MbtiPage(): JSX.Element {
   const favoriteEntries = useMemo(() => favorites.filter((item) => item.kind === 'mbti').slice(0, 6), [favorites])
 
   const renderSummaryCard = (entry: StoredResultEntry) => {
-    const targetPath = resultKindToRoute[entry.kind] ?? '/mbti'
+    const targetPath = resultKindToRoute[entry.kind] ?? ROUTE_PATHS.mbti
     return (
       <button
         key={entry.id}

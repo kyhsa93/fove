@@ -9,7 +9,7 @@ import ContactPage from './pages/ContactPage'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import type { RoutePath } from './routes'
-import { footerLinks } from './routes'
+import { BASE_PATH, ROUTE_PATHS, footerLinks } from './routes'
 
 type RouteConfig = {
   component: () => JSX.Element
@@ -17,31 +17,31 @@ type RouteConfig = {
 }
 
 const routes: Record<RoutePath, RouteConfig> = {
-  '/': {
+  [ROUTE_PATHS.home]: {
     component: HomePage,
     title: 'Fove · 하루 인사이트 허브'
   },
-  '/saju': {
+  [ROUTE_PATHS.saju]: {
     component: SajuPage,
     title: 'Fove · 사주 풀이'
   },
-  '/mbti': {
+  [ROUTE_PATHS.mbti]: {
     component: MbtiPage,
     title: 'Fove · MBTI 성향 진단'
   },
-  '/fortune': {
+  [ROUTE_PATHS.fortune]: {
     component: FortunePage,
     title: 'Fove · 오늘의 운세'
   },
-  '/privacy-policy': {
+  [ROUTE_PATHS.privacyPolicy]: {
     component: PrivacyPolicyPage,
     title: 'Fove 개인정보 처리방침'
   },
-  '/terms-of-service': {
+  [ROUTE_PATHS.termsOfService]: {
     component: TermsOfServicePage,
     title: 'Fove 이용약관'
   },
-  '/contact': {
+  [ROUTE_PATHS.contact]: {
     component: ContactPage,
     title: 'Fove 문의하기'
   }
@@ -50,14 +50,22 @@ const routes: Record<RoutePath, RouteConfig> = {
 const routeKeys = Object.keys(routes) as RoutePath[]
 
 const normalizePath = (rawPath: string): RoutePath => {
-  if (!rawPath) return '/'
+  if (!rawPath) return ROUTE_PATHS.home
   const cleaned = rawPath.replace(/\/+$/, '') || '/'
+  if (cleaned === '/') return ROUTE_PATHS.home
   const match = routeKeys.find((key) => key === cleaned)
-  return match ?? '/'
+  if (match) return match
+  if (cleaned.startsWith('/') && !cleaned.startsWith(BASE_PATH)) {
+    const candidate = `${BASE_PATH}${cleaned}` as RoutePath
+    if (routeKeys.includes(candidate)) {
+      return candidate
+    }
+  }
+  return ROUTE_PATHS.home
 }
 
 const getInitialPath = (): RoutePath => {
-  if (typeof window === 'undefined') return '/'
+  if (typeof window === 'undefined') return ROUTE_PATHS.home
   return normalizePath(window.location.pathname)
 }
 
@@ -83,6 +91,13 @@ export default function App(): JSX.Element {
     }
   }, [currentPath])
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    if (window.location.pathname !== currentPath) {
+      window.history.replaceState({}, '', currentPath)
+    }
+  }, [currentPath])
+
   const navigate = useCallback((nextPath: RoutePath) => {
     if (typeof window === 'undefined') return
     if (nextPath === currentPath) {
@@ -96,13 +111,13 @@ export default function App(): JSX.Element {
 
   const CurrentPage = useMemo(() => routes[currentPath]?.component ?? HomePage, [currentPath])
   const backgroundClass =
-    currentPath === '/'
+    currentPath === ROUTE_PATHS.home
       ? 'bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-900'
-      : currentPath === '/saju'
+      : currentPath === ROUTE_PATHS.saju
         ? 'bg-gradient-to-b from-amber-50 via-white to-rose-50'
-        : currentPath === '/mbti'
+        : currentPath === ROUTE_PATHS.mbti
           ? 'bg-gradient-to-b from-indigo-50 via-white to-slate-100'
-          : currentPath === '/fortune'
+          : currentPath === ROUTE_PATHS.fortune
             ? 'bg-gradient-to-b from-rose-50 via-white to-emerald-50'
             : 'bg-slate-100'
 

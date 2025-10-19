@@ -1,6 +1,6 @@
 import { JSX, MouseEvent } from 'react'
 import type { RoutePath } from '../routes'
-import { navLinks } from '../routes'
+import { ROUTE_PATHS, navLinks } from '../routes'
 
 type HeaderProps = {
   currentPath: RoutePath
@@ -17,8 +17,8 @@ export function Header({ currentPath, onNavigate }: HeaderProps): JSX.Element {
     <header className="sticky top-0 z-30 border-b border-slate-200/60 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-4xl items-center justify-between px-3 py-3 sm:px-6">
         <a
-          href="/"
-          onClick={(event) => handleNavigate(event, '/')}
+          href={ROUTE_PATHS.home}
+          onClick={(event) => handleNavigate(event, ROUTE_PATHS.home)}
           className="flex items-center gap-2 text-base font-semibold tracking-tight text-slate-900"
         >
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900 text-sm text-white shadow-sm">
