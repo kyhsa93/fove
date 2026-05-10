@@ -1,3 +1,3 @@
-site_bucket_name = "fove-static-site-prod"
+site_bucket_name = "fove-898865655023-ap-northeast-2-an"
 aws_region      = "ap-northeast-2"
 github_repository = "kyhsa93/fove"
