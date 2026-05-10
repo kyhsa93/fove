@@ -61,16 +61,62 @@ import type {
   HourInfo
 } from './types'
 
+const KST_OFFSET_MS = 9 * 60 * 60 * 1000
+const MS_PER_DAY = 24 * 60 * 60 * 1000
+const DAY_PILLAR_JDN_OFFSET = 50
+
+interface KstDateParts {
+  year: number
+  month: number
+  day: number
+}
+
 function mod(n: number, m: number): number {
   return ((n % m) + m) % m
 }
 
+function createKstDate(year: number, month: number, day: number, hour = 0, minute = 0): Date {
+  return new Date(Date.UTC(year, month - 1, day, hour - 9, minute, 0, 0))
+}
+
+function getKstDateParts(date: Date): KstDateParts {
+  const kst = new Date(date.getTime() + KST_OFFSET_MS)
+  return {
+    year: kst.getUTCFullYear(),
+    month: kst.getUTCMonth() + 1,
+    day: kst.getUTCDate()
+  }
+}
+
+function addKstDays(parts: KstDateParts, days: number): KstDateParts {
+  const utc = Date.UTC(parts.year, parts.month - 1, parts.day + days)
+  const date = new Date(utc)
+  return {
+    year: date.getUTCFullYear(),
+    month: date.getUTCMonth() + 1,
+    day: date.getUTCDate()
+  }
+}
+
+function getJulianDayNumber(year: number, month: number, day: number): number {
+  const a = Math.floor((14 - month) / 12)
+  const y = year + 4800 - a
+  const m = month + 12 * a - 3
+
+  return (
+    day +
+    Math.floor((153 * m + 2) / 5) +
+    365 * y +
+    Math.floor(y / 4) -
+    Math.floor(y / 100) +
+    Math.floor(y / 400) -
+    32045
+  )
+}
+
 export function getTodayKey(): string {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = (now.getMonth() + 1).toString().padStart(2, '0')
-  const day = now.getDate().toString().padStart(2, '0')
-  return `${year}-${month}-${day}`
+  const { year, month, day } = getKstDateParts(new Date())
+  return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
 }
 
 function getSolarTermEntries(year: number): Array<{ term: SolarTermName; date: Date }> {
@@ -83,7 +129,7 @@ function getSolarTermEntries(year: number): Array<{ term: SolarTermName; date: D
 }
 
 function resolveYearPillar(date: Date): YearPillarInfo {
-  const year = date.getFullYear()
+  const { year } = getKstDateParts(date)
   if (year < SUPPORTED_YEAR_MIN || year > SUPPORTED_YEAR_MAX) {
     throw new Error(`지원하는 생년월일은 ${SUPPORTED_YEAR_MIN}년부터 ${SUPPORTED_YEAR_MAX}년까지입니다.`)
   }
@@ -108,7 +154,7 @@ function resolveYearPillar(date: Date): YearPillarInfo {
 }
 
 function resolveMonthBoundary(date: Date): MonthBoundaryInfo {
-  const year = date.getFullYear()
+  const { year } = getKstDateParts(date)
   if (year < SOLAR_TERM_YEAR_MIN - 1 || year > SOLAR_TERM_YEAR_MAX + 1) {
     throw new Error('절기 데이터를 찾을 수 없는 날짜입니다.')
   }
@@ -155,12 +201,14 @@ function resolveMonthBoundary(date: Date): MonthBoundaryInfo {
 
 function toDateParts(date: Date): DateParts {
   const numeric = new Intl.DateTimeFormat('ko-u-ca-chinese', {
+    timeZone: 'Asia/Seoul',
     year: 'numeric',
     month: 'numeric',
     day: 'numeric'
   }).formatToParts(date)
 
   const detailed = new Intl.DateTimeFormat('ko-u-ca-chinese', {
+    timeZone: 'Asia/Seoul',
     dateStyle: 'long'
   }).formatToParts(date)
 
@@ -202,29 +250,9 @@ function toDateParts(date: Date): DateParts {
 }
 
 function getDayStemBranch(year: number, month: number, day: number): [number, number] {
-  let Y = year
-  let M = month
-  const D = day
-
-  if (M === 1 || M === 2) {
-    Y -= 1
-    M += 12
-  }
-
-  const C = Math.floor(Y / 100)
-  const Y2 = Y % 100
-  const term = Math.floor((3 * (M + 1)) / 5)
-
-  const stemIndex = mod(
-    4 * C + Math.floor(C / 4) + 5 * Y2 + Math.floor(Y2 / 4) + term + D - 3,
-    10
-  )
-  const branchIndex = mod(
-    8 * C + Math.floor(C / 4) + 5 * Y2 + Math.floor(Y2 / 4) + term + D + 7,
-    12
-  )
-
-  return [stemIndex, branchIndex]
+  const jdn = getJulianDayNumber(year, month, day)
+  const cycleIndex = mod(jdn + DAY_PILLAR_JDN_OFFSET, 60)
+  return [cycleIndex % STEMS.length, cycleIndex % BRANCHES.length]
 }
 
 function getHourInfo(dayStemIndex: number, hourDecimal: number | null): HourInfo | null {
@@ -341,7 +369,7 @@ export function calculateSaju(birthDateStr: string, birthTimeStr: string, gender
     }
   }
 
-  const date = new Date(year, month - 1, day, hour, minute)
+  const date = createKstDate(year, month, day, hour, minute)
   if (Number.isNaN(date.getTime())) {
     throw new Error('유효하지 않은 날짜입니다.')
   }
@@ -359,7 +387,8 @@ export function calculateSaju(birthDateStr: string, birthTimeStr: string, gender
   const monthStemIndex = mod(FIRST_MONTH_STEM_INDEX[yearStemIndex] + monthBoundary.monthIndex, STEMS.length)
   const monthStem = STEMS[monthStemIndex]
 
-  const [dayStemIndexRaw, dayBranchIndexRaw] = getDayStemBranch(year, month, day)
+  const dayParts = hasTime && hour >= 23 ? addKstDays({ year, month, day }, 1) : { year, month, day }
+  const [dayStemIndexRaw, dayBranchIndexRaw] = getDayStemBranch(dayParts.year, dayParts.month, dayParts.day)
   const dayStem = STEMS[mod(dayStemIndexRaw, STEMS.length)]
   const dayBranch = BRANCHES[mod(dayBranchIndexRaw, BRANCHES.length)]
 
@@ -379,7 +408,7 @@ export function calculateSaju(birthDateStr: string, birthTimeStr: string, gender
   const solidPillars: Pillar[] = [yearPillar, monthPillar, dayPillar, hourPillar].filter((p): p is Pillar => Boolean(p))
   const summary = makeSummary(solidPillars, Boolean(hourPillar))
 
-  const weekday = new Intl.DateTimeFormat('ko', { weekday: 'long' }).format(date)
+  const weekday = new Intl.DateTimeFormat('ko', { timeZone: 'Asia/Seoul', weekday: 'long' }).format(date)
   const westernZodiac = getWesternZodiac(month, day)
 
   const lunarText = `${monthLabel || `${lunarMonth}월`} ${dayLabel || `${lunarDay}일`}`.trim()
@@ -407,9 +436,7 @@ export function calculateSaju(birthDateStr: string, birthTimeStr: string, gender
 
 export function buildDailyFortune(result: SajuResult, referenceDate: Date = new Date()): DailyFortune {
   const now = referenceDate
-  const year = now.getFullYear()
-  const month = now.getMonth() + 1
-  const day = now.getDate()
+  const { year, month, day } = getKstDateParts(now)
 
   const [todayStemIndexRaw, todayBranchIndexRaw] = getDayStemBranch(year, month, day)
   const stem = STEMS[mod(todayStemIndexRaw, STEMS.length)]
@@ -417,7 +444,7 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
   const element = STEM_ELEMENTS[stem]
   const yinYang = STEM_YINYANG[stem]
 
-  const dateLabel = new Intl.DateTimeFormat('ko', { dateStyle: 'full' }).format(now)
+  const dateLabel = new Intl.DateTimeFormat('ko', { timeZone: 'Asia/Seoul', dateStyle: 'full' }).format(now)
 
   const elementCount = result.summary.elementCounts[element]
   const average = result.summary.totalElements / Object.keys(ELEMENT_LABELS).length
