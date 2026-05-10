@@ -62,7 +62,7 @@ export function SajuForm({
       <header className="space-y-2">
         <h2 className="text-lg font-semibold text-gray-900">기본 정보 입력</h2>
         <p className="text-sm text-amber-700 bg-amber-50/80 border border-amber-100 rounded-xl px-3 py-2">
-          생년월일은 반드시 입력해야 정확한 사주 계산이 가능합니다. 저장된 값이 없다면 오늘 날짜와 현재 시간이 기본으로 채워지며, 태어난 시간이 기억나지 않는다면 우선 비워 두고 결과를 확인한 뒤 시간 정보를 보완해 다시 계산해 보세요.
+          생년월일은 반드시 입력해야 정확한 사주 계산이 가능합니다. 현재는 양력 생년월일 기준으로 계산되며 음력·윤달 입력은 지원하지 않습니다. 태어난 시간이 기억나지 않는다면 우선 비워 두고 결과를 확인한 뒤 시간 정보를 보완해 다시 계산해 보세요.
         </p>
       </header>
 
@@ -95,7 +95,7 @@ export function SajuForm({
             required
             className="px-3 py-2 rounded-lg border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-300"
           />
-          <span className="text-xs text-gray-500">1900년 이후의 생년월일을 권장합니다. 미래 날짜는 선택할 수 없습니다.</span>
+          <span className="text-xs text-gray-500">양력 기준 입력입니다. 1900년 이후의 생년월일을 권장하며 미래 날짜는 선택할 수 없습니다.</span>
         </label>
         <div className="flex flex-col gap-2">
           <label className="flex flex-col gap-2">
@@ -131,7 +131,7 @@ export function SajuForm({
               정오로 설정
             </button>
           </div>
-          <span className="text-xs text-gray-500">* 시간이 불확실하다면 비워 두어도 계산은 진행됩니다. 다만 시주는 제외될 수 있습니다.</span>
+          <span className="text-xs text-gray-500">* 23시 이후 출생자는 야자시 기준으로 다음 날 일주가 적용될 수 있습니다.</span>
         </div>
 
         <fieldset className="flex flex-col gap-3">
