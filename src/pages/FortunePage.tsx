@@ -1,4 +1,4 @@
-import { JSX, useEffect } from 'react'
+import { JSX, useEffect, useMemo } from 'react'
 import { SajuForm } from '../components/SajuForm'
 import { CombinedFortuneCard } from '../components/FortuneCard'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
@@ -6,6 +6,7 @@ import { useToast } from '../components/ToastProvider'
 import { navigateTo } from '../lib/router'
 import type { RoutePath } from '../routes'
 import { ROUTE_PATHS } from '../routes'
+import { computeMbtiResultFromAnswers, loadPersistedAnswers, MBTI_COMPLETED_KEY } from '../components/MbtiTest'
 
 const SUPPORT_LINKS: Array<{
   id: string
@@ -53,8 +54,7 @@ const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
   {
     question: 'MBTI 결과는 어떻게 활용되나요?',
     answer: [
-      'MBTI 결과를 연동하면 오늘의 운세 카드에 성향 기반 행동 팁이 강조됩니다.',
-      'MBTI 페이지에서 20문항 검사를 완료하면 결과가 계산되고, 필요한 경우 언제든지 수정할 수 있습니다.',
+      'MBTI 페이지에서 20문항 검사를 완료하면 오늘의 운세 카드에 성향 기반 행동 팁이 자동으로 반영됩니다.',
       '성향 가이드는 참고용이므로 자신에게 맞는 속도로 조절하며 활용해 주세요.'
     ]
   }
@@ -63,6 +63,12 @@ const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
 export default function FortunePage(): JSX.Element {
   const { showToast } = useToast()
   const { birthDate, birthTime, gender, result, error, dailyFortune, isLoading, setBirthDate, setBirthTime, setGender } = useSajuCalculator()
+
+  const mbtiResult = useMemo(() => {
+    if (typeof window === 'undefined') return null
+    if (!window.localStorage.getItem(MBTI_COMPLETED_KEY)) return null
+    return computeMbtiResultFromAnswers(loadPersistedAnswers())
+  }, [])
 
   useEffect(() => {
     if (error) {
@@ -87,10 +93,12 @@ export default function FortunePage(): JSX.Element {
     }
     return (
       <div className="space-y-4">
-        <CombinedFortuneCard dailyFortune={dailyFortune} sajuResult={result} mbtiResult={null} />
-        <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 px-2 py-4 text-sm text-indigo-900/80 sm:px-4">
-          MBTI 페이지에서 검사를 완료하면 성향에 맞춘 교차 인사이트가 함께 제공됩니다.
-        </div>
+        <CombinedFortuneCard dailyFortune={dailyFortune} sajuResult={result} mbtiResult={mbtiResult} />
+        {!mbtiResult ? (
+          <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 px-2 py-4 text-sm text-indigo-900/80 sm:px-4">
+            MBTI 페이지에서 검사를 완료하면 성향에 맞춘 교차 인사이트가 함께 제공됩니다.
+          </div>
+        ) : null}
       </div>
     )
   }
@@ -104,6 +112,29 @@ export default function FortunePage(): JSX.Element {
             사주 기반으로 오늘의 흐름과 실천 포인트를 확인하세요. 사주 입력값이 비어 있으면 오늘 날짜와 현재 시간이 자동으로 채워지고 성별은 남성으로 시작하므로 바로 확인할 수 있어요.
           </p>
         </header>
+
+        <SajuForm
+          birthDate={birthDate}
+          birthTime={birthTime}
+          gender={gender}
+          onBirthDateChange={setBirthDate}
+          onBirthTimeChange={setBirthTime}
+          onGenderChange={setGender}
+        />
+        <span className="sr-only" aria-live="assertive">
+          {error}
+        </span>
+
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold text-gray-900">오늘의 운세 카드</h2>
+          {isLoading ? (
+            <div className="rounded-2xl border border-amber-100 bg-white/60 px-3 py-5 text-sm leading-relaxed text-gray-700 sm:px-6 sm:py-6">
+              운세 데이터를 정리하고 있습니다. 1~2초 정도 소요됩니다.
+            </div>
+          ) : (
+            renderFortuneSection()
+          )}
+        </section>
 
         <section className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">다른 기능과 함께 활용하기</h2>
@@ -127,29 +158,6 @@ export default function FortunePage(): JSX.Element {
               </article>
             ))}
           </div>
-        </section>
-
-        <SajuForm
-          birthDate={birthDate}
-          birthTime={birthTime}
-          gender={gender}
-          onBirthDateChange={setBirthDate}
-          onBirthTimeChange={setBirthTime}
-          onGenderChange={setGender}
-        />
-        <span className="sr-only" aria-live="assertive">
-          {error}
-        </span>
-
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900">오늘의 운세 카드</h2>
-          {isLoading ? (
-            <div className="rounded-2xl border border-amber-100 bg-white/60 px-3 py-5 text-sm leading-relaxed text-gray-700 sm:px-6 sm:py-6">
-              운세 데이터를 정리하고 있습니다. 1~2초 정도 소요됩니다.
-            </div>
-          ) : (
-            renderFortuneSection()
-          )}
         </section>
 
         <section className="space-y-4">

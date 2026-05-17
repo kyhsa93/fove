@@ -41,10 +41,11 @@ const DIMENSION_SHORT_LABEL: Record<MbtiLetter, string> = {
   P: 'P (유연)'
 }
 
-const MBTI_STORAGE_KEY = 'fove:mbti-answers'
+export const MBTI_STORAGE_KEY = 'fove:mbti-answers'
+export const MBTI_COMPLETED_KEY = 'fove:mbti-completed'
 const RESPONSE_VALUES: ResponseValue[] = [-2, -1, 0, 1, 2]
 
-const loadPersistedAnswers = (): Record<string, ResponseValue> => {
+export const loadPersistedAnswers = (): Record<string, ResponseValue> => {
   if (typeof window === 'undefined') {
     return {}
   }
@@ -468,7 +469,7 @@ interface MbtiTestProps {
   onResultChange?: (result: MbtiResult | null) => void
 }
 
-function computeMbtiResultFromAnswers(answers: Record<string, ResponseValue>): MbtiResult | null {
+export function computeMbtiResultFromAnswers(answers: Record<string, ResponseValue>): MbtiResult | null {
   const totals: Record<Dimension, number> = { EI: 0, SN: 0, TF: 0, JP: 0 }
   const positives: Record<Dimension, number> = { EI: 0, SN: 0, TF: 0, JP: 0 }
   const negatives: Record<Dimension, number> = { EI: 0, SN: 0, TF: 0, JP: 0 }
@@ -562,6 +563,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
       setError('')
       setResult(nextResult)
       onResultChange?.(nextResult)
+      try { window.localStorage.setItem(MBTI_COMPLETED_KEY, 'true') } catch { /* ignore */ }
       setIsProcessing(false)
       submitTimerRef.current = null
     }, 220)
@@ -577,6 +579,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
     setError('')
     setIsProcessing(false)
     onResultChange?.(null)
+    try { window.localStorage.removeItem(MBTI_COMPLETED_KEY) } catch { /* ignore */ }
   }
 
   useEffect(() => {

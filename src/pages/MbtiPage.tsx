@@ -52,7 +52,7 @@ const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
     answer: [
       '강점 카드와 성장 포인트를 비교해 오늘 실천할 행동을 1~2가지 선택해 보세요.',
       '현실적인 목표를 정하면 성향의 장점을 활용하고 약점을 보완하는 데 도움이 됩니다.',
-      '사주 혹은 오늘의 운세 페이지와 함께 활용하면 보다 균형 잡힌 인사이트를 얻을 수 있습니다.'
+      '검사를 완료하면 오늘의 운세 페이지에서 MBTI 성향이 반영된 교차 인사이트를 확인할 수 있습니다.'
     ]
   },
   {
@@ -88,6 +88,8 @@ export default function MbtiPage(): JSX.Element {
           <p className="mt-1 text-sm leading-relaxed text-gray-600">{summaryDescription}</p>
         </article>
 
+        <MbtiTest onResultChange={setActiveResult} />
+
         <section className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">다른 기능도 활용해 보세요</h2>
           <div className="grid gap-4 md:grid-cols-2">
@@ -111,8 +113,6 @@ export default function MbtiPage(): JSX.Element {
             ))}
           </div>
         </section>
-
-        <MbtiTest onResultChange={setActiveResult} />
 
         <section className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">자주 묻는 질문</h2>
