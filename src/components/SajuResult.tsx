@@ -1,4 +1,4 @@
-import { JSX, useMemo } from 'react'
+import { JSX } from 'react'
 import {
   BRANCH_YINYANG,
   CAREER_BY_ELEMENT,
@@ -14,10 +14,8 @@ import {
   type PillarKey,
   type SajuResult
 } from '../lib/saju'
-import type { MbtiResult } from './MbtiTest'
 import { TooltipLabel } from './TooltipLabel'
 import { ActionCardDeck, type ActionCardData } from './ActionCards'
-import { ResultCard } from './ResultCard'
 
 const ELEMENT_ACTION_DO: Record<Element, string> = {
   목: '새로운 아이디어를 적어 보거나 가벼운 스트레칭으로 몸을 깨워 확장 에너지를 움직여 보세요.',
@@ -187,154 +185,90 @@ interface SajuResultProps {
   result: SajuResult | null
   elementBars: ElementBar[]
   interpretation: InterpretationCategory[]
-  mbtiResult?: MbtiResult | null
   isLoading: boolean
 }
 
-export function SajuResult({ result, elementBars, interpretation, mbtiResult, isLoading: _isLoading }: SajuResultProps): JSX.Element {
-  const strongestLabel = result ? `${result.summary.strongest.element} (${result.summary.strongest.count}개)` : '계산 중'
-  const weakestLabel = result ? `${result.summary.weakest.element} (${result.summary.weakest.count}개)` : '계산 중'
-  const actionCards = result ? buildSajuActionCards(result) : []
-  const metrics = result
-    ? [
-        { label: '강한 오행', value: strongestLabel },
-        { label: '부족한 오행', value: weakestLabel }
-      ]
-    : []
-
-
-  const analysisTab = useMemo(() => {
-    if (!result) return null
-
-    const elementGap = result.summary.strongest.count - result.summary.weakest.count
-    const luckyRange = result.pillars.hour?.range
-    const actionDo = actionCards[0]?.description ?? ''
-    const actionAvoid = actionCards[1]?.description ?? ''
-    const relationHint = actionCards[2]?.description ?? ''
-
+export function SajuResult({ result, elementBars, interpretation, isLoading }: SajuResultProps): JSX.Element | null {
+  if (isLoading) {
     return (
-      <div className="space-y-5">
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="bg-amber-50 border border-amber-100 rounded-xl px-2 py-4 space-y-2 sm:px-4">
-            <p className="text-sm text-gray-600">양력 기준</p>
-            <p className="text-base font-semibold text-gray-900">{result.meta.solarDate}</p>
-            <p className="text-sm text-gray-600">서양 별자리: {result.meta.westernZodiac}</p>
-            <p className="text-sm text-gray-600">입력한 시간: {result.meta.timeText}</p>
-            <p className="text-sm text-gray-600">성별: {result.meta.genderLabel}</p>
+      <div className="rounded-2xl border border-amber-100 bg-white/60 px-4 py-5 text-sm text-gray-600">
+        계산 중입니다…
+      </div>
+    )
+  }
+
+  if (!result) return null
+
+  const strongestLabel = `${result.summary.strongest.element} (${result.summary.strongest.count}개)`
+  const weakestLabel = `${result.summary.weakest.element} (${result.summary.weakest.count}개)`
+  const actionCards = buildSajuActionCards(result)
+  const luckyRange = result.pillars.hour?.range
+
+  return (
+    <div className="space-y-6">
+      {/* 기본 정보 */}
+      <div className="rounded-3xl border border-slate-100 bg-white/95 px-2 py-5 shadow-sm space-y-4 sm:px-6 sm:py-6">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">SAJU INSIGHT</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900">사주 풀이</h2>
+          <p className="text-sm text-slate-600">{result.meta.solarDate} · {result.meta.genderLabel}</p>
+        </div>
+        <p className="text-sm leading-relaxed text-slate-700">{result.summary.yinYangMessage}</p>
+        <div className="grid gap-3 md:grid-cols-2">
+          <div className="bg-amber-50 border border-amber-100 rounded-xl px-2 py-3 space-y-1 sm:px-4">
+            <p className="text-xs font-medium text-gray-500">양력</p>
+            <p className="text-sm font-semibold text-gray-900">{result.meta.solarDate}</p>
+            <p className="text-xs text-gray-500">서양 별자리 · {result.meta.westernZodiac}</p>
+            <p className="text-xs text-gray-500">입력 시간 · {result.meta.timeText}</p>
           </div>
-          <div className="bg-rose-50 border border-rose-100 rounded-xl px-2 py-4 space-y-2 sm:px-4">
-            <p className="text-sm text-gray-600">음력 기준</p>
-            <p className="text-base font-semibold text-gray-900">{result.pillars.year.name}년 ({result.meta.lunarDate})</p>
+          <div className="bg-rose-50 border border-rose-100 rounded-xl px-2 py-3 space-y-1 sm:px-4">
+            <p className="text-xs font-medium text-gray-500">음력</p>
+            <p className="text-sm font-semibold text-gray-900">{result.pillars.year.name}년 · {result.meta.lunarDate}</p>
             {result.pillars.month?.isLeapMonth ? (
               <p className="text-xs text-rose-500">※ 윤달에 해당하는 날짜입니다.</p>
             ) : null}
             {!result.meta.hasTime ? (
-              <p className="text-xs text-rose-500">※ 태어난 시간을 입력하면 시주까지 확인할 수 있습니다.</p>
+              <p className="text-xs text-rose-500">※ 태어난 시간 입력 시 시주까지 확인할 수 있습니다.</p>
             ) : null}
           </div>
         </div>
-
-        <div className="rounded-2xl border border-slate-100 bg-white/85 px-2 py-4 text-sm leading-relaxed text-slate-700 sm:px-4">
-          <h3 className="text-sm font-semibold text-slate-800">핵심 해설</h3>
-          <dl className="mt-3 grid gap-3 md:grid-cols-2">
-            <div className="space-y-1">
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">왜 이런 결과가 나왔나요?</dt>
-              <dd>
-                강한 {strongestLabel}와 부족한 {weakestLabel} 차이가 {elementGap}개라 오늘의 중심 기운이 형성되었습니다.
-              </dd>
-            </div>
-            <div className="space-y-1">
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">이 결과의 의미는?</dt>
-              <dd>{result.summary.yinYangMessage}</dd>
-            </div>
-            <div className="space-y-1">
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">오늘 해볼 것</dt>
-              <dd>{actionDo}</dd>
-            </div>
-            <div className="space-y-1">
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">주의·길한 시간대</dt>
-              <dd>
-                {actionAvoid} {luckyRange ? `길한 시간대는 ${luckyRange}가 중심이니 중요한 일정을 이때 맞춰 보세요.` : '태어난 시간을 입력하면 길한 시간대까지 안내해 드립니다.'}
-              </dd>
-            </div>
-            <div className="space-y-1 md:col-span-2">
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">관계 힌트</dt>
-              <dd>{relationHint}</dd>
-            </div>
-          </dl>
-        </div>
-
-        <div className="rounded-2xl border border-amber-100 bg-amber-50/70 px-2 py-4 text-sm text-amber-900/80 sm:px-4">
-          <p className="text-sm font-semibold text-amber-900">이 결과는 이렇게 읽어보세요</p>
-          <ul className="mt-2 space-y-1 leading-relaxed">
-            <li>1) 기본 해석에서 양력·음력 정보를 확인하고 오늘의 기운을 가볍게 정리하세요.</li>
-            <li>2) 오행·음양 분포로 강점과 보완 포인트를 체크한 뒤 심층 해석을 읽어보세요.</li>
-            <li>3) 마지막 실천 카드를 행동 계획으로 연결하면 활용도가 커집니다.</li>
-          </ul>
-        </div>
-
-        <div className="rounded-2xl border border-indigo-100 bg-indigo-50/40 px-2 py-4 text-sm text-indigo-900/80 sm:px-4">
-          오늘의 운세 카드는 상단 탭에서 확인할 수 있습니다.
-          {mbtiResult
-            ? ' MBTI 검사 결과를 바탕으로 개인 맞춤형 메시지가 함께 제공됩니다.'
-            : ' MBTI 검사를 완료하면 개인 성향까지 반영된 맞춤 메시지를 받을 수 있습니다.'}
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          {(Object.entries(result.pillars) as Array<[PillarKey, Pillar | null]>).map(([key, pillar]) => {
-            if (!pillar) return null
-            return <PillarCard key={key} pillarKey={key} pillar={pillar} />
-          })}
-        </div>
-
-        <ElementDistribution
-          elementBars={elementBars}
-          strongestLabel={strongestLabel}
-          weakestLabel={weakestLabel}
-          yinYangMessage={result.summary.yinYangMessage}
-        />
-
-        <InterpretationSection interpretation={interpretation} />
-      </div>
-    )
-  }, [result, elementBars, interpretation, strongestLabel, weakestLabel, mbtiResult])
-
-  const adviceTab = useMemo(() => {
-    if (!result) return null
-
-    return (
-      <div className="space-y-5">
-        <ActionCardDeck cards={actionCards} />
-        <div className="bg-white/70 border border-gray-100 rounded-2xl px-2 py-4 text-sm text-gray-600 leading-relaxed sm:px-5 sm:py-5">
-          <p className="font-medium text-gray-800">
-            <TooltipLabel text="활용 가이드" description="실제 상담 대신 참고용으로 본인의 흐름을 점검할 때 활용하세요." />
+        {luckyRange ? (
+          <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+            길한 시간대 · {luckyRange}
           </p>
-          <p>
-            사주팔자는 태어난 시점의 기운을 간단히 살펴보는 도구입니다. 절기, 대운, 세운 등 다양한 요소를 종합적으로 살펴야 하므로 중요한 결정 전에는 전문가 상담과 함께 확인해 보세요.
-          </p>
-          <p className="mt-2 text-xs text-gray-500">※ 계산은 음력(중국력) 변환 결과를 기반으로 하며, 기기 환경에 따라 결과가 다소 달라질 수 있습니다.</p>
-        </div>
+        ) : null}
       </div>
-    )
-  }, [result, actionCards])
 
-  const tabs = useMemo(() => {
-    if (!analysisTab && !adviceTab) return []
-    const next = [] as Array<{ id: string; label: string; content: JSX.Element }>
-    if (analysisTab) {
-      next.push({ id: 'analysis', label: '해석', content: analysisTab })
-    }
-    if (adviceTab) {
-      next.push({ id: 'advice', label: '조언', content: adviceTab })
-    }
-    return next
-  }, [analysisTab, adviceTab])
+      {/* 사주 카드 */}
+      <div className="grid gap-4 md:grid-cols-2">
+        {(Object.entries(result.pillars) as Array<[PillarKey, Pillar | null]>).map(([key, pillar]) => {
+          if (!pillar) return null
+          return <PillarCard key={key} pillarKey={key} pillar={pillar} />
+        })}
+      </div>
 
-  const summaryText = result
-    ? result.summary.yinYangMessage
-    : '생년월일과 태어난 시간을 입력하면 오행 분포와 해석이 제공됩니다.'
+      {/* 오행·음양 분포 */}
+      <ElementDistribution
+        elementBars={elementBars}
+        strongestLabel={strongestLabel}
+        weakestLabel={weakestLabel}
+        yinYangMessage={result.summary.yinYangMessage}
+      />
 
-  const subtitle = result ? `${result.meta.solarDate} · ${result.meta.genderLabel}` : undefined
+      {/* 심층 해석 */}
+      <InterpretationSection interpretation={interpretation} />
 
-  return <ResultCard badge="SAJU INSIGHT" title="사주 풀이" subtitle={subtitle} metrics={metrics} summary={summaryText} tabs={tabs} />
+      {/* 실천 카드 */}
+      <ActionCardDeck cards={actionCards} />
+
+      {/* 활용 가이드 */}
+      <div className="rounded-2xl border border-gray-100 bg-white/70 px-2 py-4 text-sm text-gray-600 leading-relaxed space-y-2 sm:px-5 sm:py-5">
+        <p className="font-medium text-gray-800">
+          <TooltipLabel text="활용 가이드" description="실제 상담 대신 참고용으로 본인의 흐름을 점검할 때 활용하세요." />
+        </p>
+        <p>사주팔자는 태어난 시점의 기운을 간단히 살펴보는 도구입니다. 절기, 대운, 세운 등 다양한 요소를 종합적으로 살펴야 하므로 중요한 결정 전에는 전문가 상담과 함께 확인해 보세요.</p>
+        <p className="text-xs text-gray-500">※ 계산은 음력(중국력) 변환 결과를 기반으로 하며, 기기 환경에 따라 결과가 다소 달라질 수 있습니다.</p>
+      </div>
+    </div>
+  )
 }

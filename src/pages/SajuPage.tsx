@@ -26,7 +26,7 @@ const FEATURE_LINKS: Array<{
   {
     id: 'fortune',
     title: '오늘의 운세',
-    description: '사주 입력값이 비어 있으면 오늘 날짜와 현재 시간, 남성 기본값이 자동으로 적용되어 운세를 바로 살펴볼 수 있습니다.',
+    description: '사주와 MBTI를 조합해 하루의 에너지와 실천 포인트를 받아보세요.',
     accent: 'border-rose-100 hover:border-rose-200 focus-within:border-rose-300 bg-rose-50/60',
     buttonClass: 'bg-rose-500 hover:bg-rose-600 focus-visible:ring-rose-400',
     path: ROUTE_PATHS.fortune
@@ -44,8 +44,9 @@ const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
   {
     question: '입력한 사주 정보는 저장되나요?',
     answer: [
-      '입력한 사주 정보와 결과는 자동 저장되지 않습니다.',
-      '새로고침하거나 페이지를 벗어나면 입력값이 초기화될 수 있습니다.'
+      '입력한 생년월일·시간·성별은 브라우저 로컬 저장소에 자동으로 저장됩니다.',
+      '같은 기기에서 페이지를 다시 열면 이전에 입력한 값이 자동으로 불러와집니다.',
+      '브라우저 저장 데이터를 삭제하면 입력값이 초기화됩니다.'
     ]
   }
 ]
@@ -71,6 +72,21 @@ export default function SajuPage(): JSX.Element {
           </p>
         </header>
 
+        <SajuForm
+          birthDate={birthDate}
+          birthTime={birthTime}
+          gender={gender}
+          onBirthDateChange={setBirthDate}
+          onBirthTimeChange={setBirthTime}
+          onGenderChange={setGender}
+        />
+
+        <span className="sr-only" aria-live="assertive">
+          {error}
+        </span>
+
+        <SajuResult result={result} elementBars={elementBars} interpretation={interpretation} isLoading={isLoading} />
+
         <section className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">다른 기능 살펴보기</h2>
           <div className="grid gap-4 md:grid-cols-2">
@@ -85,7 +101,7 @@ export default function SajuPage(): JSX.Element {
                   <button
                     type="button"
                     onClick={() => navigateTo(flow.path)}
-                    className={`inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-white shadow-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${flow.buttonClass}`}
+                    className={`inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-white shadow-sm transition focus-visible:outline-2 focus-visible:outline-offset-2 ${flow.buttonClass}`}
                   >
                     바로 이동
                   </button>
@@ -94,21 +110,6 @@ export default function SajuPage(): JSX.Element {
             ))}
           </div>
         </section>
-
-        <SajuForm
-          birthDate={birthDate}
-          birthTime={birthTime}
-          gender={gender}
-          onBirthDateChange={setBirthDate}
-          onBirthTimeChange={setBirthTime}
-          onGenderChange={setGender}
-        />
-
-        <span className="sr-only" aria-live="assertive">
-          {error}
-        </span>
-
-        <SajuResult result={result} elementBars={elementBars} interpretation={interpretation} mbtiResult={null} isLoading={isLoading} />
 
         <section className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">자주 묻는 질문</h2>
