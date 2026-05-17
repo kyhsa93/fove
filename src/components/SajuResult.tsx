@@ -1,4 +1,4 @@
-import { JSX, useEffect, useMemo } from 'react'
+import { JSX, useMemo } from 'react'
 import {
   BRANCH_YINYANG,
   CAREER_BY_ELEMENT,
@@ -18,7 +18,6 @@ import type { MbtiResult } from './MbtiTest'
 import { TooltipLabel } from './TooltipLabel'
 import { ActionCardDeck, type ActionCardData } from './ActionCards'
 import { ResultCard } from './ResultCard'
-import { useResultHistory } from '../hooks/useResultHistory'
 
 const ELEMENT_ACTION_DO: Record<Element, string> = {
   목: '새로운 아이디어를 적어 보거나 가벼운 스트레칭으로 몸을 깨워 확장 에너지를 움직여 보세요.',
@@ -192,8 +191,7 @@ interface SajuResultProps {
   isLoading: boolean
 }
 
-export function SajuResult({ result, elementBars, interpretation, mbtiResult, isLoading }: SajuResultProps): JSX.Element {
-  const { addEntry } = useResultHistory()
+export function SajuResult({ result, elementBars, interpretation, mbtiResult, isLoading: _isLoading }: SajuResultProps): JSX.Element {
   const strongestLabel = result ? `${result.summary.strongest.element} (${result.summary.strongest.count}개)` : '계산 중'
   const weakestLabel = result ? `${result.summary.weakest.element} (${result.summary.weakest.count}개)` : '계산 중'
   const actionCards = result ? buildSajuActionCards(result) : []
@@ -204,36 +202,6 @@ export function SajuResult({ result, elementBars, interpretation, mbtiResult, is
       ]
     : []
 
-  const historyEntry = useMemo(() => {
-    if (!result) return null
-    return {
-      id: `saju:${result.meta.solarDate}:${result.meta.timeText}:${result.meta.gender}`,
-      kind: 'saju' as const,
-      title: '사주 풀이',
-      subtitle: `${result.meta.solarDate} · ${result.meta.genderLabel}`,
-      summary: `${result.summary.yinYangMessage} · 강한 ${strongestLabel} / 부족 ${weakestLabel}`,
-      timestamp: Date.now(),
-      badge: 'SAJU INSIGHT'
-    }
-  }, [result, strongestLabel, weakestLabel])
-
-  const placeholderEntry = useMemo(
-    () => ({
-      id: 'saju:placeholder',
-      kind: 'saju' as const,
-      title: '사주 풀이',
-      summary: '생년월일과 태어난 시간을 입력하면 사주 결과가 준비됩니다.',
-      timestamp: 0,
-      badge: 'SAJU INSIGHT'
-    }),
-    []
-  )
-
-  useEffect(() => {
-    if (historyEntry && !isLoading) {
-      addEntry(historyEntry)
-    }
-  }, [historyEntry, addEntry, isLoading])
 
   const analysisTab = useMemo(() => {
     if (!result) return null
@@ -366,7 +334,7 @@ export function SajuResult({ result, elementBars, interpretation, mbtiResult, is
     ? result.summary.yinYangMessage
     : '생년월일과 태어난 시간을 입력하면 오행 분포와 해석이 제공됩니다.'
 
-  const activeEntry = historyEntry ?? placeholderEntry
+  const subtitle = result ? `${result.meta.solarDate} · ${result.meta.genderLabel}` : undefined
 
-  return <ResultCard entry={activeEntry} metrics={metrics} summary={summaryText} tabs={tabs} />
+  return <ResultCard badge="SAJU INSIGHT" title="사주 풀이" subtitle={subtitle} metrics={metrics} summary={summaryText} tabs={tabs} />
 }

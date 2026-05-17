@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState, type JSX, type ReactNode } from 'react'
-import { useResultHistory, type StoredResultEntry } from '../hooks/useResultHistory'
 import { useToast } from './ToastProvider'
 
 interface ResultMetric {
@@ -14,7 +13,9 @@ interface ResultTab {
 }
 
 interface ResultCardProps {
-  entry: StoredResultEntry
+  badge: string
+  title: string
+  subtitle?: string
   metrics?: ResultMetric[]
   summary?: string
   tabs?: ResultTab[]
@@ -22,11 +23,9 @@ interface ResultCardProps {
   actions?: ReactNode
 }
 
-export function ResultCard({ entry, metrics = [], summary, tabs = [], footer, actions }: ResultCardProps): JSX.Element {
-  const { toggleFavorite, isFavorite } = useResultHistory()
+export function ResultCard({ badge, title, subtitle, metrics = [], summary, tabs = [], footer, actions }: ResultCardProps): JSX.Element {
   const { showToast } = useToast()
   const [activeTab, setActiveTab] = useState<string>(tabs[0]?.id ?? '')
-  const favorite = isFavorite(entry.id)
 
   useEffect(() => {
     if (tabs.length && !tabs.some((tab) => tab.id === activeTab)) {
@@ -40,12 +39,7 @@ export function ResultCard({ entry, metrics = [], summary, tabs = [], footer, ac
     return tabs.find((tab) => tab.id === fallbackId) ?? tabs[0]
   }, [tabs, activeTab])
 
-  const shareUrl = useMemo(() => {
-    if (typeof window === 'undefined') return ''
-    const url = new URL(window.location.href)
-    url.searchParams.set('tool', entry.kind)
-    return url.toString()
-  }, [entry.kind])
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : ''
 
   const handleCopyLink = async () => {
     if (!shareUrl) return
@@ -71,20 +65,11 @@ export function ResultCard({ entry, metrics = [], summary, tabs = [], footer, ac
   }
 
   const handleShare = async () => {
-    if (!shareUrl) {
-      handleCopyLink()
-      return
-    }
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: entry.title,
-          text: summary ?? entry.summary ?? '',
-          url: shareUrl
-        })
+        await navigator.share({ title, text: summary ?? '', url: shareUrl })
       } catch (shareError) {
         if (shareError instanceof Error && shareError.name === 'AbortError') return
-        console.warn('Failed to invoke share dialog', shareError)
         handleCopyLink()
       }
     } else {
@@ -96,44 +81,27 @@ export function ResultCard({ entry, metrics = [], summary, tabs = [], footer, ac
     <section className="rounded-3xl border border-slate-100 bg-white/95 px-2 py-4 shadow-sm backdrop-blur-sm sm:px-6 sm:py-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="space-y-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-            {entry.badge ?? entry.kind.toUpperCase()}
-          </p>
-          <h2 className="text-2xl font-bold text-slate-900">{entry.title}</h2>
-          {entry.subtitle ? <p className="text-sm text-slate-600">{entry.subtitle}</p> : null}
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{badge}</p>
+          <h2 className="text-2xl font-bold text-slate-900">{title}</h2>
+          {subtitle ? <p className="text-sm text-slate-600">{subtitle}</p> : null}
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2 py-1 text-xs text-slate-500">
-            <button
-              type="button"
-              onClick={handleShare}
-              className="inline-flex items-center gap-1 rounded-full px-2 py-1 font-medium transition hover:bg-slate-100 hover:text-slate-700"
-            >
-              <span aria-hidden="true">📤</span>
-              공유
-            </button>
-            <span className="h-4 w-px bg-slate-200" aria-hidden="true" />
-            <button
-              type="button"
-              onClick={handleCopyLink}
-              className="inline-flex items-center gap-1 rounded-full px-2 py-1 font-medium transition hover:bg-slate-100 hover:text-slate-700"
-            >
-              <span aria-hidden="true">🔗</span>
-              링크 복사
-            </button>
-          </div>
+        <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-2 py-1 text-xs text-slate-500">
           <button
             type="button"
-            onClick={() => toggleFavorite(entry)}
-            className={`inline-flex h-9 w-9 items-center justify-center rounded-full border text-base transition ${
-              favorite
-                ? 'border-rose-200 bg-rose-50 text-rose-500 hover:bg-rose-100'
-                : 'border-slate-200 bg-white text-slate-400 hover:bg-slate-100 hover:text-rose-500'
-            }`}
-            aria-pressed={favorite}
-            aria-label={favorite ? '즐겨찾기 해제' : '즐겨찾기에 추가'}
+            onClick={handleShare}
+            className="inline-flex items-center gap-1 rounded-full px-2 py-1 font-medium transition hover:bg-slate-100 hover:text-slate-700"
           >
-            {favorite ? '♥' : '♡'}
+            <span aria-hidden="true">📤</span>
+            공유
+          </button>
+          <span className="h-4 w-px bg-slate-200" aria-hidden="true" />
+          <button
+            type="button"
+            onClick={handleCopyLink}
+            className="inline-flex items-center gap-1 rounded-full px-2 py-1 font-medium transition hover:bg-slate-100 hover:text-slate-700"
+          >
+            <span aria-hidden="true">🔗</span>
+            링크 복사
           </button>
         </div>
       </header>

@@ -1,8 +1,7 @@
-import { JSX, useEffect, useMemo } from 'react'
+import { JSX, useMemo } from 'react'
 import { ActionCardDeck, type ActionCardData } from './ActionCards'
 import { TooltipLabel } from './TooltipLabel'
 import { ResultCard } from './ResultCard'
-import { useResultHistory } from '../hooks/useResultHistory'
 import type { MbtiResult } from './MbtiTest'
 import type { DailyFortune, SajuResult } from '../lib/saju'
 
@@ -94,7 +93,6 @@ interface CombinedFortuneCardProps {
 }
 
 export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: CombinedFortuneCardProps): JSX.Element {
-  const { addEntry } = useResultHistory()
   const { dateLabel, pillarName, elementLabel, yinYang } = dailyFortune
   const combinedTexts = useMemo(() => buildCombinedFortuneText(dailyFortune, mbtiResult), [dailyFortune, mbtiResult])
   const actionCards = useMemo(() => buildFortuneActionCards(combinedTexts, dailyFortune), [combinedTexts, dailyFortune])
@@ -107,25 +105,6 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
     ],
     [pillarName, elementLabel, yinYang]
   )
-
-  const fortuneKey = useMemo(() => `${dateLabel}:${mbtiResult?.type ?? 'base'}`, [dateLabel, mbtiResult?.type])
-
-  const historyEntry = useMemo(
-    () => ({
-      id: `fortune:${fortuneKey}`,
-      kind: 'fortune' as const,
-      title: '오늘의 운세',
-      subtitle: `${dateLabel} · ${pillarName}`,
-      summary: combinedTexts.energy,
-      timestamp: Date.now(),
-      badge: 'FORTUNE'
-    }),
-    [fortuneKey, dateLabel, pillarName, combinedTexts.energy]
-  )
-
-  useEffect(() => {
-    addEntry(historyEntry)
-  }, [historyEntry, addEntry])
 
   const analysisTab = useMemo(() => {
     const luckyRange = sajuResult?.pillars.hour?.range
@@ -219,5 +198,5 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
     ]
   }, [analysisTab, adviceTab])
 
-  return <ResultCard entry={historyEntry} metrics={metrics} summary={combinedTexts.energy} tabs={tabs} />
+  return <ResultCard badge="FORTUNE" title="오늘의 운세" subtitle={`${dateLabel} · ${pillarName}`} metrics={metrics} summary={combinedTexts.energy} tabs={tabs} />
 }

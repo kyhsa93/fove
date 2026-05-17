@@ -1,11 +1,9 @@
-import { JSX, useEffect, useMemo } from 'react'
+import { JSX, useEffect } from 'react'
 import { SajuForm } from '../components/SajuForm'
 import { CombinedFortuneCard } from '../components/FortuneCard'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
-import { useResultHistory, type StoredResultEntry } from '../hooks/useResultHistory'
 import { useToast } from '../components/ToastProvider'
 import { navigateTo } from '../lib/router'
-import { resultKindToRoute } from '../lib/resultRoutes'
 import type { RoutePath } from '../routes'
 import { ROUTE_PATHS } from '../routes'
 
@@ -28,7 +26,7 @@ const SUPPORT_LINKS: Array<{
   {
     id: 'mbti',
     title: 'MBTI 성향',
-    description: 'MBTI 결과를 저장하면 오늘의 운세 카드에 성향 기반 해석이 추가됩니다. 무작위 초깃값으로 시작해 빠르게 수정할 수 있어요.',
+    description: 'MBTI 결과와 함께 보면 오늘의 운세 카드에 성향 기반 해석이 추가됩니다. 무작위 초깃값으로 시작해 빠르게 수정할 수 있어요.',
     accent: 'border-indigo-100 hover:border-indigo-200 focus-within:border-indigo-300 bg-indigo-50/60',
     buttonClass: 'bg-indigo-500 hover:bg-indigo-600 focus-visible:ring-indigo-400',
     path: ROUTE_PATHS.mbti
@@ -56,36 +54,13 @@ const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
     question: 'MBTI 결과는 어떻게 활용되나요?',
     answer: [
       'MBTI 결과를 연동하면 오늘의 운세 카드에 성향 기반 행동 팁이 강조됩니다.',
-      'MBTI 페이지에서 20문항 검사를 완료하면 자동으로 저장되고, 필요한 경우 언제든지 수정할 수 있습니다.',
+      'MBTI 페이지에서 20문항 검사를 완료하면 결과가 계산되고, 필요한 경우 언제든지 수정할 수 있습니다.',
       '성향 가이드는 참고용이므로 자신에게 맞는 속도로 조절하며 활용해 주세요.'
-    ]
-  },
-  {
-    question: '운세 결과를 기록으로 남길 수 있나요?',
-    answer: [
-      '모든 운세 카드는 자동으로 히스토리에 저장되며 최대 30개까지 보관됩니다.',
-      '하트 버튼으로 즐겨찾기를 설정하면 의미 있는 결과를 따로 모아둘 수 있습니다.',
-      '결과 카드 상단의 공유·링크 복사 버튼으로 오늘의 요약을 간편하게 전달할 수 있습니다.'
     ]
   }
 ]
 
-const formatTimestamp = (value: number) => {
-  if (!value) return '방금'
-  try {
-    return new Intl.DateTimeFormat('ko-KR', {
-      month: 'numeric',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(new Date(value))
-  } catch {
-    return ''
-  }
-}
-
 export default function FortunePage(): JSX.Element {
-  const { history, favorites } = useResultHistory()
   const { showToast } = useToast()
   const { birthDate, birthTime, gender, result, error, dailyFortune, isLoading, setBirthDate, setBirthTime, setGender } = useSajuCalculator()
 
@@ -94,29 +69,6 @@ export default function FortunePage(): JSX.Element {
       showToast(error, 'error')
     }
   }, [error, showToast])
-
-  const recentEntries = useMemo(() => history.filter((item) => item.kind === 'fortune').slice(0, 6), [history])
-  const favoriteEntries = useMemo(() => favorites.filter((item) => item.kind === 'fortune').slice(0, 6), [favorites])
-
-  const renderSummaryCard = (entry: StoredResultEntry) => {
-    const targetPath = resultKindToRoute[entry.kind] ?? ROUTE_PATHS.fortune
-    return (
-      <button
-        key={entry.id}
-        type="button"
-        onClick={() => navigateTo(targetPath)}
-        className="flex h-full flex-col justify-between rounded-2xl border border-slate-100 bg-white/85 px-2 py-4 text-left shadow-sm transition hover:-translate-y-1 hover:shadow-md sm:px-4"
-      >
-        <div className="space-y-2">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-500">{entry.badge ?? entry.kind.toUpperCase()}</p>
-          <p className="text-sm font-semibold text-slate-900">{entry.title}</p>
-          {entry.subtitle ? <p className="text-xs text-slate-500">{entry.subtitle}</p> : null}
-          <p className="text-xs leading-relaxed text-slate-600">{entry.summary}</p>
-        </div>
-        <p className="mt-3 text-[10px] text-slate-400">{formatTimestamp(entry.timestamp)}</p>
-      </button>
-    )
-  }
 
   const renderFortuneSection = () => {
     if (!result) {
@@ -153,34 +105,6 @@ export default function FortunePage(): JSX.Element {
           </p>
         </header>
 
-        <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">최근 운세</h2>
-            <span className="text-xs text-gray-500">최대 30개까지 자동 저장됩니다.</span>
-          </div>
-          {recentEntries.length ? (
-            <div className="grid gap-3 md:grid-cols-3">{recentEntries.map(renderSummaryCard)}</div>
-          ) : (
-            <div className="rounded-2xl border border-amber-100 bg-white/70 px-3 py-4 text-sm text-gray-600">
-              아직 저장된 운세가 없습니다. 하단에서 사주 정보를 입력하면 첫 번째 운세 카드가 자동으로 기록됩니다.
-            </div>
-          )}
-        </section>
-
-        <section className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">즐겨찾기</h2>
-            <span className="text-xs text-gray-500">특별한 결과는 하트 버튼으로 저장해 두세요.</span>
-          </div>
-          {favoriteEntries.length ? (
-            <div className="grid gap-3 md:grid-cols-3">{favoriteEntries.map(renderSummaryCard)}</div>
-          ) : (
-            <div className="rounded-2xl border border-indigo-100 bg-white/70 px-3 py-4 text-sm text-gray-600">
-              즐겨찾기한 운세가 없습니다. 의미 있는 카드 상단의 하트 버튼을 눌러 두면 언제든 빠르게 다시 확인할 수 있어요.
-            </div>
-          )}
-        </section>
-
         <section className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">다른 기능과 함께 활용하기</h2>
           <div className="grid gap-4 md:grid-cols-2">
@@ -195,7 +119,7 @@ export default function FortunePage(): JSX.Element {
                   <button
                     type="button"
                     onClick={() => navigateTo(flow.path)}
-                    className={`inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-white shadow-sm transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${flow.buttonClass}`}
+                    className={`inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-white shadow-sm transition focus-visible:outline-2 focus-visible:outline-offset-2 ${flow.buttonClass}`}
                   >
                     바로 이동
                   </button>
@@ -217,11 +141,11 @@ export default function FortunePage(): JSX.Element {
           {error}
         </span>
 
-        <section className="space-y-3">
+        <section className="space-y-4">
           <h2 className="text-xl font-semibold text-gray-900">오늘의 운세 카드</h2>
           {isLoading ? (
             <div className="rounded-2xl border border-amber-100 bg-white/60 px-3 py-5 text-sm leading-relaxed text-gray-700 sm:px-6 sm:py-6">
-              운세 데이터를 정리하고 있습니다. 1~2초 정도 소요되며, 이 과정에서도 입력 값은 자동으로 저장되니 다른 페이지로 이동해도 안전합니다.
+              운세 데이터를 정리하고 있습니다. 1~2초 정도 소요됩니다.
             </div>
           ) : (
             renderFortuneSection()

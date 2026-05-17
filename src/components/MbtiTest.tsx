@@ -1,6 +1,5 @@
 import { JSX, useEffect, useMemo, useRef, useState } from 'react'
 import { ResultCard } from './ResultCard'
-import { useResultHistory } from '../hooks/useResultHistory'
 import { useToast } from './ToastProvider'
 import { ActionCardDeck, type ActionCardData } from './ActionCards'
 import { TooltipLabel } from './TooltipLabel'
@@ -507,7 +506,6 @@ function computeMbtiResultFromAnswers(answers: Record<string, ResponseValue>): M
 }
 
 export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
-  const { addEntry } = useResultHistory()
   const { showToast } = useToast()
   const persistedAnswers = useMemo(loadPersistedAnswers, [])
 
@@ -662,37 +660,6 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
     ].filter(Boolean) as Array<{ label: string; value: string }>
   }, [result, summary, dominantDimensionInfo])
 
-  const historyEntry = useMemo(() => {
-    if (!result || !summary) return null
-    return {
-      id: `mbti:${result.type}`,
-      kind: 'mbti' as const,
-      title: 'MBTI 성향',
-      subtitle: `${result.type} · ${summary.title}`,
-      summary: summary.description,
-      timestamp: Date.now(),
-      badge: 'MBTI INSIGHT'
-    }
-  }, [result, summary])
-
-  const placeholderEntry = useMemo(
-    () => ({
-      id: 'mbti:placeholder',
-      kind: 'mbti' as const,
-      title: 'MBTI 성향',
-      summary: '모든 문항에 응답하면 상세한 성향 분석이 제공됩니다.',
-      timestamp: 0,
-      badge: 'MBTI INSIGHT'
-    }),
-    []
-  )
-
-  useEffect(() => {
-    if (historyEntry && !isProcessing) {
-      addEntry(historyEntry)
-    }
-  }, [historyEntry, addEntry, isProcessing])
-
   const analysisTab = useMemo(() => {
     if (!result || !summary) return null
 
@@ -830,7 +797,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
   }, [analysisTab, adviceTab])
 
   const summaryText = summary ? summary.description : '20개의 질문에 응답하면 성향 요약과 행동 가이드를 확인할 수 있습니다.'
-  const entryForCard = historyEntry ?? placeholderEntry
+  const subtitle = result && summary ? `${result.type} · ${summary.title}` : undefined
 
   return (
     <section className="space-y-6">
@@ -910,7 +877,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
         </div>
       </div>
 
-      <ResultCard entry={entryForCard} metrics={metrics} summary={summaryText} tabs={tabs} />
+      <ResultCard badge="MBTI INSIGHT" title="MBTI 성향" subtitle={subtitle} metrics={metrics} summary={summaryText} tabs={tabs} />
     </section>
   )
 }
