@@ -9,7 +9,7 @@ import ContactPage from './pages/ContactPage'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import type { RoutePath } from './routes'
-import { BASE_PATH, ROUTE_PATHS, footerLinks } from './routes'
+import { ROUTE_PATHS, footerLinks } from './routes'
 
 type RouteConfig = {
   component: () => JSX.Element
@@ -52,16 +52,8 @@ const routeKeys = Object.keys(routes) as RoutePath[]
 const normalizePath = (rawPath: string): RoutePath => {
   if (!rawPath) return ROUTE_PATHS.home
   const cleaned = rawPath.replace(/\/+$/, '') || '/'
-  if (cleaned === '/') return ROUTE_PATHS.home
   const match = routeKeys.find((key) => key === cleaned)
-  if (match) return match
-  if (cleaned.startsWith('/') && !cleaned.startsWith(BASE_PATH)) {
-    const candidate = `${BASE_PATH}${cleaned}` as RoutePath
-    if (routeKeys.includes(candidate)) {
-      return candidate
-    }
-  }
-  return ROUTE_PATHS.home
+  return match ?? ROUTE_PATHS.home
 }
 
 const getInitialPath = (): RoutePath => {
