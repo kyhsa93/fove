@@ -1,4 +1,5 @@
-import { SOLAR_TERMS, type SolarTermName } from '../../solarTerms'
+import { SOLAR_TERMS } from '../../solarTerms'
+import type { SolarTermName } from '../../solarTerms'
 
 export const STEMS = ['갑', '을', '병', '정', '무', '기', '경', '신', '임', '계'] as const
 export const BRANCHES = ['자', '축', '인', '묘', '진', '사', '오', '미', '신', '유', '술', '해'] as const

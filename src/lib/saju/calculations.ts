@@ -1,4 +1,5 @@
-import { SOLAR_TERMS, type SolarTermName } from '../../solarTerms'
+import { SOLAR_TERMS, SOLAR_TERM_ORDER } from '../../solarTerms'
+import type { SolarTermName } from '../../solarTerms'
 import {
   BRANCHES,
   BRANCH_ANIMALS,
@@ -120,12 +121,9 @@ export function getTodayKey(): string {
 }
 
 function getSolarTermEntries(year: number): Array<{ term: SolarTermName; date: Date }> {
-  const entries = SOLAR_TERMS[year]
-  if (!entries) return []
-  return entries.map((entry) => ({
-    term: entry.term,
-    date: new Date(entry.iso)
-  }))
+  const isos = SOLAR_TERMS[year]
+  if (!isos) return []
+  return isos.map((iso, i) => ({ term: SOLAR_TERM_ORDER[i], date: new Date(iso) }))
 }
 
 function resolveYearPillar(date: Date): YearPillarInfo {
@@ -134,12 +132,12 @@ function resolveYearPillar(date: Date): YearPillarInfo {
     throw new Error(`지원하는 생년월일은 ${SUPPORTED_YEAR_MIN}년부터 ${SUPPORTED_YEAR_MAX}년까지입니다.`)
   }
 
-  const lichunEntry = SOLAR_TERMS[year]?.find((entry) => entry.term === '立春')
-  if (!lichunEntry) {
+  const lichunIso = SOLAR_TERMS[year]?.[1]
+  if (!lichunIso) {
     throw new Error('입춘 정보를 찾을 수 없습니다.')
   }
 
-  const lichunDate = new Date(lichunEntry.iso)
+  const lichunDate = new Date(lichunIso)
   const pillarYear = date.getTime() < lichunDate.getTime() ? year - 1 : year
   const stemIndex = mod(pillarYear - 4, STEMS.length)
   const branchIndex = mod(pillarYear - 4, BRANCHES.length)
