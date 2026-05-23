@@ -7,6 +7,7 @@ import { navigateTo } from '../lib/router'
 import type { RoutePath } from '../routes'
 import { ROUTE_PATHS } from '../routes'
 import { computeMbtiResultFromAnswers, loadPersistedAnswers, MBTI_COMPLETED_KEY } from '../components/MbtiTest'
+import { getTodaySolarTerm } from '../lib/solarTermUtils'
 
 const SUPPORT_LINKS: Array<{
   id: string
@@ -70,6 +71,8 @@ export default function FortunePage(): JSX.Element {
     return computeMbtiResultFromAnswers(loadPersistedAnswers())
   }, [])
 
+  const todaySolarTerm = useMemo(() => getTodaySolarTerm(), [])
+
   useEffect(() => {
     if (error) {
       showToast(error, 'error')
@@ -112,6 +115,18 @@ export default function FortunePage(): JSX.Element {
             사주 기반으로 오늘의 흐름과 실천 포인트를 확인하세요. 사주 입력값이 비어 있으면 오늘 날짜와 현재 시간이 자동으로 채워지고 성별은 남성으로 시작하므로 바로 확인할 수 있어요.
           </p>
         </header>
+
+        {todaySolarTerm ? (
+          <div className={`rounded-2xl border px-4 py-4 text-sm leading-relaxed space-y-1.5 ${todaySolarTerm.isExactDay ? 'border-amber-200 bg-amber-50 text-amber-900' : 'border-slate-200 bg-slate-50 text-slate-700'}`}>
+            <p className="font-semibold text-base">
+              {todaySolarTerm.isExactDay ? '오늘은 ' : '어제부터 '}
+              <span className="text-amber-700">{todaySolarTerm.nameKr}({todaySolarTerm.meaning})</span>
+              {todaySolarTerm.isExactDay ? '입니다' : '절기가 시작됐습니다'}
+              {' — '}{todaySolarTerm.element} 기운의 전환점
+            </p>
+            <p className="text-sm">{todaySolarTerm.message}</p>
+          </div>
+        ) : null}
 
         <SajuForm
           birthDate={birthDate}
