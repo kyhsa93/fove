@@ -21,9 +21,11 @@ interface ResultCardProps {
   tabs?: ResultTab[]
   footer?: ReactNode
   actions?: ReactNode
+  onShare?: () => void
+  onTabChange?: (tabId: string) => void
 }
 
-export function ResultCard({ badge, title, subtitle, metrics = [], summary, tabs = [], footer, actions }: ResultCardProps): JSX.Element {
+export function ResultCard({ badge, title, subtitle, metrics = [], summary, tabs = [], footer, actions, onShare, onTabChange }: ResultCardProps): JSX.Element {
   const { showToast } = useToast()
   const [activeTab, setActiveTab] = useState<string>(tabs[0]?.id ?? '')
 
@@ -68,12 +70,15 @@ export function ResultCard({ badge, title, subtitle, metrics = [], summary, tabs
     if (navigator.share) {
       try {
         await navigator.share({ title, text: summary ?? '', url: shareUrl })
+        onShare?.()
       } catch (shareError) {
         if (shareError instanceof Error && shareError.name === 'AbortError') return
         handleCopyLink()
+        onShare?.()
       }
     } else {
       handleCopyLink()
+      onShare?.()
     }
   }
 
@@ -126,7 +131,7 @@ export function ResultCard({ badge, title, subtitle, metrics = [], summary, tabs
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => { setActiveTab(tab.id); onTabChange?.(tab.id) }}
                 className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                   (displayedTab?.id ?? tabs[0].id) === tab.id
                     ? 'bg-indigo-500 text-white shadow-sm'

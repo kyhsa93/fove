@@ -1,4 +1,4 @@
-import { JSX, useEffect, useMemo } from 'react'
+import { JSX, useEffect, useMemo, useRef } from 'react'
 import { SajuForm } from '../components/SajuForm'
 import { CombinedFortuneCard } from '../components/FortuneCard'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
@@ -9,6 +9,7 @@ import { ROUTE_PATHS } from '../routes'
 import { computeMbtiResultFromAnswers, loadPersistedAnswers, MBTI_COMPLETED_KEY } from '../components/MbtiTest'
 import { getTodaySolarTerm } from '../lib/solarTermUtils'
 import { buildWeeklyFortune } from '../lib/saju'
+import { trackEvent } from '../lib/analytics'
 
 const SUPPORT_LINKS: Array<{
   id: string
@@ -74,6 +75,14 @@ export default function FortunePage(): JSX.Element {
 
   const todaySolarTerm = useMemo(() => getTodaySolarTerm(), [])
   const weeklyFortune = useMemo(() => buildWeeklyFortune(), [])
+
+  const generatedTracked = useRef(false)
+  useEffect(() => {
+    if (dailyFortune && !generatedTracked.current) {
+      generatedTracked.current = true
+      trackEvent('fortune_generated', { pillar: dailyFortune.pillarName, score: dailyFortune.score })
+    }
+  }, [dailyFortune])
 
   useEffect(() => {
     if (error) {
@@ -213,6 +222,7 @@ export default function FortunePage(): JSX.Element {
             <button
               type="button"
               onClick={() => {
+                trackEvent('clicked_next', { destination: 'tomorrow_fortune' })
                 const tomorrow = new Date()
                 tomorrow.setDate(tomorrow.getDate() + 1)
                 const y = tomorrow.getFullYear()
@@ -227,7 +237,7 @@ export default function FortunePage(): JSX.Element {
             </button>
             <button
               type="button"
-              onClick={() => navigateTo(ROUTE_PATHS.saju)}
+              onClick={() => { trackEvent('clicked_next', { destination: 'saju' }); navigateTo(ROUTE_PATHS.saju) }}
               className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-5 text-left transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-slate-400"
             >
               <p className="text-base font-semibold text-slate-800">사주 풀이 보기</p>
@@ -235,7 +245,7 @@ export default function FortunePage(): JSX.Element {
             </button>
             <button
               type="button"
-              onClick={() => navigateTo(ROUTE_PATHS.fortuneYear)}
+              onClick={() => { trackEvent('clicked_next', { destination: 'fortune_year' }); navigateTo(ROUTE_PATHS.fortuneYear) }}
               className="rounded-2xl border border-indigo-200 bg-indigo-50/60 px-4 py-5 text-left transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-indigo-400"
             >
               <p className="text-base font-semibold text-indigo-900">올해 연간 운세 보기</p>

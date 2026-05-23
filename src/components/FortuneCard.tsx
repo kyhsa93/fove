@@ -1,9 +1,10 @@
-import { JSX, useMemo } from 'react'
+import { JSX, useCallback, useMemo } from 'react'
 import { ActionCardDeck, type ActionCardData } from './ActionCards'
 import { TooltipLabel } from './TooltipLabel'
 import { ResultCard } from './ResultCard'
 import type { MbtiResult } from './MbtiTest'
 import type { DailyFortune, SajuResult } from '../lib/saju'
+import { trackEvent } from '../lib/analytics'
 
 const MBTI_DIMENSION_TIPS: Record<string, { positive: string; negative: string }> = {
   EI: {
@@ -237,5 +238,26 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
     { id: 'advice', label: '조언', content: adviceTab }
   ], [analysisTab, categoriesTab, adviceTab])
 
-  return <ResultCard badge="FORTUNE" title="오늘의 운세" subtitle={`${dateLabel} · ${pillarName}`} metrics={metrics} summary={combinedTexts.energy} tabs={tabs} />
+  const handleShare = useCallback(() => {
+    trackEvent('shared', { pillar: pillarName, score })
+  }, [pillarName, score])
+
+  const handleTabChange = useCallback((tabId: string) => {
+    if (tabId === 'advice') {
+      trackEvent('fortune_completed', { pillar: pillarName, score })
+    }
+  }, [pillarName, score])
+
+  return (
+    <ResultCard
+      badge="FORTUNE"
+      title="오늘의 운세"
+      subtitle={`${dateLabel} · ${pillarName}`}
+      metrics={metrics}
+      summary={combinedTexts.energy}
+      tabs={tabs}
+      onShare={handleShare}
+      onTabChange={handleTabChange}
+    />
+  )
 }
