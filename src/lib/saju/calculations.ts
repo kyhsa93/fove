@@ -16,6 +16,10 @@ import {
   ELEMENT_CONTROLLED_BY,
   ELEMENT_INTERACTION_DO,
   ELEMENT_INTERACTION_AVOID,
+  STEM_HARMONY_PAIRS,
+  STEM_HARMONY_ELEMENT,
+  STEM_HARMONY_MESSAGE,
+  BRANCH_CLASH_EXTENDED_MESSAGE,
   ELEMENT_CONTROLS,
   ELEMENT_LABELS,
   ELEMENT_PRODUCED_BY,
@@ -509,9 +513,23 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
 
   const weakestElement = result.summary.weakest.element
 
+  // 천간합 감지: 오늘 천간 ↔ 출생 일주 천간
+  const birthDayStem = result.pillars.day.stem
+  const stemHarmonyPartner = STEM_HARMONY_PAIRS[stem]
+  const hasStemHarmony = stemHarmonyPartner === birthDayStem
+  const stemHarmonyElement = hasStemHarmony ? STEM_HARMONY_ELEMENT[stem] : null
+  const stemHarmonyText = hasStemHarmony && stemHarmonyElement
+    ? STEM_HARMONY_MESSAGE(stem, birthDayStem, stemHarmonyElement)
+    : ''
+
+  // 지지충 감지: 오늘 지지 ↔ 출생 일주 지지 (기존 clash에 확장 메시지 추가)
+  const branchClashText = branchRelation === 'clash'
+    ? BRANCH_CLASH_EXTENDED_MESSAGE(branch, personalBranch)
+    : ''
+
   const energyText = `${STEM_DAILY_CONTEXT[stem]} ${DAILY_RELATION_MESSAGES[relationKey]} ${DAILY_ELEMENT_ALIGNMENT[alignment]}`.trim()
-  const actionParts = [ELEMENT_INTERACTION_DO[element][personalElement], branchPositive].filter(Boolean)
-  const cautionParts = [balanceText, ELEMENT_INTERACTION_AVOID[element][weakestElement], branchCaution].filter(Boolean)
+  const actionParts = [ELEMENT_INTERACTION_DO[element][personalElement], branchPositive, stemHarmonyText].filter(Boolean)
+  const cautionParts = [balanceText, ELEMENT_INTERACTION_AVOID[element][weakestElement], branchClashText].filter(Boolean)
 
   return {
     dateLabel,

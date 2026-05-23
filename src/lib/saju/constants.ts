@@ -432,6 +432,30 @@ export const DAILY_BRANCH_MESSAGES: Record<BranchRelationKey, string> = {
   neutral: ''
 }
 
+// 천간합(天干合): 오늘 천간 ↔ 출생 일주 천간이 합을 이루는 쌍
+export const STEM_HARMONY_PAIRS: Partial<Record<Stem, Stem>> = {
+  '갑': '기', '기': '갑',
+  '을': '경', '경': '을',
+  '병': '신', '신': '병',
+  '정': '임', '임': '정',
+  '무': '계', '계': '무'
+}
+
+// 천간합이 성립할 때 화(化)하는 오행
+export const STEM_HARMONY_ELEMENT: Partial<Record<Stem, Element>> = {
+  '갑': '토', '기': '토',   // 甲己합 → 토
+  '을': '금', '경': '금',   // 乙庚합 → 금
+  '병': '수', '신': '수',   // 丙辛합 → 수
+  '정': '목', '임': '목',   // 丁壬합 → 목
+  '무': '화', '계': '화'    // 戊癸합 → 화
+}
+
+export const STEM_HARMONY_MESSAGE = (todayStem: string, birthStem: string, element: string): string =>
+  `오늘 ${todayStem}일이 출생 일주 천간(${birthStem})과 천간합을 이루어 ${element} 기운으로 화합합니다. 협력·계약·합의처럼 두 힘이 합쳐지는 일에서 결실을 기대할 수 있습니다.`
+
+export const BRANCH_CLASH_EXTENDED_MESSAGE = (todayBranch: string, birthBranch: string): string =>
+  `오늘 ${todayBranch}지지가 출생 일주 지지(${birthBranch})와 충(冲)을 이루어 기운이 크게 흔들립니다. 이사·계약·수술처럼 큰 결정은 오늘을 피하고, 예상치 못한 변수에 유연하게 대응하세요.`
+
 export const SOLAR_TERM_INFO: Record<SolarTermName, { branch: Branch; monthIndex: number }> = {
   '立春': { branch: '인', monthIndex: 0 },
   '驚蟄': { branch: '묘', monthIndex: 1 },
