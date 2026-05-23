@@ -633,3 +633,32 @@ export function buildElementBars(result: SajuResult | null): ElementBar[] {
     ratio: result.summary.totalElements ? Math.round((count / result.summary.totalElements) * 100) : 0
   }))
 }
+
+export function buildWeeklyFortune(referenceDate: Date = new Date()): import('./types').WeekDayFortune[] {
+  const { year, month, day } = getKstDateParts(referenceDate)
+  const result = []
+
+  for (let i = 0; i < 7; i++) {
+    const targetDate = new Date(Date.UTC(year, month - 1, day + i))
+    const kst = getKstDateParts(targetDate)
+    const [stemIdx, branchIdx] = getDayStemBranch(kst.year, kst.month, kst.day)
+    const stem = STEMS[mod(stemIdx, STEMS.length)]
+    const branch = BRANCHES[mod(branchIdx, BRANCHES.length)]
+    const element = STEM_ELEMENTS[stem]
+    const yinYang = STEM_YINYANG[stem]
+
+    const weekday = new Intl.DateTimeFormat('ko', { timeZone: 'Asia/Seoul', weekday: 'short' }).format(targetDate)
+
+    result.push({
+      shortDate: `${kst.month}/${kst.day}`,
+      weekday,
+      pillarName: `${stem}${branch}`,
+      elementLabel: ELEMENT_LABELS[element],
+      element,
+      yinYang,
+      isToday: i === 0
+    })
+  }
+
+  return result
+}

@@ -5,5 +5,6 @@ export {
   calculateSaju,
   buildDailyFortune,
   buildInterpretation,
-  buildElementBars
+  buildElementBars,
+  buildWeeklyFortune
 } from './calculations'

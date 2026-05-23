@@ -107,6 +107,16 @@ export interface DailyFortune {
   cautionText: string
 }
 
+export interface WeekDayFortune {
+  shortDate: string
+  weekday: string
+  pillarName: string
+  elementLabel: string
+  element: import('./constants').Element
+  yinYang: YinYang
+  isToday: boolean
+}
+
 export interface YearPillarInfo {
   year: number
   stem: Stem

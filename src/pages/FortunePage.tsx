@@ -8,6 +8,7 @@ import type { RoutePath } from '../routes'
 import { ROUTE_PATHS } from '../routes'
 import { computeMbtiResultFromAnswers, loadPersistedAnswers, MBTI_COMPLETED_KEY } from '../components/MbtiTest'
 import { getTodaySolarTerm } from '../lib/solarTermUtils'
+import { buildWeeklyFortune } from '../lib/saju'
 
 const SUPPORT_LINKS: Array<{
   id: string
@@ -72,6 +73,7 @@ export default function FortunePage(): JSX.Element {
   }, [])
 
   const todaySolarTerm = useMemo(() => getTodaySolarTerm(), [])
+  const weeklyFortune = useMemo(() => buildWeeklyFortune(), [])
 
   useEffect(() => {
     if (error) {
@@ -149,6 +151,27 @@ export default function FortunePage(): JSX.Element {
           ) : (
             renderFortuneSection()
           )}
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">이번 주 일진 흐름</h2>
+          <div className="grid grid-cols-7 gap-1.5">
+            {weeklyFortune.map((day) => (
+              <div
+                key={day.shortDate}
+                className={`rounded-xl border px-1.5 py-3 text-center space-y-1.5 transition ${
+                  day.isToday
+                    ? 'border-amber-300 bg-amber-50 shadow-sm'
+                    : 'border-slate-100 bg-white/80'
+                }`}
+              >
+                <p className={`text-xs font-medium ${day.isToday ? 'text-amber-700' : 'text-slate-400'}`}>{day.weekday}</p>
+                <p className={`text-xs ${day.isToday ? 'text-amber-600' : 'text-slate-400'}`}>{day.shortDate}</p>
+                <p className={`text-sm font-bold ${day.isToday ? 'text-amber-900' : 'text-slate-700'}`}>{day.pillarName}</p>
+                <p className={`text-xs leading-tight ${day.isToday ? 'text-amber-800' : 'text-slate-500'}`}>{day.elementLabel}</p>
+              </div>
+            ))}
+          </div>
         </section>
 
         <section className="space-y-4">
