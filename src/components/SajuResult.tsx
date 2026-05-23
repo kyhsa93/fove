@@ -1,4 +1,4 @@
-import { JSX } from 'react'
+import { JSX, useCallback } from 'react'
 import {
   BRANCH_YINYANG,
   CAREER_BY_ELEMENT,
@@ -18,6 +18,7 @@ import {
 } from '../lib/saju'
 import { TooltipLabel } from './TooltipLabel'
 import { ActionCardDeck, type ActionCardData } from './ActionCards'
+import { useToast } from './ToastProvider'
 
 const ELEMENT_ACTION_DO: Record<Element, string> = {
   목: '새로운 아이디어를 적어 보거나 가벼운 스트레칭으로 몸을 깨워 확장 에너지를 움직여 보세요.',
@@ -193,6 +194,35 @@ interface SajuResultProps {
 }
 
 export function SajuResult({ result, elementBars, interpretation, isLoading }: SajuResultProps): JSX.Element | null {
+  const { showToast } = useToast()
+
+  const handleShare = useCallback(async () => {
+    if (!result) return
+    const strongest = result.summary.strongest
+    const text = [
+      '[Fove 사주 풀이]',
+      TEMPERAMENT_BY_ELEMENT[strongest.element],
+      `강한 오행: ${strongest.element}(${strongest.count}개) · 일주: ${result.pillars.day.name}`,
+      '',
+      '나의 사주를 확인해보세요: https://kyhsa93.github.io/fove/saju'
+    ].join('\n')
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Fove 사주 풀이', text, url: 'https://kyhsa93.github.io/fove/saju' })
+        return
+      } catch (e) {
+        if (e instanceof Error && e.name === 'AbortError') return
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(text)
+      showToast('사주 결과를 복사했습니다.', 'success')
+    } catch {
+      showToast('복사에 실패했어요. 다시 시도해 주세요.', 'error')
+    }
+  }, [result, showToast])
+
   if (isLoading) {
     return (
       <div className="rounded-2xl border border-amber-100 bg-white/60 px-4 py-5 text-sm text-gray-600">
@@ -212,10 +242,22 @@ export function SajuResult({ result, elementBars, interpretation, isLoading }: S
     <div className="space-y-6">
       {/* 기본 정보 */}
       <div className="rounded-3xl border border-slate-100 bg-white/95 px-2 py-5 shadow-sm space-y-4 sm:px-6 sm:py-6">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">SAJU INSIGHT</p>
-          <h2 className="mt-1 text-2xl font-bold text-slate-900">사주 풀이</h2>
-          <p className="text-sm text-slate-600">{result.meta.solarDate} · {result.meta.genderLabel}</p>
+        <div className="flex items-start justify-between gap-3 flex-wrap">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">SAJU INSIGHT</p>
+            <h2 className="mt-1 text-2xl font-bold text-slate-900">사주 풀이</h2>
+            <p className="text-sm text-slate-600">{result.meta.solarDate} · {result.meta.genderLabel}</p>
+          </div>
+          <button
+            type="button"
+            onClick={handleShare}
+            className="flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-500 transition hover:bg-slate-50 hover:text-slate-700"
+          >
+            <svg aria-hidden="true" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+            공유
+          </button>
         </div>
         <div className="space-y-2">
           <p className="text-base font-medium leading-relaxed text-slate-800">{TEMPERAMENT_BY_ELEMENT[result.summary.strongest.element]}</p>
