@@ -14,36 +14,52 @@ import { ROUTE_PATHS, footerLinks } from './routes'
 type RouteConfig = {
   component: () => JSX.Element
   title: string
+  description: string
+  ogTitle: string
 }
 
 const routes: Record<RoutePath, RouteConfig> = {
   [ROUTE_PATHS.home]: {
     component: HomePage,
-    title: 'Fove · 하루 인사이트 허브'
+    title: 'Fove · 하루 인사이트 허브',
+    description: '사주 계산, MBTI 성향 진단, 오늘의 운세를 한 곳에서 확인하세요. 생년월일 기반 맞춤 인사이트를 제공합니다.',
+    ogTitle: 'Fove · 하루 인사이트 허브'
   },
   [ROUTE_PATHS.saju]: {
     component: SajuPage,
-    title: 'Fove · 사주 풀이'
+    title: 'Fove · 사주 풀이',
+    description: '생년월일과 태어난 시간으로 사주팔자를 계산하고 오행 밸런스와 사주 해석을 확인하세요.',
+    ogTitle: '사주 풀이 — Fove'
   },
   [ROUTE_PATHS.mbti]: {
     component: MbtiPage,
-    title: 'Fove · MBTI 성향 진단'
+    title: 'Fove · MBTI 성향 진단',
+    description: '20문항으로 빠르게 MBTI 성향을 진단하고 사주 운세와 교차 인사이트를 받아보세요.',
+    ogTitle: 'MBTI 성향 진단 — Fove'
   },
   [ROUTE_PATHS.fortune]: {
     component: FortunePage,
-    title: 'Fove · 오늘의 운세'
+    title: 'Fove · 오늘의 운세',
+    description: '사주와 일진을 조합해 오늘의 에너지 흐름, 분야별 운세(일·사랑·재물·건강), 행운 요소를 확인하세요.',
+    ogTitle: '오늘의 운세 — Fove'
   },
   [ROUTE_PATHS.privacyPolicy]: {
     component: PrivacyPolicyPage,
-    title: 'Fove 개인정보 처리방침'
+    title: 'Fove 개인정보 처리방침',
+    description: 'Fove 서비스의 개인정보 처리방침을 확인하세요.',
+    ogTitle: '개인정보 처리방침 — Fove'
   },
   [ROUTE_PATHS.termsOfService]: {
     component: TermsOfServicePage,
-    title: 'Fove 이용약관'
+    title: 'Fove 이용약관',
+    description: 'Fove 서비스 이용약관을 확인하세요.',
+    ogTitle: '이용약관 — Fove'
   },
   [ROUTE_PATHS.contact]: {
     component: ContactPage,
-    title: 'Fove 문의하기'
+    title: 'Fove 문의하기',
+    description: 'Fove 서비스에 대한 문의와 피드백을 보내주세요.',
+    ogTitle: '문의하기 — Fove'
   }
 }
 
@@ -78,9 +94,17 @@ export default function App(): JSX.Element {
   useEffect(() => {
     if (typeof document === 'undefined') return
     const meta = routes[currentPath]
-    if (meta) {
-      document.title = meta.title
+    if (!meta) return
+    document.title = meta.title
+    const setMeta = (selector: string, content: string) => {
+      const el = document.querySelector(selector)
+      if (el) el.setAttribute('content', content)
     }
+    setMeta('meta[name="description"]', meta.description)
+    setMeta('meta[property="og:title"]', meta.ogTitle)
+    setMeta('meta[property="og:description"]', meta.description)
+    setMeta('meta[name="twitter:title"]', meta.ogTitle)
+    setMeta('meta[name="twitter:description"]', meta.description)
   }, [currentPath])
 
   useEffect(() => {
