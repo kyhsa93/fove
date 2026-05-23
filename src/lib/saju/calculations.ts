@@ -8,9 +8,7 @@ import {
   BRANCH_HARMONIES,
   BRANCH_YINYANG,
   CAREER_BY_ELEMENT,
-  DAILY_ACTIVITY_BY_ELEMENT,
   DAILY_BRANCH_MESSAGES,
-  DAILY_CARE_BY_ELEMENT,
   DAILY_ELEMENT_ALIGNMENT,
   DAILY_RELATION_MESSAGES,
   ELEMENT_ACTION_AVOID,
@@ -510,7 +508,7 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
   const weakestElement = result.summary.weakest.element
 
   const energyText = `${DAILY_RELATION_MESSAGES[relationKey]} ${DAILY_ELEMENT_ALIGNMENT[alignment]}`.trim()
-  const actionParts = [DAILY_ACTIVITY_BY_ELEMENT[element], ELEMENT_ACTION_DO[strongestElement], branchPositive].filter(Boolean)
+  const actionParts = [ELEMENT_ACTION_DO[strongestElement], branchPositive].filter(Boolean)
   const cautionParts = [balanceText, ELEMENT_ACTION_AVOID[weakestElement], branchCaution].filter(Boolean)
 
   return {
