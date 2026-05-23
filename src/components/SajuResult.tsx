@@ -2,11 +2,13 @@ import { JSX } from 'react'
 import {
   BRANCH_YINYANG,
   CAREER_BY_ELEMENT,
+  ELEMENT_KEYWORDS,
   ELEMENT_LABELS,
   PILLAR_FOCUS,
   PILLAR_LABELS,
   RELATIONSHIP_BY_ANIMAL,
   STEM_YINYANG,
+  TEMPERAMENT_BY_ELEMENT,
   type Element,
   type ElementBar,
   type InterpretationCategory,
@@ -169,11 +171,13 @@ function InterpretationSection({ interpretation }: InterpretationSectionProps): 
       <h2 className="text-lg font-semibold text-gray-900">
         <TooltipLabel text="심층 해석" description="핵심 키워드를 기반으로 삶의 흐름과 성향을 알기 쉽게 정리했습니다." />
       </h2>
-      <div className="space-y-3 text-sm text-gray-700 leading-relaxed">
+      <div className="space-y-5 text-sm leading-relaxed">
         {interpretation.map((item) => (
-          <div key={item.key}>
+          <div key={item.key} className="space-y-1.5">
             <p className="font-semibold text-gray-900">{item.title}</p>
-            <p>{item.description}</p>
+            <p className="font-medium text-gray-800">{item.summary}</p>
+            <p className="text-gray-500 text-xs">{item.reason}</p>
+            <p className="text-amber-800 text-xs bg-amber-50 rounded-lg px-3 py-1.5">→ {item.tip}</p>
           </div>
         ))}
       </div>
@@ -213,7 +217,15 @@ export function SajuResult({ result, elementBars, interpretation, isLoading }: S
           <h2 className="mt-1 text-2xl font-bold text-slate-900">사주 풀이</h2>
           <p className="text-sm text-slate-600">{result.meta.solarDate} · {result.meta.genderLabel}</p>
         </div>
-        <p className="text-sm leading-relaxed text-slate-700">{result.summary.yinYangMessage}</p>
+        <div className="space-y-2">
+          <p className="text-base font-medium leading-relaxed text-slate-800">{TEMPERAMENT_BY_ELEMENT[result.summary.strongest.element]}</p>
+          <div className="flex flex-wrap gap-1.5">
+            {ELEMENT_KEYWORDS[result.summary.strongest.element].map((kw) => (
+              <span key={kw} className="text-xs bg-amber-50 text-amber-800 border border-amber-200 rounded-full px-2.5 py-0.5">{kw}</span>
+            ))}
+            <span className="text-xs bg-slate-50 text-slate-600 border border-slate-200 rounded-full px-2.5 py-0.5">{result.summary.yinYangMessage}</span>
+          </div>
+        </div>
         <div className="grid gap-3 md:grid-cols-2">
           <div className="bg-amber-50 border border-amber-100 rounded-xl px-2 py-3 space-y-1 sm:px-4">
             <p className="text-xs font-medium text-gray-500">양력</p>

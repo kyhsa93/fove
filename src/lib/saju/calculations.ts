@@ -536,98 +536,89 @@ export function buildInterpretation(result: SajuResult): InterpretationCategory[
   const minCount = summary.weakest.count
   const gender = result.meta.gender
   const genderTone = GENDER_TONE[gender]
-  const strongRoutine = ELEMENT_ROUTINE_TIPS[strongestElement]
   const weakRoutine = ELEMENT_ROUTINE_TIPS[weakestElement]
+  const strongRoutine = ELEMENT_ROUTINE_TIPS[strongestElement]
 
   categories.push({
     key: 'temperament',
     title: '타고난 기질과 성격',
-    description: [
-      `사주의 중심이 되는 ${pillars.day.name} 일주에서 ${pillars.day.stem}(${ELEMENT_LABELS[pillars.day.stemElement]}) 기운과 ${pillars.day.branch} 지지가 겹쳐 ${TEMPERAMENT_BY_ELEMENT[pillars.day.stemElement]} 성향이 두드러집니다.`,
-      `이 결과의 의미는? 강한 ${strongestElement} 기운이 ${summary.strongest.count}개 쌓여 자신의 주도권을 확보하기 쉬운 흐름을 만든다는 뜻입니다.`,
-      `삶에 적용하는 팁: 강한 ${strongestElement} 기운은 자신감이 필요한 자리에서 쓰고, 부족한 ${weakestElement} 기운은 ${weakRoutine}`
-    ].join(' ')
+    summary: TEMPERAMENT_BY_ELEMENT[strongestElement],
+    reason: pillars.day.stemElement === strongestElement
+      ? `사주의 중심 일주(${pillars.day.name})가 ${ELEMENT_LABELS[strongestElement]} 기운을 직접 품고 있으며, 사주 전체에서도 ${summary.strongest.count}개로 가장 강하게 쌓여 이 성향이 두드러집니다.`
+      : `사주 전체에서 ${strongestElement} 기운이 ${summary.strongest.count}개로 가장 강하며, 중심 일주(${pillars.day.name})의 ${ELEMENT_LABELS[pillars.day.stemElement]} 기운과 어우러져 이 성향이 형성됩니다.`,
+    tip: `강한 ${strongestElement} 기운은 자신감이 필요한 자리에서 적극 활용하고, 부족한 ${weakestElement} 기운은 ${weakRoutine}`
   })
 
   const elementGap = maxCount - minCount
-  let flowMessage: string
+  let flowSummary: string
   if (elementGap <= 1) {
-    flowMessage = FLOW_MESSAGES.balanced
+    flowSummary = FLOW_MESSAGES.balanced
   } else {
-    flowMessage = FLOW_MESSAGES.focused(summary.strongest.element)
+    flowSummary = FLOW_MESSAGES.focused(summary.strongest.element)
   }
 
   const yinCount = summary.yinYangCounts.음
   const yangCount = summary.yinYangCounts.양
   const yinYangDiff = Math.abs(yinCount - yangCount)
+  let yinYangSuffix = ''
   if (yinCount > yangCount && yinYangDiff >= 2) {
-    flowMessage += ` ${FLOW_MESSAGES.yinDominant(yinYangDiff)}`
+    yinYangSuffix = ` ${FLOW_MESSAGES.yinDominant(yinYangDiff)}`
   } else if (yangCount > yinCount && yinYangDiff >= 2) {
-    flowMessage += ` ${FLOW_MESSAGES.yangDominant(yinYangDiff)}`
+    yinYangSuffix = ` ${FLOW_MESSAGES.yangDominant(yinYangDiff)}`
   }
 
   categories.push({
     key: 'fortune',
     title: '운의 흐름',
-    description: [
-      `${strongestElement} 기운과 ${weakestElement} 기운의 차이가 ${elementGap}개라 흐름이 한쪽으로 기울어 있습니다.`,
-      `이 결과의 의미는? ${genderTone} ${flowMessage}`,
-      `삶에 적용하는 팁: ${strongRoutine} 부족한 ${weakestElement} 영역은 하루 10분이라도 ${weakRoutine}`
-    ].join(' ')
+    summary: `${genderTone} ${flowSummary}${yinYangSuffix}`,
+    reason: `${strongestElement} 기운(${maxCount}개)과 ${weakestElement} 기운(${minCount}개)의 차이가 ${elementGap}개로, 에너지가 한 방향으로 집중되어 있습니다.`,
+    tip: `${strongRoutine} 부족한 ${weakestElement} 영역은 하루 10분이라도 ${weakRoutine}`
   })
 
   categories.push({
     key: 'relationship',
     title: '관계운',
-    description: [
-      `일주(${pillars.day.branch})와 연주(${pillars.year.branch})의 관계가 ${RELATIONSHIP_BY_ANIMAL[pillars.year.branch]} 흐름과 연결되기 때문입니다.`,
-      `이 결과의 의미는? ${RELATIONSHIP_BY_ANIMAL[pillars.day.branch]} 영향으로 자신이 주도하는 인간관계 스타일이 형성된다는 뜻입니다.`,
-      `삶에 적용하는 팁: 강한 ${strongestElement} 기운을 만남과 협업에 활용하고, 부족한 ${weakestElement} 감각은 일정에 휴식과 경청 시간을 배치해 보완하세요.`
-    ].join(' ')
+    summary: RELATIONSHIP_BY_ANIMAL[pillars.day.branch],
+    reason: `일주 지지(${pillars.day.branch})가 이 관계 패턴을 만들어내며, 연주(${pillars.year.branch})와의 기운 흐름이 초년부터 쌓인 대인관계 스타일을 형성합니다.`,
+    tip: `강한 ${strongestElement} 기운을 만남과 협업에 활용하고, 부족한 ${weakestElement} 감각은 경청과 휴식 시간을 의도적으로 배치해 보완하세요.`
   })
 
   categories.push({
     key: 'career',
     title: '직업·적성',
-    description: [
-      `월주(${pillars.month.name})에서 ${pillars.month.stem}(${ELEMENT_LABELS[pillars.month.stemElement]}) 기운이 직업 환경을 설계하는 축을 담당하기 때문입니다.`,
-      `이 결과의 의미는? ${CAREER_BY_ELEMENT[pillars.month.stemElement]}`,
-      `삶에 적용하는 팁: 강한 ${strongestElement} 기운을 프로젝트의 추진력으로 삼고, 부족한 ${weakestElement} 기운은 ${weakRoutine}`
-    ].join(' ')
+    summary: CAREER_BY_ELEMENT[pillars.month.stemElement],
+    reason: `월주(${pillars.month.name})에서 ${ELEMENT_LABELS[pillars.month.stemElement]} 기운이 사회 활동과 직업 환경을 설계하는 축을 담당합니다.`,
+    tip: `강한 ${strongestElement} 기운을 프로젝트의 추진력으로 삼고, 부족한 ${weakestElement} 기운은 ${weakRoutine}`
   })
 
   categories.push({
     key: 'wealth',
     title: '재물운',
-    description: [
-      `${strongestElement} 기운이 ${summary.elementCounts[strongestElement]}개로 가장 높아 재물 흐름을 끌어오는 열쇠가 됩니다.`,
-      `이 결과의 의미는? ${WEALTH_FOCUS_BY_ELEMENT[strongestElement]}`,
-      `삶에 적용하는 팁: ${
-        maxCount === minCount
-          ? '오행 균형이 좋아 계획적인 저축과 투자가 빛을 발합니다.'
-          : `부족한 ${weakestElement} 기운은 ${ELEMENT_ROUTINE_TIPS[weakestElement]}`
-      }`
-    ].join(' ')
+    summary: WEALTH_FOCUS_BY_ELEMENT[strongestElement],
+    reason: `${strongestElement} 기운이 사주에서 ${summary.elementCounts[strongestElement]}개로 가장 높아 재물 흐름을 끌어오는 핵심 에너지가 됩니다.`,
+    tip: maxCount === minCount
+      ? '오행 균형이 좋아 계획적인 저축과 투자가 빛을 발합니다.'
+      : `부족한 ${weakestElement} 기운을 보완하면 재물 흐름이 더 안정됩니다. ${ELEMENT_ROUTINE_TIPS[weakestElement]}`
   })
 
   categories.push({
     key: 'honor',
     title: '명예·사회적 인정',
-    description: [
-      `${strongestElement} 기운이 주축이 되어 사회적 평가가 해당 기운과 연결되기 쉽습니다.`,
-      `이 결과의 의미는? ${HONOR_FOCUS_BY_ELEMENT[strongestElement]}${maxCount === minCount ? ' 오행 균형이 좋아 다양한 영역에서 신뢰를 얻기 좋은 구조입니다.' : ''}`,
-      `삶에 적용하는 팁: ${maxCount === minCount ? '꾸준한 약속 이행과 기록 관리로 명성을 쌓아보세요.' : `부족한 ${weakestElement} 기운을 보완하면 인정 폭이 더욱 넓어집니다.`}`
-    ].join(' ')
+    summary: HONOR_FOCUS_BY_ELEMENT[strongestElement],
+    reason: `${strongestElement} 기운이 주축이 되어 사회적 평가가 이 기운과 연결되며${maxCount === minCount ? ', 오행 균형이 좋아 다양한 영역에서 신뢰를 얻기 좋은 구조입니다.' : '.'}`,
+    tip: maxCount === minCount
+      ? '꾸준한 약속 이행과 성과 기록으로 명성을 쌓아보세요.'
+      : `부족한 ${weakestElement} 기운을 보완할수록 사회적 인정의 폭이 넓어집니다.`
   })
 
   categories.push({
     key: 'health',
     title: '건강 포인트',
-    description: [
-      `${weakestElement} 기운이 ${summary.elementCounts[weakestElement]}개로 가장 낮아 몸이 해당 부위를 먼저 신호로 보냅니다.`,
-      `이 결과의 의미는? ${HEALTH_TIPS_BY_ELEMENT[weakestElement]}`,
-      `삶에 적용하는 팁: ${maxCount === minCount ? '현재의 생활 리듬을 유지하면서 주기적인 컨디션 점검을 이어가세요.' : `${ELEMENT_ROUTINE_TIPS[weakestElement]} 강한 ${strongestElement} 기운은 무리하지 않도록 속도를 조절하세요.`}`
-    ].join(' ')
+    summary: HEALTH_TIPS_BY_ELEMENT[weakestElement],
+    reason: `${weakestElement} 기운이 사주에서 ${summary.elementCounts[weakestElement]}개로 가장 낮아, 몸은 이 기운과 연결된 부위에서 먼저 피로 신호를 보내는 경향이 있습니다.`,
+    tip: maxCount === minCount
+      ? '현재의 생활 리듬을 유지하면서 주기적인 컨디션 점검을 이어가세요.'
+      : `${ELEMENT_ROUTINE_TIPS[weakestElement]} 강한 ${strongestElement} 기운으로 무리하지 않도록 속도를 조절하세요.`
   })
 
   return categories

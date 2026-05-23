@@ -205,6 +205,14 @@ export const HEALTH_TIPS_BY_ELEMENT: Record<Element, string> = {
   '수': '수 기운이 약하면 신장·비뇨기와 하체 순환에 주의하세요. 충분한 수분과 휴식이 필요합니다.'
 }
 
+export const ELEMENT_KEYWORDS: Record<Element, string[]> = {
+  목: ['성장 지향', '연결자', '창의적'],
+  화: ['열정적', '리더십', '추진력'],
+  토: ['안정 추구', '신뢰감', '균형적'],
+  금: ['원칙주의', '집중력', '치밀함'],
+  수: ['유연함', '통찰력', '지혜로움']
+}
+
 export const FLOW_MESSAGES = {
   balanced: '오행이 비교적 고르게 분포해 스스로 균형을 유지하기 좋은 흐름입니다.',
   focused: (element: Element) => `${element} 기운이 두드러져 이와 관련된 기회가 자주 찾아옵니다. 반대로 부족한 오행을 보충하면 더 큰 성장을 기대할 수 있습니다.`,

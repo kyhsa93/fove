@@ -92,7 +92,9 @@ export interface ElementBar {
 export interface InterpretationCategory {
   key: string
   title: string
-  description: string
+  summary: string
+  reason: string
+  tip: string
 }
 
 export interface DailyFortune {
