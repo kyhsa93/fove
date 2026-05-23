@@ -14,6 +14,8 @@ import {
   ELEMENT_ACTION_AVOID,
   ELEMENT_ACTION_DO,
   ELEMENT_CONTROLLED_BY,
+  ELEMENT_INTERACTION_DO,
+  ELEMENT_INTERACTION_AVOID,
   ELEMENT_CONTROLS,
   ELEMENT_LABELS,
   ELEMENT_PRODUCED_BY,
@@ -505,12 +507,11 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
   const branchPositive = branchRelation === 'same' || branchRelation === 'harmony' ? DAILY_BRANCH_MESSAGES[branchRelation] : ''
   const branchCaution = branchRelation === 'clash' ? DAILY_BRANCH_MESSAGES[branchRelation] : ''
 
-  const strongestElement = result.summary.strongest.element
   const weakestElement = result.summary.weakest.element
 
   const energyText = `${STEM_DAILY_CONTEXT[stem]} ${DAILY_RELATION_MESSAGES[relationKey]} ${DAILY_ELEMENT_ALIGNMENT[alignment]}`.trim()
-  const actionParts = [ELEMENT_ACTION_DO[strongestElement], branchPositive].filter(Boolean)
-  const cautionParts = [balanceText, ELEMENT_ACTION_AVOID[weakestElement], branchCaution].filter(Boolean)
+  const actionParts = [ELEMENT_INTERACTION_DO[element][personalElement], branchPositive].filter(Boolean)
+  const cautionParts = [balanceText, ELEMENT_INTERACTION_AVOID[element][weakestElement], branchCaution].filter(Boolean)
 
   return {
     dateLabel,
