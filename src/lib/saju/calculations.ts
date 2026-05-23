@@ -31,6 +31,7 @@ import {
   SOLAR_TERM_YEAR_MAX,
   SOLAR_TERM_YEAR_MIN,
   STEMS,
+  STEM_DAILY_CONTEXT,
   STEM_ELEMENTS,
   STEM_YINYANG,
   SUPPORTED_YEAR_MAX,
@@ -507,7 +508,7 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
   const strongestElement = result.summary.strongest.element
   const weakestElement = result.summary.weakest.element
 
-  const energyText = `${DAILY_RELATION_MESSAGES[relationKey]} ${DAILY_ELEMENT_ALIGNMENT[alignment]}`.trim()
+  const energyText = `${STEM_DAILY_CONTEXT[stem]} ${DAILY_RELATION_MESSAGES[relationKey]} ${DAILY_ELEMENT_ALIGNMENT[alignment]}`.trim()
   const actionParts = [ELEMENT_ACTION_DO[strongestElement], branchPositive].filter(Boolean)
   const cautionParts = [balanceText, ELEMENT_ACTION_AVOID[weakestElement], branchCaution].filter(Boolean)
 
