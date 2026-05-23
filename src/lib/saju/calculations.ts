@@ -696,6 +696,49 @@ export function buildElementBars(result: SajuResult | null): ElementBar[] {
   }))
 }
 
+export function buildYearlyFortune(referenceDate: Date = new Date()): import('./types').MonthFortune[] {
+  const { year, month: currentMonth } = getKstDateParts(referenceDate)
+  const result: import('./types').MonthFortune[] = []
+
+  for (let m = 1; m <= 12; m++) {
+    // 해당 월 중순(15일)을 기준으로 월주 계산
+    const midMonthDate = createKstDate(year, m, 15, 12)
+    let monthPillarName = ''
+    let element: import('./constants').Element = '목'
+    let yinYang: import('./constants').YinYang = '양'
+
+    try {
+      const boundary = resolveMonthBoundary(midMonthDate)
+      const yearInfo = resolveYearPillar(midMonthDate)
+      const monthStemIndex = mod(
+        FIRST_MONTH_STEM_INDEX[yearInfo.stemIndex] + boundary.monthIndex,
+        STEMS.length
+      )
+      const monthStem = STEMS[monthStemIndex]
+      const monthBranch = boundary.branch
+      monthPillarName = `${monthStem}${monthBranch}`
+      element = STEM_ELEMENTS[monthStem]
+      yinYang = STEM_YINYANG[monthStem]
+    } catch {
+      // 절기 데이터 없는 경우 스킵
+    }
+
+    const monthLabel = new Intl.DateTimeFormat('ko', { month: 'long' }).format(new Date(year, m - 1, 1))
+
+    result.push({
+      month: m,
+      monthLabel,
+      pillarName: monthPillarName,
+      elementLabel: ELEMENT_LABELS[element],
+      element,
+      yinYang,
+      isCurrentMonth: m === currentMonth
+    })
+  }
+
+  return result
+}
+
 export function buildWeeklyFortune(referenceDate: Date = new Date()): import('./types').WeekDayFortune[] {
   const { year, month, day } = getKstDateParts(referenceDate)
   const result = []

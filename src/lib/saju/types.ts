@@ -123,6 +123,16 @@ export interface DailyFortune {
   lucky: LuckyElements
 }
 
+export interface MonthFortune {
+  month: number
+  monthLabel: string
+  pillarName: string
+  elementLabel: string
+  element: import('./constants').Element
+  yinYang: import('./constants').YinYang
+  isCurrentMonth: boolean
+}
+
 export interface WeekDayFortune {
   shortDate: string
   weekday: string

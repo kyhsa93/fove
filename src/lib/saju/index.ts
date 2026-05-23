@@ -6,5 +6,6 @@ export {
   buildDailyFortune,
   buildInterpretation,
   buildElementBars,
-  buildWeeklyFortune
+  buildWeeklyFortune,
+  buildYearlyFortune
 } from './calculations'

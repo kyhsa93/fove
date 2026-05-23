@@ -4,6 +4,7 @@ export const ROUTE_PATHS = {
   mbti: '/mbti',
   fortune: '/fortune',
   fortuneWeek: '/fortune/week',
+  fortuneYear: '/fortune/year',
   privacyPolicy: '/privacy-policy',
   termsOfService: '/terms-of-service',
   contact: '/contact'

@@ -7,6 +7,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfServicePage from './pages/TermsOfServicePage'
 import ContactPage from './pages/ContactPage'
 import FortuneWeekPage from './pages/FortuneWeekPage'
+import FortuneYearPage from './pages/FortuneYearPage'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import type { RoutePath } from './routes'
@@ -49,6 +50,12 @@ const routes: Record<RoutePath, RouteConfig> = {
     title: 'Fove · 이번 주 일진 흐름',
     description: '이번 주 7일의 일진 천간·지지와 오행 에너지 흐름을 한눈에 확인하세요.',
     ogTitle: '이번 주 일진 — Fove'
+  },
+  [ROUTE_PATHS.fortuneYear]: {
+    component: FortuneYearPage,
+    title: 'Fove · 연간 운세',
+    description: '올해 12개월의 월주 오행 흐름을 확인하고 시기별 에너지와 행동 방향을 파악하세요.',
+    ogTitle: '연간 운세 — Fove'
   },
   [ROUTE_PATHS.privacyPolicy]: {
     component: PrivacyPolicyPage,

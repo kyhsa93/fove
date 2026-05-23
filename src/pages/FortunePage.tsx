@@ -235,11 +235,11 @@ export default function FortunePage(): JSX.Element {
             </button>
             <button
               type="button"
-              onClick={() => navigateTo(ROUTE_PATHS.mbti)}
+              onClick={() => navigateTo(ROUTE_PATHS.fortuneYear)}
               className="rounded-2xl border border-indigo-200 bg-indigo-50/60 px-4 py-5 text-left transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-indigo-400"
             >
-              <p className="text-base font-semibold text-indigo-900">MBTI 성향 연결</p>
-              <p className="mt-1 text-sm text-indigo-700">MBTI를 추가하면 운세에 성향 기반 인사이트가 추가됩니다.</p>
+              <p className="text-base font-semibold text-indigo-900">올해 연간 운세 보기</p>
+              <p className="mt-1 text-sm text-indigo-700">12개월 월주 흐름으로 올해 시기별 에너지를 파악합니다.</p>
             </button>
           </div>
         </section>
