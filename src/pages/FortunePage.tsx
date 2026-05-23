@@ -154,7 +154,16 @@ export default function FortunePage(): JSX.Element {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">이번 주 일진 흐름</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900">이번 주 일진 흐름</h2>
+            <button
+              type="button"
+              onClick={() => navigateTo(ROUTE_PATHS.fortuneWeek)}
+              className="text-sm text-amber-600 hover:text-amber-700 font-medium"
+            >
+              전체 보기 →
+            </button>
+          </div>
           <div className="grid grid-cols-7 gap-1.5">
             {weeklyFortune.map((day) => (
               <div

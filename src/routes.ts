@@ -3,6 +3,7 @@ export const ROUTE_PATHS = {
   saju: '/saju',
   mbti: '/mbti',
   fortune: '/fortune',
+  fortuneWeek: '/fortune/week',
   privacyPolicy: '/privacy-policy',
   termsOfService: '/terms-of-service',
   contact: '/contact'

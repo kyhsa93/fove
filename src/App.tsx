@@ -6,6 +6,7 @@ import FortunePage from './pages/FortunePage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfServicePage from './pages/TermsOfServicePage'
 import ContactPage from './pages/ContactPage'
+import FortuneWeekPage from './pages/FortuneWeekPage'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import type { RoutePath } from './routes'
@@ -42,6 +43,12 @@ const routes: Record<RoutePath, RouteConfig> = {
     title: 'Fove · 오늘의 운세',
     description: '사주와 일진을 조합해 오늘의 에너지 흐름, 분야별 운세(일·사랑·재물·건강), 행운 요소를 확인하세요.',
     ogTitle: '오늘의 운세 — Fove'
+  },
+  [ROUTE_PATHS.fortuneWeek]: {
+    component: FortuneWeekPage,
+    title: 'Fove · 이번 주 일진 흐름',
+    description: '이번 주 7일의 일진 천간·지지와 오행 에너지 흐름을 한눈에 확인하세요.',
+    ogTitle: '이번 주 일진 — Fove'
   },
   [ROUTE_PATHS.privacyPolicy]: {
     component: PrivacyPolicyPage,
