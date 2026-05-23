@@ -2,6 +2,8 @@ import { JSX, useCallback } from 'react'
 import {
   BRANCH_YINYANG,
   CAREER_BY_ELEMENT,
+  ELEMENT_ACTION_AVOID,
+  ELEMENT_ACTION_DO,
   ELEMENT_KEYWORDS,
   ELEMENT_LABELS,
   PILLAR_FOCUS,
@@ -20,21 +22,6 @@ import { TooltipLabel } from './TooltipLabel'
 import { ActionCardDeck, type ActionCardData } from './ActionCards'
 import { useToast } from './ToastProvider'
 
-const ELEMENT_ACTION_DO: Record<Element, string> = {
-  목: '새로운 아이디어를 적어 보거나 가벼운 스트레칭으로 몸을 깨워 확장 에너지를 움직여 보세요.',
-  화: '짧은 발표·콘텐츠 작업처럼 열정을 쏟을 수 있는 일을 정해 추진력을 살려 보세요.',
-  토: '공간 정리와 기록 정비로 안정감을 만들면 토 기운이 든든해집니다.',
-  금: '중요한 자료를 분류하고 계획을 구조화하며 집중력을 발휘해 보세요.',
-  수: '정보를 모으거나 글로 생각을 정리하며 유연한 흐름을 만들어 보세요.'
-}
-
-const ELEMENT_ACTION_AVOID: Record<Element, string> = {
-  목: '즉흥적으로 계획을 바꾸기보다 정한 우선순위를 지켜 균형을 잡아보세요.',
-  화: '감정이 과열될 때는 잠시 숨고르기 하며 급한 반응을 줄이세요.',
-  토: '모든 책임을 혼자 떠안지 말고 나눌 부분이 있는지 살펴보세요.',
-  금: '사소한 실수에 날카롭게 반응하기보다 한 번 더 여유를 두세요.',
-  수: '생각만 반복하다 시간을 보내지 말고, 정한 마감과 휴식을 지켜 보세요.'
-}
 
 function buildSajuActionCards(result: SajuResult): ActionCardData[] {
   const strongestElement = result.summary.strongest.element
