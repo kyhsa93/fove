@@ -39,6 +39,7 @@ import {
   STEMS,
   STEM_DAILY_CONTEXT,
   STEM_ELEMENTS,
+  GAPJA_DAILY_CONTEXT,
   STEM_YINYANG,
   SUPPORTED_YEAR_MAX,
   SUPPORTED_YEAR_MIN,
@@ -527,7 +528,12 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
     ? BRANCH_CLASH_EXTENDED_MESSAGE(branch, personalBranch)
     : ''
 
-  const energyText = `${STEM_DAILY_CONTEXT[stem]} ${DAILY_RELATION_MESSAGES[relationKey]} ${DAILY_ELEMENT_ALIGNMENT[alignment]}`.trim()
+  const pillarKey = `${stem}${branch}`
+  const gapjaContext = GAPJA_DAILY_CONTEXT[pillarKey] ?? ''
+  const energyText = [gapjaContext, STEM_DAILY_CONTEXT[stem], DAILY_RELATION_MESSAGES[relationKey], DAILY_ELEMENT_ALIGNMENT[alignment]]
+    .filter(Boolean)
+    .join(' ')
+    .trim()
   const actionParts = [ELEMENT_INTERACTION_DO[element][personalElement], branchPositive, stemHarmonyText].filter(Boolean)
   const cautionParts = [balanceText, ELEMENT_INTERACTION_AVOID[element][weakestElement], branchClashText].filter(Boolean)
 
