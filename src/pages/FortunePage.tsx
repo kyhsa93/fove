@@ -199,6 +199,43 @@ export default function FortunePage(): JSX.Element {
         </section>
 
         <section className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">더 알아보기</h2>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <button
+              type="button"
+              onClick={() => {
+                const tomorrow = new Date()
+                tomorrow.setDate(tomorrow.getDate() + 1)
+                const y = tomorrow.getFullYear()
+                const m = String(tomorrow.getMonth() + 1).padStart(2, '0')
+                const d = String(tomorrow.getDate()).padStart(2, '0')
+                setBirthDate(`${y}-${m}-${d}`)
+              }}
+              className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-5 text-left transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-amber-400"
+            >
+              <p className="text-base font-semibold text-amber-900">내일 운세 미리 보기</p>
+              <p className="mt-1 text-sm text-amber-700">내일 날짜로 전환해 내일의 흐름을 확인합니다.</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigateTo(ROUTE_PATHS.saju)}
+              className="rounded-2xl border border-slate-200 bg-white/80 px-4 py-5 text-left transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-slate-400"
+            >
+              <p className="text-base font-semibold text-slate-800">사주 풀이 보기</p>
+              <p className="mt-1 text-sm text-slate-600">생년월일로 사주 기둥과 오행 밸런스를 확인합니다.</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigateTo(ROUTE_PATHS.mbti)}
+              className="rounded-2xl border border-indigo-200 bg-indigo-50/60 px-4 py-5 text-left transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-indigo-400"
+            >
+              <p className="text-base font-semibold text-indigo-900">MBTI 성향 연결</p>
+              <p className="mt-1 text-sm text-indigo-700">MBTI를 추가하면 운세에 성향 기반 인사이트가 추가됩니다.</p>
+            </button>
+          </div>
+        </section>
+
+        <section className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">자주 묻는 질문</h2>
           <div className="space-y-4">
             {FAQ_ITEMS.map((item) => (
