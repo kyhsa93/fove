@@ -92,8 +92,30 @@ interface CombinedFortuneCardProps {
   mbtiResult?: MbtiResult | null
 }
 
+const CATEGORY_META = [
+  { key: 'work' as const, label: '일·업무', icon: '💼', color: 'border-blue-100 bg-blue-50/60 text-blue-900' },
+  { key: 'love' as const, label: '사랑·관계', icon: '🌸', color: 'border-rose-100 bg-rose-50/60 text-rose-900' },
+  { key: 'money' as const, label: '재물', icon: '💰', color: 'border-amber-100 bg-amber-50/60 text-amber-900' },
+  { key: 'health' as const, label: '건강', icon: '🌿', color: 'border-emerald-100 bg-emerald-50/60 text-emerald-900' }
+]
+
+function ScoreBar({ score }: { score: number }): JSX.Element {
+  const color = score >= 80 ? 'bg-emerald-400' : score >= 65 ? 'bg-amber-400' : 'bg-rose-400'
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between text-xs text-slate-500">
+        <span>오늘의 운세 지수</span>
+        <span className="font-semibold text-slate-700">{score}점</span>
+      </div>
+      <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+        <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${score}%` }} />
+      </div>
+    </div>
+  )
+}
+
 export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: CombinedFortuneCardProps): JSX.Element {
-  const { dateLabel, pillarName, elementLabel, yinYang } = dailyFortune
+  const { dateLabel, pillarName, elementLabel, yinYang, score, categories, lucky } = dailyFortune
   const combinedTexts = useMemo(() => buildCombinedFortuneText(dailyFortune, mbtiResult), [dailyFortune, mbtiResult])
   const actionCards = useMemo(() => buildFortuneActionCards(combinedTexts, dailyFortune), [combinedTexts, dailyFortune])
 
@@ -117,6 +139,8 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
 
     return (
       <div className="space-y-5 text-sm leading-relaxed text-slate-700">
+        <ScoreBar score={score} />
+
         <div className="grid gap-4 md:grid-cols-3">
           <div className="md:col-span-1 space-y-1">
             <p className="text-xs font-semibold uppercase tracking-wide text-amber-600">
@@ -146,10 +170,6 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
               <dd>{reasonText}</dd>
             </div>
             <div className="space-y-1">
-              <dt className="text-xs font-medium uppercase tracking-wide text-amber-500">이 결과의 의미는?</dt>
-              <dd>{combinedTexts.energy}</dd>
-            </div>
-            <div className="space-y-1">
               <dt className="text-xs font-medium uppercase tracking-wide text-amber-500">오늘 해볼 것</dt>
               <dd>{combinedTexts.action}</dd>
             </div>
@@ -157,46 +177,65 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
               <dt className="text-xs font-medium uppercase tracking-wide text-amber-500">주의·길한 시간대</dt>
               <dd>{cautionText}</dd>
             </div>
-            <div className="space-y-1 md:col-span-2">
+            <div className="space-y-1">
               <dt className="text-xs font-medium uppercase tracking-wide text-amber-500">관계 힌트</dt>
               <dd>{relationHint}</dd>
             </div>
           </dl>
         </div>
+      </div>
+    )
+  }, [combinedTexts, pillarName, elementLabel, actionCards, sajuResult, score])
 
-        <div className="rounded-xl border border-amber-200/70 bg-amber-50/70 px-2 py-4 text-amber-900/80 sm:px-4">
-          <p className="text-sm font-semibold text-amber-900">이 결과는 이렇게 읽어보세요</p>
-          <ul className="mt-2 space-y-1 leading-relaxed">
-            <li>1) 오늘의 일진으로 기본 기운을 확인하고 ENERGY → ACTION 순으로 읽어보세요.</li>
-            <li>2) CARE 문장을 체크해 무리할 부분을 조정하면 균형 잡힌 하루가 됩니다.</li>
-            <li>3) 실천 카드를 일정에 바로 옮겨놓으면 실행률이 훨씬 높아집니다.</li>
-          </ul>
+  const categoriesTab = useMemo(() => (
+    <div className="space-y-4 text-sm leading-relaxed">
+      <div className="grid gap-3 sm:grid-cols-2">
+        {CATEGORY_META.map(({ key, label, icon, color }) => (
+          <div key={key} className={`rounded-xl border px-3 py-4 space-y-1.5 ${color}`}>
+            <p className="text-xs font-semibold">{icon} {label}</p>
+            <p>{categories[key]}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-xl border border-amber-100 bg-white/80 px-3 py-4">
+        <p className="text-xs font-semibold text-amber-700 mb-3">✨ 오늘의 행운 요소</p>
+        <div className="grid grid-cols-3 gap-3 text-center">
+          <div className="space-y-1">
+            <p className="text-xs text-slate-500">행운색</p>
+            <p className="font-semibold text-slate-800">{lucky.color}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs text-slate-500">행운 숫자</p>
+            <p className="font-semibold text-slate-800">{lucky.number}</p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs text-slate-500">행운 방위</p>
+            <p className="font-semibold text-slate-800">{lucky.direction}</p>
+          </div>
         </div>
       </div>
-    )
-  }, [combinedTexts, pillarName, elementLabel, actionCards, sajuResult])
+    </div>
+  ), [categories, lucky])
 
-  const adviceTab = useMemo(() => {
-    return (
-      <div className="space-y-5 text-sm leading-relaxed text-slate-700">
-        <ActionCardDeck cards={actionCards} />
-        {mbtiResult && combinedTexts.accent ? (
-          <div className="rounded-xl border border-indigo-100 bg-white/80 px-2 py-4 text-indigo-900/80 sm:px-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-indigo-500">MBTI Insight</p>
-            <p className="mt-1">{combinedTexts.accent}</p>
-            <p className="mt-1 text-xs text-indigo-600">핵심 메시지: {mbtiResult.summary.description}</p>
-          </div>
-        ) : null}
-      </div>
-    )
-  }, [actionCards, combinedTexts, mbtiResult])
+  const adviceTab = useMemo(() => (
+    <div className="space-y-5 text-sm leading-relaxed text-slate-700">
+      <ActionCardDeck cards={actionCards} />
+      {mbtiResult && combinedTexts.accent ? (
+        <div className="rounded-xl border border-indigo-100 bg-white/80 px-2 py-4 text-indigo-900/80 sm:px-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-indigo-500">MBTI Insight</p>
+          <p className="mt-1">{combinedTexts.accent}</p>
+          <p className="mt-1 text-xs text-indigo-600">핵심 메시지: {mbtiResult.summary.description}</p>
+        </div>
+      ) : null}
+    </div>
+  ), [actionCards, combinedTexts, mbtiResult])
 
-  const tabs = useMemo(() => {
-    return [
-      { id: 'analysis', label: '해석', content: analysisTab },
-      { id: 'advice', label: '조언', content: adviceTab }
-    ]
-  }, [analysisTab, adviceTab])
+  const tabs = useMemo(() => [
+    { id: 'analysis', label: '해석', content: analysisTab },
+    { id: 'categories', label: '분야별', content: categoriesTab },
+    { id: 'advice', label: '조언', content: adviceTab }
+  ], [analysisTab, categoriesTab, adviceTab])
 
   return <ResultCard badge="FORTUNE" title="오늘의 운세" subtitle={`${dateLabel} · ${pillarName}`} metrics={metrics} summary={combinedTexts.energy} tabs={tabs} />
 }
