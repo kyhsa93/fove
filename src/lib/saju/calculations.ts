@@ -20,6 +20,16 @@ import {
   STEM_HARMONY_ELEMENT,
   STEM_HARMONY_MESSAGE,
   BRANCH_CLASH_EXTENDED_MESSAGE,
+  CATEGORY_WORK,
+  CATEGORY_LOVE_BY_ELEMENT,
+  CATEGORY_LOVE_BRANCH_BONUS,
+  CATEGORY_MONEY_BY_RELATION,
+  CATEGORY_HEALTH_BY_ELEMENT,
+  LUCKY_COLOR,
+  LUCKY_NUMBER,
+  LUCKY_DIRECTION,
+  SCORE_BASE,
+  SCORE_BRANCH_BONUS,
   ELEMENT_CONTROLS,
   ELEMENT_LABELS,
   ELEMENT_PRODUCED_BY,
@@ -537,6 +547,26 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
   const actionParts = [ELEMENT_INTERACTION_DO[element][personalElement], branchPositive, stemHarmonyText].filter(Boolean)
   const cautionParts = [balanceText, ELEMENT_INTERACTION_AVOID[element][weakestElement], branchClashText].filter(Boolean)
 
+  // 점수 계산
+  const score = Math.min(99, Math.max(30,
+    SCORE_BASE[alignment] + SCORE_BRANCH_BONUS[branchRelation] + (hasStemHarmony ? 5 : 0)
+  ))
+
+  // 분야별 운세
+  const categories = {
+    work: CATEGORY_WORK[element][personalElement],
+    love: CATEGORY_LOVE_BY_ELEMENT[element] + CATEGORY_LOVE_BRANCH_BONUS[branchRelation],
+    money: CATEGORY_MONEY_BY_RELATION[relationKey],
+    health: CATEGORY_HEALTH_BY_ELEMENT[element]
+  }
+
+  // 행운 요소
+  const lucky = {
+    color: LUCKY_COLOR[element],
+    number: LUCKY_NUMBER[stem],
+    direction: LUCKY_DIRECTION[branch]
+  }
+
   return {
     dateLabel,
     pillarName: `${stem}${branch}`,
@@ -544,7 +574,10 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
     yinYang,
     energyText,
     actionText: actionParts.join(' '),
-    cautionText: cautionParts.join(' ')
+    cautionText: cautionParts.join(' '),
+    score,
+    categories,
+    lucky
   }
 }
 

@@ -97,6 +97,19 @@ export interface InterpretationCategory {
   tip: string
 }
 
+export interface FortuneCategories {
+  work: string
+  love: string
+  money: string
+  health: string
+}
+
+export interface LuckyElements {
+  color: string
+  number: number
+  direction: string
+}
+
 export interface DailyFortune {
   dateLabel: string
   pillarName: string
@@ -105,6 +118,9 @@ export interface DailyFortune {
   energyText: string
   actionText: string
   cautionText: string
+  score: number
+  categories: FortuneCategories
+  lucky: LuckyElements
 }
 
 export interface WeekDayFortune {
