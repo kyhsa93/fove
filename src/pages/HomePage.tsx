@@ -2,6 +2,9 @@ import { JSX } from 'react'
 import type { RoutePath } from '../routes'
 import { ROUTE_PATHS } from '../routes'
 import { navigateTo } from '../lib/router'
+import { useSajuCalculator } from '../hooks/useSajuCalculator'
+import { ELEMENT_LABELS, ELEMENT_KEYWORDS, TEMPERAMENT_BY_ELEMENT } from '../lib/saju'
+import type { DailyFortune, SajuResult } from '../lib/saju'
 
 const PRIMARY_ACTIONS: Array<{ path: RoutePath; label: string; description: string }> = [
   {
@@ -39,10 +42,70 @@ const HIGHLIGHTS: Array<{ title: string; description: string }> = [
   }
 ]
 
+interface HomeFortuneProps {
+  dailyFortune: DailyFortune
+  result: SajuResult
+}
+
+function HomeFortune({ dailyFortune, result }: HomeFortuneProps): JSX.Element {
+  const strongest = result.summary.strongest.element
+  const keywords = ELEMENT_KEYWORDS[strongest]
+
+  return (
+    <div className="rounded-3xl border border-white/20 bg-white/10 backdrop-blur px-4 py-5 text-white shadow-xl space-y-4 sm:px-6 sm:py-6">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">오늘의 운세</p>
+        <p className="text-xs text-white/60">{dailyFortune.dateLabel}</p>
+      </div>
+
+      <div className="space-y-1">
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className="text-2xl font-bold tracking-wide">{dailyFortune.pillarName}</span>
+          <span className="rounded-full bg-white/15 px-3 py-0.5 text-sm font-medium">{ELEMENT_LABELS[result.summary.strongest.element]} 기운</span>
+          <span className="text-sm text-white/70">{dailyFortune.yinYang}</span>
+        </div>
+        <p className="text-sm leading-relaxed text-white/90">{TEMPERAMENT_BY_ELEMENT[strongest]}</p>
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {keywords.map((kw) => (
+            <span key={kw} className="text-xs rounded-full bg-white/10 border border-white/20 px-2.5 py-0.5 text-white/80">{kw}</span>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-2">
+        <div className="rounded-2xl bg-white/10 border border-white/10 px-3 py-3 space-y-1">
+          <p className="text-xs font-semibold uppercase tracking-wide text-emerald-300">오늘 해볼 것</p>
+          <p className="text-sm leading-relaxed text-white/90 line-clamp-2">{dailyFortune.actionText}</p>
+        </div>
+        <div className="rounded-2xl bg-white/10 border border-white/10 px-3 py-3 space-y-1">
+          <p className="text-xs font-semibold uppercase tracking-wide text-rose-300">주의 포인트</p>
+          <p className="text-sm leading-relaxed text-white/90 line-clamp-2">{dailyFortune.cautionText}</p>
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={() => navigateTo(ROUTE_PATHS.fortune)}
+        className="w-full rounded-2xl bg-white/15 border border-white/20 py-3 text-sm font-semibold text-white transition hover:bg-white/25"
+      >
+        오늘의 운세 전체 보기 →
+      </button>
+    </div>
+  )
+}
+
 export default function HomePage(): JSX.Element {
+  const { result, dailyFortune } = useSajuCalculator()
+  const isReturning = Boolean(result && dailyFortune)
+
   return (
     <section className="relative overflow-hidden">
       <div className="mx-auto flex max-w-5xl flex-col gap-12 px-4 py-12 sm:py-16">
+
+        {isReturning && result && dailyFortune ? (
+          <HomeFortune dailyFortune={dailyFortune} result={result} />
+        ) : null}
+
         <header className="space-y-6 text-center text-white">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-white/80">
             <span>Fove Insight</span>
