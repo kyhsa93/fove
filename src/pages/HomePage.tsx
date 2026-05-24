@@ -21,6 +21,11 @@ const PRIMARY_ACTIONS: Array<{ path: RoutePath; label: string; description: stri
     path: ROUTE_PATHS.mbti,
     label: 'MBTI 성향 진단',
     description: '20개의 문항으로 심리적 경향을 측정하고 사주 결과와 함께 분석합니다.'
+  },
+  {
+    path: ROUTE_PATHS.zodiac,
+    label: '띠별 운세 보기',
+    description: '12간지 띠별 기질·관계·직업·건강 특성을 사주 오행으로 분석합니다.'
   }
 ]
 

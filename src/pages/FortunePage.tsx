@@ -1,4 +1,4 @@
-import { JSX, useEffect, useMemo, useRef } from 'react'
+import { JSX, useCallback, useEffect, useMemo, useRef } from 'react'
 import { SajuForm } from '../components/SajuForm'
 import { CombinedFortuneCard } from '../components/FortuneCard'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
@@ -8,7 +8,8 @@ import type { RoutePath } from '../routes'
 import { ROUTE_PATHS } from '../routes'
 import { computeMbtiResultFromAnswers, loadPersistedAnswers, MBTI_COMPLETED_KEY } from '../components/MbtiTest'
 import { getTodaySolarTerm } from '../lib/solarTermUtils'
-import { buildWeeklyFortune } from '../lib/saju'
+import { buildWeeklyFortune, buildMonthlyFortune } from '../lib/saju'
+import type { Element } from '../lib/saju/constants'
 import { trackEvent } from '../lib/analytics'
 
 const SUPPORT_LINKS: Array<{
@@ -75,6 +76,20 @@ export default function FortunePage(): JSX.Element {
 
   const todaySolarTerm = useMemo(() => getTodaySolarTerm(), [])
   const weeklyFortune = useMemo(() => buildWeeklyFortune(), [])
+  const monthlyFortune = useMemo(() => buildMonthlyFortune(), [])
+
+  const weekKeyword = useMemo(() => {
+    const counts: Record<Element, number> = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 }
+    weeklyFortune.forEach((d) => { counts[d.element] += 1 })
+    const top = (Object.entries(counts) as [Element, number][]).sort((a, b) => b[1] - a[1])[0]
+    return top ? top[0] : null
+  }, [weeklyFortune])
+
+  const monthKeyword = useMemo(() => {
+    const counts: Record<Element, number> = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 }
+    monthlyFortune.forEach((d) => { counts[d.element] += 1 })
+    return (Object.entries(counts) as [Element, number][]).sort((a, b) => b[1] - a[1])
+  }, [monthlyFortune])
 
   const generatedTracked = useRef(false)
   useEffect(() => {
@@ -83,6 +98,25 @@ export default function FortunePage(): JSX.Element {
       trackEvent('fortune_generated', { pillar: dailyFortune.pillarName, score: dailyFortune.score })
     }
   }, [dailyFortune])
+
+  const fortuneSectionRef = useRef<HTMLElement>(null)
+  const scrollTracked = useRef(false)
+  const handleScrollObserver = useCallback((entries: IntersectionObserverEntry[]) => {
+    if (scrollTracked.current) return
+    const entry = entries[0]
+    if (entry?.isIntersecting && dailyFortune) {
+      scrollTracked.current = true
+      trackEvent('fortune_scrolled', { pillar: dailyFortune.pillarName, score: dailyFortune.score })
+    }
+  }, [dailyFortune])
+
+  useEffect(() => {
+    const el = fortuneSectionRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(handleScrollObserver, { threshold: 0.3 })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [handleScrollObserver])
 
   useEffect(() => {
     if (error) {
@@ -151,7 +185,7 @@ export default function FortunePage(): JSX.Element {
           {error}
         </span>
 
-        <section className="space-y-4">
+        <section ref={fortuneSectionRef} className="space-y-4">
           <h2 className="text-xl font-semibold text-gray-900">오늘의 운세 카드</h2>
           {isLoading ? (
             <div className="rounded-2xl border border-amber-100 bg-white/60 px-3 py-5 text-sm leading-relaxed text-gray-700 sm:px-6 sm:py-6">
@@ -193,6 +227,46 @@ export default function FortunePage(): JSX.Element {
         </section>
 
         <section className="space-y-4">
+          <h2 className="text-lg font-semibold text-gray-900">이번 주·이번 달 흐름</h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {weekKeyword ? (
+              <div className="rounded-2xl border border-slate-100 bg-white/80 px-4 py-4 space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-wide text-amber-600">이번 주 키워드</p>
+                <p className="text-2xl font-bold text-slate-900">{weekKeyword}</p>
+                <p className="text-sm text-slate-600 leading-relaxed">
+                  이번 주 7일 중 <span className="font-medium text-amber-700">{weekKeyword}</span> 기운이 가장 많이 흐릅니다.{' '}
+                  {weeklyFortune.filter((d) => d.element === weekKeyword).map((d) => d.weekday).join('·')}요일에 집중해보세요.
+                </p>
+              </div>
+            ) : null}
+            {monthKeyword.length > 0 ? (
+              <div className="rounded-2xl border border-slate-100 bg-white/80 px-4 py-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-teal-600">이번 달 오행 분포</p>
+                  <button
+                    type="button"
+                    onClick={() => { trackEvent('clicked_next', { destination: 'fortune_month' }); navigateTo(ROUTE_PATHS.fortuneMonth) }}
+                    className="text-xs text-teal-600 hover:text-teal-700 font-medium"
+                  >
+                    달력 보기 →
+                  </button>
+                </div>
+                <div className="flex gap-2 flex-wrap">
+                  {monthKeyword.map(([el, count]) => (
+                    <span key={el} className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-700">
+                      {el} {count}일
+                    </span>
+                  ))}
+                </div>
+                <p className="text-sm text-slate-600">
+                  주도 오행 <span className="font-medium text-teal-700">{monthKeyword[0]?.[0]}</span>({monthKeyword[0]?.[1]}일) 기운이 이번 달 전반을 이끕니다.
+                </p>
+              </div>
+            ) : null}
+          </div>
+        </section>
+
+        <section className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">다른 기능과 함께 활용하기</h2>
           <div className="grid gap-4 md:grid-cols-2">
             {SUPPORT_LINKS.map((flow) => (
@@ -218,7 +292,7 @@ export default function FortunePage(): JSX.Element {
 
         <section className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">더 알아보기</h2>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             <button
               type="button"
               onClick={() => {
@@ -242,6 +316,14 @@ export default function FortunePage(): JSX.Element {
             >
               <p className="text-base font-semibold text-slate-800">사주 풀이 보기</p>
               <p className="mt-1 text-sm text-slate-600">생년월일로 사주 기둥과 오행 밸런스를 확인합니다.</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => { trackEvent('clicked_next', { destination: 'fortune_month' }); navigateTo(ROUTE_PATHS.fortuneMonth) }}
+              className="rounded-2xl border border-teal-200 bg-teal-50/60 px-4 py-5 text-left transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-teal-400"
+            >
+              <p className="text-base font-semibold text-teal-900">이번달 일진 달력</p>
+              <p className="mt-1 text-sm text-teal-700">이번 달 매일의 일진 기운을 달력으로 한눈에 봅니다.</p>
             </button>
             <button
               type="button"

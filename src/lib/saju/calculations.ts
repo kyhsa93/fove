@@ -739,6 +739,36 @@ export function buildYearlyFortune(referenceDate: Date = new Date()): import('./
   return result
 }
 
+export function buildMonthlyFortune(referenceDate: Date = new Date()): import('./types').MonthDayFortune[] {
+  const { year, month, day: todayDay } = getKstDateParts(referenceDate)
+  const daysInMonth = new Date(year, month, 0).getDate()
+  const result: import('./types').MonthDayFortune[] = []
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const [stemIdx, branchIdx] = getDayStemBranch(year, month, d)
+    const stem = STEMS[mod(stemIdx, STEMS.length)]
+    const branch = BRANCHES[mod(branchIdx, BRANCHES.length)]
+    const element = STEM_ELEMENTS[stem]
+    const yinYang = STEM_YINYANG[stem]
+    const targetDate = new Date(Date.UTC(year, month - 1, d))
+    const weekday = new Intl.DateTimeFormat('ko', { timeZone: 'Asia/Seoul', weekday: 'short' }).format(targetDate)
+
+    result.push({
+      date: `${month}/${d}`,
+      day: d,
+      weekday,
+      pillarName: `${stem}${branch}`,
+      elementLabel: ELEMENT_LABELS[element],
+      element,
+      yinYang,
+      isToday: d === todayDay,
+      isPast: d < todayDay
+    })
+  }
+
+  return result
+}
+
 export function buildWeeklyFortune(referenceDate: Date = new Date()): import('./types').WeekDayFortune[] {
   const { year, month, day } = getKstDateParts(referenceDate)
   const result = []

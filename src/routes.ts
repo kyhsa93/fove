@@ -4,7 +4,9 @@ export const ROUTE_PATHS = {
   mbti: '/mbti',
   fortune: '/fortune',
   fortuneWeek: '/fortune/week',
+  fortuneMonth: '/fortune/month',
   fortuneYear: '/fortune/year',
+  zodiac: '/zodiac',
   privacyPolicy: '/privacy-policy',
   termsOfService: '/terms-of-service',
   contact: '/contact'

@@ -7,5 +7,6 @@ export {
   buildInterpretation,
   buildElementBars,
   buildWeeklyFortune,
+  buildMonthlyFortune,
   buildYearlyFortune
 } from './calculations'

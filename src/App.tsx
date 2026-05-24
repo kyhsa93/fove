@@ -7,7 +7,9 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfServicePage from './pages/TermsOfServicePage'
 import ContactPage from './pages/ContactPage'
 import FortuneWeekPage from './pages/FortuneWeekPage'
+import FortuneMonthPage from './pages/FortuneMonthPage'
 import FortuneYearPage from './pages/FortuneYearPage'
+import ZodiacPage from './pages/ZodiacPage'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import type { RoutePath } from './routes'
@@ -51,11 +53,23 @@ const routes: Record<RoutePath, RouteConfig> = {
     description: '이번 주 7일의 일진 천간·지지와 오행 에너지 흐름을 한눈에 확인하세요.',
     ogTitle: '이번 주 일진 — Fove'
   },
+  [ROUTE_PATHS.fortuneMonth]: {
+    component: FortuneMonthPage,
+    title: 'Fove · 이번 달 일진 달력',
+    description: '이번 달 매일의 일진 천간·지지와 오행 기운을 달력 형태로 한눈에 확인하세요.',
+    ogTitle: '이번 달 일진 달력 — Fove'
+  },
   [ROUTE_PATHS.fortuneYear]: {
     component: FortuneYearPage,
     title: 'Fove · 연간 운세',
     description: '올해 12개월의 월주 오행 흐름을 확인하고 시기별 에너지와 행동 방향을 파악하세요.',
     ogTitle: '연간 운세 — Fove'
+  },
+  [ROUTE_PATHS.zodiac]: {
+    component: ZodiacPage,
+    title: 'Fove · 띠별 운세',
+    description: '12간지 띠별 기질·관계·직업·건강 특성과 사주 오행 분석을 확인하세요.',
+    ogTitle: '띠별 운세 — Fove'
   },
   [ROUTE_PATHS.privacyPolicy]: {
     component: PrivacyPolicyPage,
@@ -82,6 +96,7 @@ const routeKeys = Object.keys(routes) as RoutePath[]
 const normalizePath = (rawPath: string): RoutePath => {
   if (!rawPath) return ROUTE_PATHS.home
   const cleaned = rawPath.replace(/\/+$/, '') || '/'
+  if (cleaned.startsWith('/zodiac')) return ROUTE_PATHS.zodiac
   const match = routeKeys.find((key) => key === cleaned)
   return match ?? ROUTE_PATHS.home
 }
@@ -107,6 +122,9 @@ export default function App(): JSX.Element {
 
   useEffect(() => {
     if (typeof document === 'undefined') return
+    // zodiac 세부 페이지(/zodiac/:slug)는 ZodiacPage 내부에서 메타 처리
+    const actualPath = typeof window !== 'undefined' ? window.location.pathname : currentPath
+    if (actualPath.startsWith('/zodiac/')) return
     const meta = routes[currentPath]
     if (!meta) return
     document.title = meta.title
@@ -123,7 +141,10 @@ export default function App(): JSX.Element {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    if (window.location.pathname !== currentPath) {
+    const actual = window.location.pathname
+    // zodiac 세부 경로는 pushState로 이미 정확히 설정됨 — replaceState 불필요
+    if (actual.startsWith('/zodiac/')) return
+    if (actual !== currentPath) {
       window.history.replaceState({}, '', currentPath)
     }
   }, [currentPath])

@@ -143,6 +143,18 @@ export interface WeekDayFortune {
   isToday: boolean
 }
 
+export interface MonthDayFortune {
+  date: string
+  day: number
+  weekday: string
+  pillarName: string
+  elementLabel: string
+  element: import('./constants').Element
+  yinYang: YinYang
+  isToday: boolean
+  isPast: boolean
+}
+
 export interface YearPillarInfo {
   year: number
   stem: Stem

@@ -1,4 +1,4 @@
-type EventName = 'fortune_generated' | 'fortune_completed' | 'shared' | 'clicked_next'
+type EventName = 'fortune_generated' | 'fortune_completed' | 'fortune_scrolled' | 'shared' | 'clicked_next'
 
 interface EventProps {
   [key: string]: string | number | boolean | undefined
