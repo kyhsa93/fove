@@ -13,6 +13,7 @@ export const ROUTE_PATHS = {
   sajuYear: '/saju/year',
   mbtiCompatibility: '/mbti/compatibility',
   zodiacCompatibility: '/zodiac/compatibility',
+  combinedCompatibility: '/compatibility/combined',
   blogSajuBasics: '/blog/saju-basics',
   blogZodiacStandard: '/blog/zodiac-standard',
   blogMbtiLoveStyle: '/blog/mbti-love-style',

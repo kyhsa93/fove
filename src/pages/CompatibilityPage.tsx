@@ -284,6 +284,19 @@ export default function CompatibilityPage(): JSX.Element {
           </div>
         ) : null}
 
+        {/* 통합 궁합 CTA */}
+        <div className="rounded-2xl border border-violet-100 bg-violet-50/60 px-5 py-4 space-y-2">
+          <p className="text-sm font-semibold text-violet-800">사주 + MBTI 통합 궁합</p>
+          <p className="text-xs text-violet-600 leading-relaxed">사주 오행(40%)과 MBTI 인지기능(60%)을 함께 분석해 더 입체적인 궁합을 확인할 수 있습니다.</p>
+          <button
+            type="button"
+            onClick={() => navigateTo(ROUTE_PATHS.combinedCompatibility)}
+            className="rounded-full bg-violet-500 px-5 py-2 text-sm font-medium text-white hover:bg-violet-600 transition shadow-sm"
+          >
+            통합 궁합 보러가기
+          </button>
+        </div>
+
         <div className="flex gap-3">
           <button
             type="button"

@@ -16,6 +16,7 @@ import QuizPage from './pages/QuizPage'
 import SajuYearPage from './pages/SajuYearPage'
 import MbtiCompatibilityPage from './pages/MbtiCompatibilityPage'
 import ZodiacCompatPage from './pages/ZodiacCompatPage'
+import CombinedCompatPage from './pages/CombinedCompatPage'
 import BlogSajuBasicsPage from './pages/BlogSajuBasicsPage'
 import BlogZodiacStandardPage from './pages/BlogZodiacStandardPage'
 import BlogMbtiLoveStylePage from './pages/BlogMbtiLoveStylePage'
@@ -115,6 +116,12 @@ const routes: Record<RoutePath, RouteConfig> = {
     title: '띠 궁합 — 12간지 궁합 보기 | Fove',
     description: '쥐띠·소띠·호랑이띠 등 12간지 띠별 궁합을 확인하세요. 삼합·육합·충 기반으로 연인·친구·직장 궁합을 분석합니다.',
     ogTitle: '띠 궁합 — 12간지 궁합 보기 | Fove'
+  },
+  [ROUTE_PATHS.combinedCompatibility]: {
+    component: CombinedCompatPage,
+    title: '사주+MBTI 통합 궁합 | Fove',
+    description: '사주 오행(40%)과 MBTI 인지기능(60%)을 결합한 통합 궁합을 확인하세요. 두 사람의 에너지 흐름과 소통 방식을 교차 분석합니다.',
+    ogTitle: '사주+MBTI 통합 궁합 — Fove'
   },
   [ROUTE_PATHS.blogSajuBasics]: {
     component: BlogSajuBasicsPage,
