@@ -1,4 +1,4 @@
-import { JSX, useCallback, useEffect, useMemo, useRef } from 'react'
+import { JSX, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SajuForm } from '../components/SajuForm'
 import { CombinedFortuneCard } from '../components/FortuneCard'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
@@ -11,6 +11,14 @@ import { getTodaySolarTerm } from '../lib/solarTermUtils'
 import { buildWeeklyFortune, buildMonthlyFortune, buildDailyFortune } from '../lib/saju'
 import type { Element } from '../lib/saju/constants'
 import { trackEvent } from '../lib/analytics'
+import {
+  isNotificationSupported,
+  getNotificationPermission,
+  isOptedIn,
+  requestNotificationPermission,
+  sendTestNotification,
+  optOut
+} from '../lib/notifications'
 
 const SUPPORT_LINKS: Array<{
   id: string
@@ -84,6 +92,30 @@ const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
 export default function FortunePage(): JSX.Element {
   const { showToast } = useToast()
   const { birthDate, birthTime, gender, result, error, dailyFortune, isLoading, setBirthTime, setGender, setBirthDate } = useSajuCalculator()
+
+  const [notifPermission, setNotifPermission] = useState<NotificationPermission | 'unsupported'>(() => getNotificationPermission())
+  const [notifOptedIn, setNotifOptedIn] = useState(() => isOptedIn())
+
+  const handleNotifSubscribe = useCallback(async () => {
+    const permission = await requestNotificationPermission()
+    setNotifPermission(permission)
+    if (permission === 'granted') {
+      setNotifOptedIn(true)
+      showToast('알림이 설정됐습니다. 매일 운세를 확인하세요!', 'success')
+      if (dailyFortune) {
+        sendTestNotification('오늘의 Fove 운세', `${dailyFortune.pillarName} · ${dailyFortune.score}점 — ${dailyFortune.actionText.slice(0, 30)}`)
+      }
+      trackEvent('fortune_generated', { pillar: dailyFortune?.pillarName ?? '', score: dailyFortune?.score ?? 0 })
+    } else {
+      showToast('알림 권한이 거부됐습니다. 브라우저 설정에서 허용해 주세요.', 'error')
+    }
+  }, [showToast, dailyFortune])
+
+  const handleNotifOptOut = useCallback(() => {
+    optOut()
+    setNotifOptedIn(false)
+    showToast('알림 구독이 해제됐습니다.', 'success')
+  }, [showToast])
 
   const mbtiResult = useMemo(() => {
     if (typeof window === 'undefined') return null
@@ -348,6 +380,37 @@ export default function FortunePage(): JSX.Element {
                 </div>
               ))}
             </div>
+          </section>
+        ) : null}
+
+        {isNotificationSupported() && notifPermission !== 'denied' ? (
+          <section className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-4 py-5 space-y-3">
+            <div className="space-y-1">
+              <h2 className="text-base font-semibold text-indigo-900">매일 운세 알림 받기</h2>
+              <p className="text-sm text-indigo-700 leading-relaxed">
+                매일 아침 오늘의 운세를 알림으로 받아보세요. 저장된 정보는 이 기기에만 남습니다.
+              </p>
+            </div>
+            {notifOptedIn ? (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-indigo-800 font-medium">✓ 알림 구독 중</span>
+                <button
+                  type="button"
+                  onClick={handleNotifOptOut}
+                  className="text-xs text-indigo-500 hover:text-indigo-700 underline underline-offset-2"
+                >
+                  구독 해제
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={handleNotifSubscribe}
+                className="rounded-full bg-indigo-500 px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-600 transition"
+              >
+                알림 받기
+              </button>
+            )}
           </section>
         ) : null}
 
