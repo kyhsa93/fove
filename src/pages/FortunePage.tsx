@@ -8,6 +8,7 @@ import type { RoutePath } from '../routes'
 import { ROUTE_PATHS } from '../routes'
 import { computeMbtiResultFromAnswers, loadPersistedAnswers, MBTI_COMPLETED_KEY } from '../components/MbtiTest'
 import { getTodaySolarTerm } from '../lib/solarTermUtils'
+import { SeasonalBanner } from '../components/SeasonalBanner'
 import { buildWeeklyFortune, buildMonthlyFortune, buildDailyFortune } from '../lib/saju'
 import type { Element } from '../lib/saju/constants'
 import { trackEvent } from '../lib/analytics'
@@ -225,6 +226,8 @@ export default function FortunePage(): JSX.Element {
             사주 기반으로 오늘의 흐름과 실천 포인트를 확인하세요. 사주 입력값이 비어 있으면 오늘 날짜와 현재 시간이 자동으로 채워지고 성별은 남성으로 시작하므로 바로 확인할 수 있어요.
           </p>
         </header>
+
+        <SeasonalBanner />
 
         {todaySolarTerm ? (
           <div className={`rounded-2xl border px-4 py-4 text-sm leading-relaxed space-y-1.5 ${todaySolarTerm.isExactDay ? 'border-amber-200 bg-amber-50 text-amber-900' : 'border-slate-200 bg-slate-50 text-slate-700'}`}>

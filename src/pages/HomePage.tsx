@@ -1,4 +1,5 @@
 import { JSX } from 'react'
+import { SeasonalBanner } from '../components/SeasonalBanner'
 import type { RoutePath } from '../routes'
 import { ROUTE_PATHS } from '../routes'
 import { navigateTo } from '../lib/router'
@@ -140,6 +141,8 @@ export default function HomePage(): JSX.Element {
             </button>
           </div>
         )}
+
+        <SeasonalBanner />
 
         <header className="space-y-6 text-center text-white">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-white/80">
