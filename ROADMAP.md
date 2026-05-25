@@ -80,9 +80,7 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 
 ## 기술 부채
 
-- [ ] `CompatibilityPage.tsx` 입력 폼 UX 개선 — 현재 이름 입력과 날짜 입력이 분리되어 어색함
-- [ ] `FortunePage.tsx` `setBirthDate` destructuring 정리 — 3칸 비교 추가 후 실제 미사용 가능성 점검
-- [ ] 브라우저 알림 Service Worker 연동 — 현재는 탭이 열려있을 때만 알림 가능, 백그라운드 알림 미지원
+_항목 없음 — 모두 해소됨_
 
 ---
 
@@ -93,3 +91,4 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 | 2026-05-25 | v1 | plan.md + test.md 통합, 완료/미완 구분, 로드맵 문서화 |
 | 2026-05-25 | v2 | P3-미완(시즌성 콘텐츠 배너) 완료 — SeasonalBanner 컴포넌트, FortunePage·HomePage 적용 |
 | 2026-05-25 | v3 | P4-b(SEO 페이지 4개) + P4-c(궁합 URL 공유) 완료 |
+| 2026-05-25 | v4 | 기술 부채 3건 해소 — 궁합 폼 UX 개선, SW 알림 연동, setBirthDate 사용 확인 |

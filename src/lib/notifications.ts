@@ -25,14 +25,24 @@ export async function requestNotificationPermission(): Promise<NotificationPermi
   return result
 }
 
-export function sendTestNotification(title: string, body: string): void {
+export async function sendTestNotification(title: string, body: string): Promise<void> {
   if (getNotificationPermission() !== 'granted') return
-  new Notification(title, {
+  const options: NotificationOptions = {
     body,
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-192x192.png',
+    icon: '/icons/icon-192.svg',
+    badge: '/icons/icon-192.svg',
     tag: 'fove-daily'
-  })
+  }
+  if ('serviceWorker' in navigator) {
+    try {
+      const registration = await navigator.serviceWorker.ready
+      await registration.showNotification(title, options)
+      return
+    } catch {
+      // fall through to main-thread notification
+    }
+  }
+  new Notification(title, options)
 }
 
 export function optOut(): void {

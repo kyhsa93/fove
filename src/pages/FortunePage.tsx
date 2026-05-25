@@ -104,7 +104,7 @@ export default function FortunePage(): JSX.Element {
       setNotifOptedIn(true)
       showToast('알림이 설정됐습니다. 매일 운세를 확인하세요!', 'success')
       if (dailyFortune) {
-        sendTestNotification('오늘의 Fove 운세', `${dailyFortune.pillarName} · ${dailyFortune.score}점 — ${dailyFortune.actionText.slice(0, 30)}`)
+        await sendTestNotification('오늘의 Fove 운세', `${dailyFortune.pillarName} · ${dailyFortune.score}점 — ${dailyFortune.actionText.slice(0, 30)}`)
       }
       trackEvent('fortune_generated', { pillar: dailyFortune?.pillarName ?? '', score: dailyFortune?.score ?? 0 })
     } else {

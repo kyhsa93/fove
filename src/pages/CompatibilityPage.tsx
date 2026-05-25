@@ -134,26 +134,30 @@ export default function CompatibilityPage(): JSX.Element {
           <p className="text-sm text-gray-600">두 사람의 생년월일로 사주 오행 궁합을 분석합니다.</p>
         </header>
 
-        <div className="rounded-2xl border border-slate-100 bg-white/90 px-5 py-6 space-y-5 shadow-sm">
+        <div className="rounded-2xl border border-slate-100 bg-white/90 px-5 py-6 space-y-4 shadow-sm">
           {([
-            { state: personA, setter: setPersonA, placeholder: '나의 생년월일' },
-            { state: personB, setter: setPersonB, placeholder: '상대방 생년월일' }
-          ] as Array<{ state: PersonInput; setter: (v: PersonInput) => void; placeholder: string }>).map(({ state, setter, placeholder }, idx) => (
-            <div key={idx} className="space-y-2">
-              <label className="block text-sm font-medium text-slate-700">{state.label}</label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder={placeholder + ' (예: 1993-01-15)'}
-                  value={state.label !== (idx === 0 ? '나' : '상대방') ? state.label : ''}
-                  onChange={(e) => setter({ ...state, label: e.target.value || (idx === 0 ? '나' : '상대방') })}
-                  className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                />
+            { state: personA, setter: setPersonA, defaultLabel: '나' },
+            { state: personB, setter: setPersonB, defaultLabel: '상대방' }
+          ] as Array<{ state: PersonInput; setter: (v: PersonInput) => void; defaultLabel: string }>).map(({ state, setter, defaultLabel }, idx) => (
+            <div key={idx} className="rounded-xl border border-slate-100 bg-slate-50/60 px-4 py-4 space-y-3">
+              <p className="text-sm font-semibold text-slate-700">{state.label}</p>
+              <div className="space-y-1">
+                <label className="text-xs text-slate-500">생년월일</label>
                 <input
                   type="date"
                   value={state.birthDate}
                   onChange={(e) => { setter({ ...state, birthDate: e.target.value }); setChecked(false) }}
-                  className="flex-none w-36 rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-slate-500">이름/호칭 <span className="text-slate-400">(선택)</span></label>
+                <input
+                  type="text"
+                  placeholder={defaultLabel}
+                  value={state.label !== defaultLabel ? state.label : ''}
+                  onChange={(e) => setter({ ...state, label: e.target.value || defaultLabel })}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
                 />
               </div>
             </div>
