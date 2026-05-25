@@ -36,3 +36,9 @@ export const navLinks: Array<{ path: RoutePath; label: string }> = [
   { path: ROUTE_PATHS.fortune, label: '오늘의 운세' },
   { path: ROUTE_PATHS.insight, label: '통합 인사이트' }
 ]
+
+export const blogLinks: Array<{ path: RoutePath; label: string }> = [
+  { path: ROUTE_PATHS.blogSajuBasics, label: '사주란 무엇인가?' },
+  { path: ROUTE_PATHS.blogZodiacStandard, label: '띠 기준 완벽 정리' },
+  { path: ROUTE_PATHS.blogMbtiLoveStyle, label: 'MBTI별 연애 스타일' }
+]
