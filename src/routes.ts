@@ -10,6 +10,7 @@ export const ROUTE_PATHS = {
   insight: '/insight',
   compatibility: '/compatibility',
   quiz: '/quiz',
+  sajuYear: '/saju/year',
   privacyPolicy: '/privacy-policy',
   termsOfService: '/terms-of-service',
   contact: '/contact'

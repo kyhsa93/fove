@@ -13,6 +13,7 @@ import ZodiacPage from './pages/ZodiacPage'
 import InsightPage from './pages/InsightPage'
 import CompatibilityPage from './pages/CompatibilityPage'
 import QuizPage from './pages/QuizPage'
+import SajuYearPage from './pages/SajuYearPage'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import type { RoutePath } from './routes'
@@ -92,6 +93,12 @@ const routes: Record<RoutePath, RouteConfig> = {
     description: '가벼운 심리테스트로 나의 운 흐름과 성향을 확인하고 결과를 공유해 보세요.',
     ogTitle: '운세 심리테스트 — Fove'
   },
+  [ROUTE_PATHS.sajuYear]: {
+    component: SajuYearPage,
+    title: 'Fove · 생년별 사주 특성',
+    description: '생년별 사주 연주(年柱) 오행 특성, 성향, 직업, 재물, 건강 분석을 확인하세요.',
+    ogTitle: '생년별 사주 특성 — Fove'
+  },
   [ROUTE_PATHS.privacyPolicy]: {
     component: PrivacyPolicyPage,
     title: 'Fove 개인정보 처리방침',
@@ -118,6 +125,7 @@ const normalizePath = (rawPath: string): RoutePath => {
   if (!rawPath) return ROUTE_PATHS.home
   const cleaned = rawPath.replace(/\/+$/, '') || '/'
   if (cleaned.startsWith('/zodiac')) return ROUTE_PATHS.zodiac
+  if (/^\/saju\/\d{4}$/.test(cleaned)) return ROUTE_PATHS.sajuYear
   const match = routeKeys.find((key) => key === cleaned)
   return match ?? ROUTE_PATHS.home
 }
@@ -143,9 +151,10 @@ export default function App(): JSX.Element {
 
   useEffect(() => {
     if (typeof document === 'undefined') return
-    // zodiac 세부 페이지(/zodiac/:slug)는 ZodiacPage 내부에서 메타 처리
+    // zodiac·saju-year 세부 페이지는 해당 컴포넌트 내부에서 메타 처리
     const actualPath = typeof window !== 'undefined' ? window.location.pathname : currentPath
     if (actualPath.startsWith('/zodiac/')) return
+    if (/^\/saju\/\d{4}$/.test(actualPath)) return
     const meta = routes[currentPath]
     if (!meta) return
     document.title = meta.title
@@ -163,8 +172,9 @@ export default function App(): JSX.Element {
   useEffect(() => {
     if (typeof window === 'undefined') return
     const actual = window.location.pathname
-    // zodiac 세부 경로는 pushState로 이미 정확히 설정됨 — replaceState 불필요
+    // zodiac·saju-year 세부 경로는 pushState로 이미 정확히 설정됨 — replaceState 불필요
     if (actual.startsWith('/zodiac/')) return
+    if (/^\/saju\/\d{4}$/.test(actual)) return
     if (actual !== currentPath) {
       window.history.replaceState({}, '', currentPath)
     }

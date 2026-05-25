@@ -16,6 +16,9 @@ const routePrefix = '/fove'
 
 const zodiacSlugs = ['rat', 'ox', 'tiger', 'rabbit', 'dragon', 'snake', 'horse', 'goat', 'monkey', 'rooster', 'dog', 'pig']
 
+const currentYear = new Date().getFullYear()
+const sajuYears = Array.from({ length: 80 }, (_, i) => currentYear - 70 + i)
+
 const routes = [
   { path: `${routePrefix}`, changefreq: 'daily', priority: '1.0' },
   { path: `${routePrefix}/saju`, changefreq: 'daily', priority: '0.9' },
@@ -29,6 +32,14 @@ const routes = [
     path: `${routePrefix}/zodiac/${slug}`,
     changefreq: 'monthly',
     priority: '0.7'
+  })),
+  { path: `${routePrefix}/insight`, changefreq: 'monthly', priority: '0.8' },
+  { path: `${routePrefix}/compatibility`, changefreq: 'monthly', priority: '0.8' },
+  { path: `${routePrefix}/quiz`, changefreq: 'monthly', priority: '0.7' },
+  ...sajuYears.map((year) => ({
+    path: `${routePrefix}/saju/${year}`,
+    changefreq: 'yearly',
+    priority: '0.6'
   })),
   { path: `${routePrefix}/privacy-policy`, changefreq: 'yearly', priority: '0.3' },
   { path: `${routePrefix}/terms-of-service`, changefreq: 'yearly', priority: '0.3' },
