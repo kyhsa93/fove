@@ -44,19 +44,6 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 
 ---
 
-### ✅ P-OG — 오픈 그래프(Open Graph) 설정
-
-**목적:** SNS 공유 시 미리보기 카드(제목·설명·이미지) 노출로 클릭률 향상  
-**예상 파일:** `src/app/layout.tsx`, 각 페이지 `page.tsx`  
-**구현 방법:**
-- `next/metadata`의 `openGraph` 필드를 루트 레이아웃에 기본값으로 설정
-- `/fortune`, `/compatibility`, `/saju`, `/mbti` 등 주요 페이지별 동적 메타데이터 (`generateMetadata`) 개별 설정
-- `og:title`, `og:description`, `og:image`, `og:url`, `og:type` 포함
-- Twitter Card(`twitter:card`, `twitter:image`) 병행 설정
-- 공유 미리보기 이미지: 정적 기본 이미지 + 페이지별 커스텀 이미지 분리
-
----
-
 ### 🔲 P-G5 — 궁합 결과 공유 카드 이미지
 
 **목적:** 궁합 결과 SNS 공유 유도, 바이럴 채널화  
