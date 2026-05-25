@@ -11,6 +11,10 @@ export const ROUTE_PATHS = {
   compatibility: '/compatibility',
   quiz: '/quiz',
   sajuYear: '/saju/year',
+  mbtiCompatibility: '/mbti/compatibility',
+  blogSajuBasics: '/blog/saju-basics',
+  blogZodiacStandard: '/blog/zodiac-standard',
+  blogMbtiLoveStyle: '/blog/mbti-love-style',
   privacyPolicy: '/privacy-policy',
   termsOfService: '/terms-of-service',
   contact: '/contact'

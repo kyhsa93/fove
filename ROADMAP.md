@@ -67,27 +67,6 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 
 ---
 
-### 🔲 P4-b — SEO 추가 페이지
-
-- [ ] `/mbti/compatibility` — MBTI 16타입 궁합 매트릭스 SEO 페이지
-- [ ] `/blog/saju-basics` — 사주란 무엇인가 (입문 설명 콘텐츠)
-- [ ] `/blog/zodiac-standard` — 띠 기준은 입춘인가 음력 설인가
-- [ ] `/blog/mbti-love-style` — MBTI별 연애 스타일
-
----
-
-### 🔲 P4-c — 궁합 결과 URL 공유
-
-**목적:** "친구에게 궁합 보내기" 바이럴 유도  
-**구현 방법:**
-```
-/compatibility?a=1993-01-15&b=1995-05-10&type=love
-```
-- URL 파라미터에서 두 사람 생년월일·궁합 유형 파싱
-- 결과 페이지 OG 태그 동적 설정 (CompatibilityPage 내부)
-- "이 결과 공유하기" 버튼으로 URL 복사
-
----
 
 ### 🔲 P5 — 수익화/확장 (장기)
 
@@ -113,3 +92,4 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 |------|------|------|
 | 2026-05-25 | v1 | plan.md + test.md 통합, 완료/미완 구분, 로드맵 문서화 |
 | 2026-05-25 | v2 | P3-미완(시즌성 콘텐츠 배너) 완료 — SeasonalBanner 컴포넌트, FortunePage·HomePage 적용 |
+| 2026-05-25 | v3 | P4-b(SEO 페이지 4개) + P4-c(궁합 URL 공유) 완료 |

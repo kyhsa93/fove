@@ -1,8 +1,9 @@
-import { JSX, useMemo, useState } from 'react'
+import { JSX, useCallback, useEffect, useMemo, useState } from 'react'
 import { calculateSaju, ELEMENT_LABELS, ELEMENT_KEYWORDS, TEMPERAMENT_BY_ELEMENT } from '../lib/saju'
 import type { Element } from '../lib/saju/constants'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
+import { useToast } from '../components/ToastProvider'
 
 type CompatibilityType = 'love' | 'friend' | 'work'
 
@@ -64,11 +65,42 @@ function parseElement(birthDate: string): Element | null {
   }
 }
 
+function getInitialState() {
+  if (typeof window === 'undefined') return { a: '', b: '', type: 'love' as CompatibilityType }
+  const params = new URLSearchParams(window.location.search)
+  return {
+    a: params.get('a') ?? '',
+    b: params.get('b') ?? '',
+    type: (params.get('type') as CompatibilityType) ?? 'love'
+  }
+}
+
 export default function CompatibilityPage(): JSX.Element {
-  const [personA, setPersonA] = useState<PersonInput>({ birthDate: '', label: '나' })
-  const [personB, setPersonB] = useState<PersonInput>({ birthDate: '', label: '상대방' })
-  const [activeType, setActiveType] = useState<CompatibilityType>('love')
-  const [checked, setChecked] = useState(false)
+  const { showToast } = useToast()
+  const initial = useMemo(() => getInitialState(), [])
+
+  const [personA, setPersonA] = useState<PersonInput>({ birthDate: initial.a, label: '나' })
+  const [personB, setPersonB] = useState<PersonInput>({ birthDate: initial.b, label: '상대방' })
+  const [activeType, setActiveType] = useState<CompatibilityType>(initial.type)
+  const [checked, setChecked] = useState(() => initial.a.length >= 10 && initial.b.length >= 10)
+
+  useEffect(() => {
+    if (!checked || !personA.birthDate || !personB.birthDate) return
+    const score = calcCompatScore(
+      parseElement(personA.birthDate) ?? '목',
+      parseElement(personB.birthDate) ?? '목',
+      activeType
+    )
+    const title = `${personA.label} × ${personB.label} ${COMPAT_LABELS[activeType]} ${score}점 — Fove`
+    const desc = `사주 오행 기반 ${COMPAT_LABELS[activeType]} 결과: ${score}점. Fove에서 두 사람의 궁합을 확인해보세요.`
+    document.title = title
+    const setMeta = (selector: string, content: string) => {
+      const el = document.querySelector(selector)
+      if (el) el.setAttribute('content', content)
+    }
+    setMeta('meta[property="og:title"]', title)
+    setMeta('meta[property="og:description"]', desc)
+  }, [checked, personA, personB, activeType])
 
   const elemA = useMemo(() => checked ? parseElement(personA.birthDate) : null, [checked, personA.birthDate])
   const elemB = useMemo(() => checked ? parseElement(personB.birthDate) : null, [checked, personB.birthDate])
@@ -83,6 +115,16 @@ export default function CompatibilityPage(): JSX.Element {
       setChecked(true)
     }
   }
+
+  const handleShare = useCallback(() => {
+    const base = `${window.location.origin}${window.location.pathname}`
+    const url = `${base}?a=${personA.birthDate}&b=${personB.birthDate}&type=${activeType}`
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('링크가 복사됐습니다. 친구에게 공유해보세요!', 'success')
+    }).catch(() => {
+      showToast('링크 복사에 실패했습니다.', 'error')
+    })
+  }, [personA.birthDate, personB.birthDate, activeType, showToast])
 
   return (
     <section className="py-6 sm:py-8">
@@ -179,6 +221,14 @@ export default function CompatibilityPage(): JSX.Element {
               <p className="text-xs font-semibold text-slate-500">종합 해석</p>
               <p className="text-sm leading-relaxed text-slate-700">{getCompatComment(score, activeType)}</p>
             </div>
+
+            <button
+              type="button"
+              onClick={handleShare}
+              className="w-full rounded-2xl border border-indigo-200 bg-white/70 py-3 text-sm font-medium text-indigo-700 hover:bg-white transition"
+            >
+              이 결과 공유하기 🔗
+            </button>
           </div>
         ) : null}
 

@@ -14,6 +14,10 @@ import InsightPage from './pages/InsightPage'
 import CompatibilityPage from './pages/CompatibilityPage'
 import QuizPage from './pages/QuizPage'
 import SajuYearPage from './pages/SajuYearPage'
+import MbtiCompatibilityPage from './pages/MbtiCompatibilityPage'
+import BlogSajuBasicsPage from './pages/BlogSajuBasicsPage'
+import BlogZodiacStandardPage from './pages/BlogZodiacStandardPage'
+import BlogMbtiLoveStylePage from './pages/BlogMbtiLoveStylePage'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import type { RoutePath } from './routes'
@@ -99,6 +103,30 @@ const routes: Record<RoutePath, RouteConfig> = {
     description: '생년별 사주 연주(年柱) 오행 특성, 성향, 직업, 재물, 건강 분석을 확인하세요.',
     ogTitle: '생년별 사주 특성 — Fove'
   },
+  [ROUTE_PATHS.mbtiCompatibility]: {
+    component: MbtiCompatibilityPage,
+    title: 'MBTI 16타입 궁합 매트릭스 — 나와 맞는 유형은? | Fove',
+    description: 'MBTI 16타입별 연애 궁합을 확인하세요. INTJ, ENFP, INFJ, ENTP 등 각 유형의 최고 궁합과 연애 스타일을 분석합니다.',
+    ogTitle: 'MBTI 16타입 궁합 매트릭스 — Fove'
+  },
+  [ROUTE_PATHS.blogSajuBasics]: {
+    component: BlogSajuBasicsPage,
+    title: '사주란 무엇인가? 사주팔자 기초 완벽 정리 | Fove',
+    description: '사주(四柱)의 개념부터 천간·지지·오행·60갑자까지. 사주팔자 계산 방법과 연주·월주·일주·시주의 기준을 쉽게 설명합니다.',
+    ogTitle: '사주란 무엇인가? — Fove'
+  },
+  [ROUTE_PATHS.blogZodiacStandard]: {
+    component: BlogZodiacStandardPage,
+    title: '띠 기준은 입춘인가 음력 설인가? 완벽 정리 | Fove',
+    description: '1~2월생이 혼란스러워하는 띠 기준을 완벽 정리합니다. 입춘 기준과 음력 설 기준의 차이, 사주명리학의 올바른 연주 계산법을 설명합니다.',
+    ogTitle: '띠 기준은 입춘인가 음력 설인가? — Fove'
+  },
+  [ROUTE_PATHS.blogMbtiLoveStyle]: {
+    component: BlogMbtiLoveStylePage,
+    title: 'MBTI별 연애 스타일 완벽 정리 — 16타입 사랑 방식 | Fove',
+    description: 'MBTI 16타입별 연애 스타일을 완벽 정리합니다. 각 유형이 사랑을 표현하는 방식, 강점과 주의점, 이상적인 데이트까지 분석합니다.',
+    ogTitle: 'MBTI별 연애 스타일 완벽 정리 — Fove'
+  },
   [ROUTE_PATHS.privacyPolicy]: {
     component: PrivacyPolicyPage,
     title: 'Fove 개인정보 처리방침',
@@ -130,9 +158,14 @@ const normalizePath = (rawPath: string): RoutePath => {
   return match ?? ROUTE_PATHS.home
 }
 
+const normalizePathWithQuery = (rawPath: string): RoutePath => {
+  // strip query string before matching
+  return normalizePath(rawPath.split('?')[0])
+}
+
 const getInitialPath = (): RoutePath => {
   if (typeof window === 'undefined') return ROUTE_PATHS.home
-  return normalizePath(window.location.pathname)
+  return normalizePathWithQuery(window.location.pathname + window.location.search)
 }
 
 export default function App(): JSX.Element {
@@ -141,7 +174,7 @@ export default function App(): JSX.Element {
   useEffect(() => {
     if (typeof window === 'undefined') return
     const handlePopState = () => {
-      setCurrentPath(normalizePath(window.location.pathname))
+      setCurrentPath(normalizePathWithQuery(window.location.pathname + window.location.search))
     }
     window.addEventListener('popstate', handlePopState)
     return () => {
