@@ -40,53 +40,6 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 
 ## 로드맵
 
-### ✅ P1 — 즉시 개선 (완료)
-
-- [x] **분야별 숫자 점수 카드** — 일·업무 / 사랑·관계 / 재물 / 건강 점수를 숫자+바+설명으로 표시
-  - `src/lib/saju/types.ts` — `FortuneCategoryScores` 타입 추가
-  - `src/lib/saju/calculations.ts` — 분야별 점수 산출 로직
-  - `src/components/FortuneCard.tsx` — 점수 카드 UI
-- [x] **FAQ 신뢰도 콘텐츠 확장** — 사주 계산 기준(입춘/절기), 오행·십간 설명, MBTI 참고 안내
-  - `src/pages/FortunePage.tsx`
-- [x] **홈 첫 화면 개편** — 총운+분야별 점수 4칸 리포트 카드, 첫 방문자용 CTA 카드
-  - `src/pages/HomePage.tsx`
-
-### ✅ P2 — 재방문 기능 (완료)
-
-- [x] **운세 캘린더 좋은날/조심할날 표시** — 사주 데이터 기반(개인화) 또는 오행 일반 기준
-  - `src/pages/FortuneMonthPage.tsx`
-- [x] **어제·오늘·내일 3칸 비교** — 일진·오행·점수·행동 요약 비교 카드
-  - `src/pages/FortunePage.tsx`
-- [x] **브라우저 알림 구독** — Notification API 권한 요청, localStorage 구독 상태 관리
-  - `src/lib/notifications.ts`
-  - `src/pages/FortunePage.tsx`
-
-### ✅ P3 — 차별화 기능 (완료)
-
-- [x] **사주·MBTI 통합 인사이트 페이지** `/insight`
-  - 오행 성향 × MBTI 타입 교차 해석 메시지
-  - 직업·재물·건강·관계 성향 분석
-  - `src/pages/InsightPage.tsx`
-- [x] **궁합 보기** `/compatibility`
-  - 두 사람 생년월일 → 오행 기반 궁합 점수 + 관계 해석
-  - 연인/친구/직장 탭
-  - `src/pages/CompatibilityPage.tsx`
-- [x] **운세 심리테스트** `/quiz`
-  - 연애 패턴, 돈 새는 습관 테스트
-  - 결과 공유 지원
-  - `src/pages/QuizPage.tsx`
-
-### ✅ P4-a — SEO 기반 (완료)
-
-- [x] **생년별 사주 특성 페이지** `/saju/:year` (예: `/saju/1993`)
-  - 연주 오행·띠·성향·직업·재물·건강 분석
-  - 페이지 자체 메타 태그 (SEO 최적화)
-  - `src/pages/SajuYearPage.tsx`
-- [x] **sitemap 확장** — insight / compatibility / quiz / saju/:year (80년치) 포함, 총 106개 URL
-  - `scripts/generate-sitemap.mjs`
-
----
-
 ### 🔲 P1-미완 — 공유 카드 이미지 저장
 
 **목적:** 결과를 이미지로 저장해 카카오톡·인스타그램 공유 유도  
