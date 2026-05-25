@@ -8,7 +8,7 @@ import type { RoutePath } from '../routes'
 import { ROUTE_PATHS } from '../routes'
 import { computeMbtiResultFromAnswers, loadPersistedAnswers, MBTI_COMPLETED_KEY } from '../components/MbtiTest'
 import { getTodaySolarTerm } from '../lib/solarTermUtils'
-import { buildWeeklyFortune, buildMonthlyFortune } from '../lib/saju'
+import { buildWeeklyFortune, buildMonthlyFortune, buildDailyFortune } from '../lib/saju'
 import type { Element } from '../lib/saju/constants'
 import { trackEvent } from '../lib/analytics'
 
@@ -83,7 +83,7 @@ const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
 
 export default function FortunePage(): JSX.Element {
   const { showToast } = useToast()
-  const { birthDate, birthTime, gender, result, error, dailyFortune, isLoading, setBirthDate, setBirthTime, setGender } = useSajuCalculator()
+  const { birthDate, birthTime, gender, result, error, dailyFortune, isLoading, setBirthTime, setGender, setBirthDate } = useSajuCalculator()
 
   const mbtiResult = useMemo(() => {
     if (typeof window === 'undefined') return null
@@ -94,6 +94,22 @@ export default function FortunePage(): JSX.Element {
   const todaySolarTerm = useMemo(() => getTodaySolarTerm(), [])
   const weeklyFortune = useMemo(() => buildWeeklyFortune(), [])
   const monthlyFortune = useMemo(() => buildMonthlyFortune(), [])
+
+  const threeDayFortunes = useMemo(() => {
+    if (!result) return null
+    const offsets = [-1, 0, 1]
+    return offsets.map((offset) => {
+      const d = new Date()
+      d.setDate(d.getDate() + offset)
+      try {
+        const fortune = buildDailyFortune(result, d)
+        const label = offset === -1 ? '어제' : offset === 0 ? '오늘' : '내일'
+        return { label, fortune, isToday: offset === 0 }
+      } catch {
+        return null
+      }
+    }).filter(Boolean) as Array<{ label: string; fortune: ReturnType<typeof buildDailyFortune>; isToday: boolean }>
+  }, [result])
 
   const weekKeyword = useMemo(() => {
     const counts: Record<Element, number> = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 }
@@ -307,25 +323,37 @@ export default function FortunePage(): JSX.Element {
           </div>
         </section>
 
+        {threeDayFortunes ? (
+          <section className="space-y-4">
+            <h2 className="text-lg font-semibold text-gray-900">어제 · 오늘 · 내일 흐름 비교</h2>
+            <div className="grid grid-cols-3 gap-2">
+              {threeDayFortunes.map(({ label, fortune, isToday }) => (
+                <div
+                  key={label}
+                  className={`rounded-2xl border px-2 py-4 text-center space-y-2 transition ${
+                    isToday
+                      ? 'border-amber-300 bg-amber-50 shadow-sm'
+                      : 'border-slate-100 bg-white/80'
+                  }`}
+                >
+                  <p className={`text-xs font-semibold ${isToday ? 'text-amber-700' : 'text-slate-400'}`}>{label}</p>
+                  <p className={`text-base font-bold ${isToday ? 'text-amber-900' : 'text-slate-700'}`}>{fortune.pillarName}</p>
+                  <p className={`text-xs ${isToday ? 'text-amber-700' : 'text-slate-500'}`}>{fortune.elementLabel}</p>
+                  <p className={`text-xl font-bold tabular-nums ${isToday ? 'text-amber-900' : 'text-slate-700'}`}>
+                    {fortune.score}<span className="text-xs font-normal ml-0.5">점</span>
+                  </p>
+                  <p className={`text-[11px] leading-tight px-1 ${isToday ? 'text-amber-800' : 'text-slate-500'}`}>
+                    {fortune.actionText.split(' ').slice(0, 6).join(' ')}…
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         <section className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">더 알아보기</h2>
           <div className="grid gap-3 sm:grid-cols-2">
-            <button
-              type="button"
-              onClick={() => {
-                trackEvent('clicked_next', { destination: 'tomorrow_fortune' })
-                const tomorrow = new Date()
-                tomorrow.setDate(tomorrow.getDate() + 1)
-                const y = tomorrow.getFullYear()
-                const m = String(tomorrow.getMonth() + 1).padStart(2, '0')
-                const d = String(tomorrow.getDate()).padStart(2, '0')
-                setBirthDate(`${y}-${m}-${d}`)
-              }}
-              className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-5 text-left transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-amber-400"
-            >
-              <p className="text-base font-semibold text-amber-900">내일 운세 미리 보기</p>
-              <p className="mt-1 text-sm text-amber-700">내일 날짜로 전환해 내일의 흐름을 확인합니다.</p>
-            </button>
             <button
               type="button"
               onClick={() => { trackEvent('clicked_next', { destination: 'saju' }); navigateTo(ROUTE_PATHS.saju) }}
