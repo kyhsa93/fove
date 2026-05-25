@@ -55,19 +55,27 @@ interface HomeFortuneProps {
 function HomeFortune({ dailyFortune, result }: HomeFortuneProps): JSX.Element {
   const strongest = result.summary.strongest.element
   const keywords = ELEMENT_KEYWORDS[strongest]
+  const { score, categoryScores } = dailyFortune
+
+  const SCORE_META = [
+    { key: 'work' as const, label: '일', color: 'text-sky-300' },
+    { key: 'love' as const, label: '관계', color: 'text-rose-300' },
+    { key: 'money' as const, label: '재물', color: 'text-amber-300' },
+    { key: 'health' as const, label: '건강', color: 'text-emerald-300' }
+  ]
 
   return (
     <div className="rounded-3xl border border-white/20 bg-white/10 backdrop-blur px-4 py-5 text-white shadow-xl space-y-4 sm:px-6 sm:py-6">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">오늘의 운세</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">오늘의 Fove 리포트</p>
         <p className="text-xs text-white/60">{dailyFortune.dateLabel}</p>
       </div>
 
       <div className="space-y-1">
         <div className="flex items-center gap-3 flex-wrap">
           <span className="text-2xl font-bold tracking-wide">{dailyFortune.pillarName}</span>
-          <span className="rounded-full bg-white/15 px-3 py-0.5 text-sm font-medium">{ELEMENT_LABELS[result.summary.strongest.element]} 기운</span>
-          <span className="text-sm text-white/70">{dailyFortune.yinYang}</span>
+          <span className="rounded-full bg-white/15 px-3 py-0.5 text-sm font-medium">{ELEMENT_LABELS[strongest]} 기운</span>
+          <span className="rounded-full bg-white/10 border border-white/20 px-2.5 py-0.5 text-sm font-semibold">{score}점</span>
         </div>
         <p className="text-sm leading-relaxed text-white/90">{TEMPERAMENT_BY_ELEMENT[strongest]}</p>
         <div className="flex flex-wrap gap-1.5 pt-1">
@@ -75,6 +83,15 @@ function HomeFortune({ dailyFortune, result }: HomeFortuneProps): JSX.Element {
             <span key={kw} className="text-xs rounded-full bg-white/10 border border-white/20 px-2.5 py-0.5 text-white/80">{kw}</span>
           ))}
         </div>
+      </div>
+
+      <div className="grid grid-cols-4 gap-2">
+        {SCORE_META.map(({ key, label, color }) => (
+          <div key={key} className="rounded-2xl bg-white/10 border border-white/10 px-2 py-3 text-center space-y-1">
+            <p className={`text-xs font-semibold ${color}`}>{label}</p>
+            <p className="text-lg font-bold tabular-nums">{categoryScores[key]}</p>
+          </div>
+        ))}
       </div>
 
       <div className="grid gap-2 sm:grid-cols-2">
@@ -109,7 +126,20 @@ export default function HomePage(): JSX.Element {
 
         {isReturning && result && dailyFortune ? (
           <HomeFortune dailyFortune={dailyFortune} result={result} />
-        ) : null}
+        ) : (
+          <div className="rounded-3xl border border-white/20 bg-white/10 backdrop-blur px-4 py-5 text-white shadow-xl space-y-4 sm:px-6 sm:py-6">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">오늘의 Fove 리포트</p>
+            <p className="text-base font-semibold text-white/90">사주 정보를 입력하면 오늘의 개인 운세 리포트가 여기에 표시됩니다.</p>
+            <p className="text-sm text-white/70">총운 · 일·업무 · 사랑·관계 · 재물 · 건강 점수와 오늘의 조언을 한눈에 확인하세요.</p>
+            <button
+              type="button"
+              onClick={() => navigateTo(ROUTE_PATHS.fortune)}
+              className="w-full rounded-2xl bg-white/15 border border-white/20 py-3 text-sm font-semibold text-white transition hover:bg-white/25"
+            >
+              오늘의 운세 시작하기 →
+            </button>
+          </div>
+        )}
 
         <header className="space-y-6 text-center text-white">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-white/80">
