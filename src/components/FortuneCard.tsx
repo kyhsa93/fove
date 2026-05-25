@@ -94,29 +94,33 @@ interface CombinedFortuneCardProps {
 }
 
 const CATEGORY_META = [
-  { key: 'work' as const, label: '일·업무', icon: '💼', color: 'border-blue-100 bg-blue-50/60 text-blue-900' },
-  { key: 'love' as const, label: '사랑·관계', icon: '🌸', color: 'border-rose-100 bg-rose-50/60 text-rose-900' },
-  { key: 'money' as const, label: '재물', icon: '💰', color: 'border-amber-100 bg-amber-50/60 text-amber-900' },
-  { key: 'health' as const, label: '건강', icon: '🌿', color: 'border-emerald-100 bg-emerald-50/60 text-emerald-900' }
+  { key: 'work' as const, label: '일·업무', icon: '💼', bar: 'bg-blue-400', border: 'border-blue-100 bg-blue-50/60 text-blue-900' },
+  { key: 'love' as const, label: '사랑·관계', icon: '🌸', bar: 'bg-rose-400', border: 'border-rose-100 bg-rose-50/60 text-rose-900' },
+  { key: 'money' as const, label: '재물', icon: '💰', bar: 'bg-amber-400', border: 'border-amber-100 bg-amber-50/60 text-amber-900' },
+  { key: 'health' as const, label: '건강', icon: '🌿', bar: 'bg-emerald-400', border: 'border-emerald-100 bg-emerald-50/60 text-emerald-900' }
 ]
 
-function ScoreBar({ score }: { score: number }): JSX.Element {
-  const color = score >= 80 ? 'bg-emerald-400' : score >= 65 ? 'bg-amber-400' : 'bg-rose-400'
+function ScoreBar({ score, label, color }: { score: number; label: string; color: string }): JSX.Element {
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between text-xs text-slate-500">
-        <span>오늘의 운세 지수</span>
+        <span>{label}</span>
         <span className="font-semibold text-slate-700">{score}점</span>
       </div>
-      <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+      <div className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
         <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${score}%` }} />
       </div>
     </div>
   )
 }
 
+function OverallScoreBar({ score }: { score: number }): JSX.Element {
+  const color = score >= 80 ? 'bg-emerald-400' : score >= 65 ? 'bg-amber-400' : 'bg-rose-400'
+  return <ScoreBar score={score} label="오늘의 운세 지수" color={color} />
+}
+
 export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: CombinedFortuneCardProps): JSX.Element {
-  const { dateLabel, pillarName, elementLabel, yinYang, score, categories, lucky } = dailyFortune
+  const { dateLabel, pillarName, elementLabel, yinYang, score, categories, categoryScores, lucky } = dailyFortune
   const combinedTexts = useMemo(() => buildCombinedFortuneText(dailyFortune, mbtiResult), [dailyFortune, mbtiResult])
   const actionCards = useMemo(() => buildFortuneActionCards(combinedTexts, dailyFortune), [combinedTexts, dailyFortune])
 
@@ -140,7 +144,7 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
 
     return (
       <div className="space-y-5 text-sm leading-relaxed text-slate-700">
-        <ScoreBar score={score} />
+        <OverallScoreBar score={score} />
 
         <div className="grid gap-4 md:grid-cols-3">
           <div className="md:col-span-1 space-y-1">
@@ -191,10 +195,16 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
   const categoriesTab = useMemo(() => (
     <div className="space-y-4 text-sm leading-relaxed">
       <div className="grid gap-3 sm:grid-cols-2">
-        {CATEGORY_META.map(({ key, label, icon, color }) => (
-          <div key={key} className={`rounded-xl border px-3 py-4 space-y-1.5 ${color}`}>
-            <p className="text-xs font-semibold">{icon} {label}</p>
-            <p>{categories[key]}</p>
+        {CATEGORY_META.map(({ key, label, icon, bar, border }) => (
+          <div key={key} className={`rounded-xl border px-3 py-4 space-y-2.5 ${border}`}>
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold">{icon} {label}</p>
+              <span className="text-lg font-bold tabular-nums">{categoryScores[key]}점</span>
+            </div>
+            <div className="h-1.5 w-full rounded-full bg-black/10 overflow-hidden">
+              <div className={`h-full rounded-full ${bar}`} style={{ width: `${categoryScores[key]}%` }} />
+            </div>
+            <p className="text-xs leading-relaxed opacity-80">{categories[key]}</p>
           </div>
         ))}
       </div>
@@ -217,7 +227,7 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
         </div>
       </div>
     </div>
-  ), [categories, lucky])
+  ), [categories, categoryScores, lucky])
 
   const adviceTab = useMemo(() => (
     <div className="space-y-5 text-sm leading-relaxed text-slate-700">

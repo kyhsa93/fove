@@ -104,6 +104,13 @@ export interface FortuneCategories {
   health: string
 }
 
+export interface FortuneCategoryScores {
+  work: number
+  love: number
+  money: number
+  health: number
+}
+
 export interface LuckyElements {
   color: string
   number: number
@@ -120,6 +127,7 @@ export interface DailyFortune {
   cautionText: string
   score: number
   categories: FortuneCategories
+  categoryScores: FortuneCategoryScores
   lucky: LuckyElements
 }
 

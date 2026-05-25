@@ -552,6 +552,32 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
     SCORE_BASE[alignment] + SCORE_BRANCH_BONUS[branchRelation] + (hasStemHarmony ? 5 : 0)
   ))
 
+  // 분야별 점수 계산
+  const WORK_BRANCH_MOD: Record<BranchRelationKey, number> = { harmony: 8, same: 4, neutral: 0, clash: -12 }
+  const workScore = Math.min(99, Math.max(30,
+    SCORE_BASE[alignment] + WORK_BRANCH_MOD[branchRelation] + (hasStemHarmony ? 3 : 0)
+  ))
+
+  const LOVE_BRANCH_MOD: Record<BranchRelationKey, number> = { harmony: 22, same: 12, neutral: 0, clash: -18 }
+  const loveScore = Math.min(99, Math.max(30,
+    63 + LOVE_BRANCH_MOD[branchRelation] + (hasStemHarmony ? 8 : 0)
+  ))
+
+  const MONEY_RELATION_MOD: Record<ElementRelationKey, number> = {
+    aligned: 15, resource: 10, output: 5, authority: 3, neutral: 0, pressure: -15
+  }
+  const moneyScore = Math.min(99, Math.max(30,
+    62 + MONEY_RELATION_MOD[relationKey] + Math.round(SCORE_BRANCH_BONUS[branchRelation] / 2)
+  ))
+
+  const balancePenalty = Math.abs(yinCount - yangCount) * 4
+  const HEALTH_ALIGN_MOD: Record<typeof alignment, number> = { strong: 5, supportive: 8, neutral: 3, weak: -5 }
+  const healthScore = Math.min(99, Math.max(30,
+    74 - balancePenalty + HEALTH_ALIGN_MOD[alignment]
+  ))
+
+  const categoryScores = { work: workScore, love: loveScore, money: moneyScore, health: healthScore }
+
   // 분야별 운세
   const categories = {
     work: CATEGORY_WORK[element][personalElement],
@@ -577,6 +603,7 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
     cautionText: cautionParts.join(' '),
     score,
     categories,
+    categoryScores,
     lucky
   }
 }
