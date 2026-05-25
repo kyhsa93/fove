@@ -1,11 +1,10 @@
 import { JSX, useCallback, useEffect, useMemo, useState } from 'react'
-import { calculateSaju, ELEMENT_LABELS, ELEMENT_KEYWORDS, TEMPERAMENT_BY_ELEMENT } from '../lib/saju'
-import type { Element } from '../lib/saju/constants'
+import { ELEMENT_LABELS, ELEMENT_KEYWORDS, TEMPERAMENT_BY_ELEMENT } from '../lib/saju'
+import { parseSajuResult, calcCompatScores, getCompatDetail } from '../lib/saju/compatibility'
+import type { CompatibilityType } from '../lib/saju/compatibility'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
 import { useToast } from '../components/ToastProvider'
-
-type CompatibilityType = 'love' | 'friend' | 'work'
 
 const COMPAT_LABELS: Record<CompatibilityType, string> = {
   love: '연인 궁합',
@@ -13,56 +12,38 @@ const COMPAT_LABELS: Record<CompatibilityType, string> = {
   work: '직장 궁합'
 }
 
-const ELEMENT_RELATION: Record<Element, { produces: Element; controlledBy: Element; controls: Element }> = {
-  목: { produces: '화', controlledBy: '금', controls: '토' },
-  화: { produces: '토', controlledBy: '수', controls: '금' },
-  토: { produces: '금', controlledBy: '목', controls: '수' },
-  금: { produces: '수', controlledBy: '화', controls: '목' },
-  수: { produces: '목', controlledBy: '토', controls: '화' }
-}
+const CATEGORY_META: Array<{
+  key: keyof ReturnType<typeof calcCompatScores>
+  label: string
+  subLabel: string
+  icon: string
+}> = [
+  { key: 'overall', label: '총운', subLabel: '일주 오행 흐름', icon: '✦' },
+  { key: 'love', label: '감정교류', subLabel: '일지 감정 결', icon: '♡' },
+  { key: 'communication', label: '소통', subLabel: '월주 대화 방식', icon: '◎' },
+  { key: 'future', label: '미래안정', subLabel: '연주 장기 흐름', icon: '◇' },
+]
 
-function calcCompatScore(elemA: Element, elemB: Element, type: CompatibilityType): number {
-  const rel = ELEMENT_RELATION[elemA]
-  let base = 65
-  if (elemA === elemB) base = 72
-  else if (rel.produces === elemB) base = 82
-  else if (rel.controlledBy === elemA) base = 58
-  else if (rel.controls === elemB) base = 60
-
-  const MOD: Record<CompatibilityType, number> = { love: 5, friend: 0, work: -3 }
-  return Math.min(99, Math.max(40, base + MOD[type]))
-}
-
-function getCompatComment(score: number, type: CompatibilityType): string {
-  if (score >= 80) {
-    if (type === 'love') return '두 사람의 기운이 자연스럽게 흘러 서로를 성장시키는 관계입니다. 함께할수록 더 빛납니다.'
-    if (type === 'friend') return '서로 다른 강점이 보완되며 오래 함께할수록 깊어지는 우정입니다.'
-    return '서로의 역할이 잘 분담되어 팀 시너지가 높습니다. 신뢰 관계를 쌓기 유리합니다.'
-  }
-  if (score >= 68) {
-    if (type === 'love') return '서로 다른 기운이 때로는 자극이 되고 때로는 마찰이 됩니다. 이해와 소통이 관계를 풍성하게 합니다.'
-    if (type === 'friend') return '공통점과 차이점이 공존하는 관계입니다. 서로의 관점을 존중하면 좋은 자극이 됩니다.'
-    return '협업 시 역할 분담을 명확히 하면 좋은 성과를 낼 수 있습니다.'
-  }
-  if (type === 'love') return '두 기운의 방향이 달라 노력이 필요한 관계입니다. 진심 어린 대화로 간극을 좁혀가세요.'
-  if (type === 'friend') return '처음엔 낯설 수 있지만 서로를 알아갈수록 의외의 조화를 찾을 수 있습니다.'
-  return '업무 스타일 차이가 있을 수 있습니다. 역할을 명확히 하고 중간 접점을 찾으면 협력이 원활해집니다.'
-}
+const HOUR_OPTIONS = [
+  { label: '시간 모름', value: -1 },
+  { label: '자시 (23:00~00:59)', value: 23 },
+  { label: '축시 (01:00~02:59)', value: 1 },
+  { label: '인시 (03:00~04:59)', value: 3 },
+  { label: '묘시 (05:00~06:59)', value: 5 },
+  { label: '진시 (07:00~08:59)', value: 7 },
+  { label: '사시 (09:00~10:59)', value: 9 },
+  { label: '오시 (11:00~12:59)', value: 11 },
+  { label: '미시 (13:00~14:59)', value: 13 },
+  { label: '신시 (15:00~16:59)', value: 15 },
+  { label: '유시 (17:00~18:59)', value: 17 },
+  { label: '술시 (19:00~20:59)', value: 19 },
+  { label: '해시 (21:00~22:59)', value: 21 },
+]
 
 interface PersonInput {
   birthDate: string
+  hour: number
   label: string
-}
-
-function parseElement(birthDate: string): Element | null {
-  if (!birthDate || birthDate.length < 10) return null
-  try {
-    const [y, m, d] = birthDate.split('-').map(Number)
-    const result = calculateSaju(new Date(y, m - 1, d, 12, 0))
-    return result.summary.strongest.element
-  } catch {
-    return null
-  }
 }
 
 function getInitialState() {
@@ -75,24 +56,54 @@ function getInitialState() {
   }
 }
 
+function ScoreBar({ score, colorClass }: { score: number; colorClass: string }) {
+  return (
+    <div className="h-2 w-full rounded-full bg-indigo-100 overflow-hidden">
+      <div
+        className={`h-full rounded-full transition-all duration-500 ${colorClass}`}
+        style={{ width: `${score}%` }}
+      />
+    </div>
+  )
+}
+
+function scoreColor(score: number) {
+  if (score >= 80) return 'bg-emerald-400'
+  if (score >= 65) return 'bg-amber-400'
+  return 'bg-rose-400'
+}
+
 export default function CompatibilityPage(): JSX.Element {
   const { showToast } = useToast()
   const initial = useMemo(() => getInitialState(), [])
 
-  const [personA, setPersonA] = useState<PersonInput>({ birthDate: initial.a, label: '나' })
-  const [personB, setPersonB] = useState<PersonInput>({ birthDate: initial.b, label: '상대방' })
+  const [personA, setPersonA] = useState<PersonInput>({ birthDate: initial.a, hour: -1, label: '나' })
+  const [personB, setPersonB] = useState<PersonInput>({ birthDate: initial.b, hour: -1, label: '상대방' })
   const [activeType, setActiveType] = useState<CompatibilityType>(initial.type)
   const [checked, setChecked] = useState(() => initial.a.length >= 10 && initial.b.length >= 10)
 
+  const resultA = useMemo(
+    () => (checked ? parseSajuResult(personA.birthDate, personA.hour === -1 ? undefined : personA.hour) : null),
+    [checked, personA.birthDate, personA.hour]
+  )
+  const resultB = useMemo(
+    () => (checked ? parseSajuResult(personB.birthDate, personB.hour === -1 ? undefined : personB.hour) : null),
+    [checked, personB.birthDate, personB.hour]
+  )
+
+  const scores = useMemo(
+    () => (resultA && resultB ? calcCompatScores(resultA, resultB, activeType) : null),
+    [resultA, resultB, activeType]
+  )
+  const detail = useMemo(
+    () => (scores && resultA && resultB ? getCompatDetail(scores, resultA, resultB, activeType) : null),
+    [scores, resultA, resultB, activeType]
+  )
+
   useEffect(() => {
-    if (!checked || !personA.birthDate || !personB.birthDate) return
-    const score = calcCompatScore(
-      parseElement(personA.birthDate) ?? '목',
-      parseElement(personB.birthDate) ?? '목',
-      activeType
-    )
-    const title = `${personA.label} × ${personB.label} ${COMPAT_LABELS[activeType]} ${score}점 — Fove`
-    const desc = `사주 오행 기반 ${COMPAT_LABELS[activeType]} 결과: ${score}점. Fove에서 두 사람의 궁합을 확인해보세요.`
+    if (!checked || !personA.birthDate || !personB.birthDate || !scores) return
+    const title = `${personA.label} × ${personB.label} ${COMPAT_LABELS[activeType]} ${scores.total}점 — Fove`
+    const desc = `사주 오행 기반 ${COMPAT_LABELS[activeType]} 결과: 총운 ${scores.overall}점, 감정교류 ${scores.love}점, 소통 ${scores.communication}점. Fove에서 두 사람의 궁합을 확인해보세요.`
     document.title = title
     const setMeta = (selector: string, content: string) => {
       const el = document.querySelector(selector)
@@ -100,15 +111,7 @@ export default function CompatibilityPage(): JSX.Element {
     }
     setMeta('meta[property="og:title"]', title)
     setMeta('meta[property="og:description"]', desc)
-  }, [checked, personA, personB, activeType])
-
-  const elemA = useMemo(() => checked ? parseElement(personA.birthDate) : null, [checked, personA.birthDate])
-  const elemB = useMemo(() => checked ? parseElement(personB.birthDate) : null, [checked, personB.birthDate])
-
-  const score = useMemo(() => {
-    if (!elemA || !elemB) return null
-    return calcCompatScore(elemA, elemB, activeType)
-  }, [elemA, elemB, activeType])
+  }, [checked, personA, personB, activeType, scores])
 
   const handleCheck = () => {
     if (personA.birthDate.length >= 10 && personB.birthDate.length >= 10) {
@@ -126,49 +129,67 @@ export default function CompatibilityPage(): JSX.Element {
     })
   }, [personA.birthDate, personB.birthDate, activeType, showToast])
 
+  const resetChecked = () => setChecked(false)
+
   return (
     <section className="py-6 sm:py-8">
       <div className="mx-auto max-w-xl px-4 space-y-8">
         <header className="space-y-2 text-center">
           <h1 className="text-3xl font-bold text-gray-900">궁합 보기</h1>
-          <p className="text-sm text-gray-600">두 사람의 생년월일로 사주 오행 궁합을 분석합니다.</p>
+          <p className="text-sm text-gray-600">두 사람의 생년월일로 사주 오행 궁합을 4개 차원으로 분석합니다.</p>
         </header>
 
+        {/* 입력 폼 */}
         <div className="rounded-2xl border border-slate-100 bg-white/90 px-5 py-6 space-y-4 shadow-sm">
           {([
             { state: personA, setter: setPersonA, defaultLabel: '나' },
             { state: personB, setter: setPersonB, defaultLabel: '상대방' }
-          ] as Array<{ state: PersonInput; setter: (v: PersonInput) => void; defaultLabel: string }>).map(({ state, setter, defaultLabel }, idx) => (
-            <div key={idx} className="rounded-xl border border-slate-100 bg-slate-50/60 px-4 py-4 space-y-3">
-              <p className="text-sm font-semibold text-slate-700">{state.label}</p>
-              <div className="space-y-1">
-                <label className="text-xs text-slate-500">생년월일</label>
-                <input
-                  type="date"
-                  value={state.birthDate}
-                  onChange={(e) => { setter({ ...state, birthDate: e.target.value }); setChecked(false) }}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                />
+          ] as Array<{ state: PersonInput; setter: (v: PersonInput) => void; defaultLabel: string }>)
+            .map(({ state, setter, defaultLabel }, idx) => (
+              <div key={idx} className="rounded-xl border border-slate-100 bg-slate-50/60 px-4 py-4 space-y-3">
+                <p className="text-sm font-semibold text-slate-700">{state.label}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1">
+                    <label className="text-xs text-slate-500">생년월일</label>
+                    <input
+                      type="date"
+                      value={state.birthDate}
+                      onChange={(e) => { setter({ ...state, birthDate: e.target.value }); resetChecked() }}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs text-slate-500">태어난 시 <span className="text-slate-400">(선택)</span></label>
+                    <select
+                      value={state.hour}
+                      onChange={(e) => { setter({ ...state, hour: Number(e.target.value) }); resetChecked() }}
+                      className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                    >
+                      {HOUR_OPTIONS.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs text-slate-500">이름/호칭 <span className="text-slate-400">(선택)</span></label>
+                  <input
+                    type="text"
+                    placeholder={defaultLabel}
+                    value={state.label !== defaultLabel ? state.label : ''}
+                    onChange={(e) => setter({ ...state, label: e.target.value || defaultLabel })}
+                    className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                  />
+                </div>
               </div>
-              <div className="space-y-1">
-                <label className="text-xs text-slate-500">이름/호칭 <span className="text-slate-400">(선택)</span></label>
-                <input
-                  type="text"
-                  placeholder={defaultLabel}
-                  value={state.label !== defaultLabel ? state.label : ''}
-                  onChange={(e) => setter({ ...state, label: e.target.value || defaultLabel })}
-                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                />
-              </div>
-            </div>
-          ))}
+            ))}
 
           <div className="flex gap-2 flex-wrap">
             {(Object.keys(COMPAT_LABELS) as CompatibilityType[]).map((t) => (
               <button
                 key={t}
                 type="button"
-                onClick={() => { setActiveType(t); setChecked(false) }}
+                onClick={() => { setActiveType(t); resetChecked() }}
                 className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
                   activeType === t
                     ? 'bg-indigo-500 text-white shadow-sm'
@@ -190,40 +211,67 @@ export default function CompatibilityPage(): JSX.Element {
           </button>
         </div>
 
-        {checked && score !== null && elemA && elemB ? (
-          <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-5 py-6 space-y-5 shadow-sm">
-            <div className="text-center space-y-2">
+        {/* 결과 */}
+        {checked && scores && detail && resultA && resultB ? (
+          <div className="space-y-4">
+            {/* 총점 카드 */}
+            <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-5 py-6 space-y-3 shadow-sm text-center">
               <p className="text-xs font-semibold uppercase tracking-wide text-indigo-500">{COMPAT_LABELS[activeType]} 결과</p>
-              <p className="text-5xl font-bold text-indigo-900 tabular-nums">{score}<span className="text-xl font-normal ml-1">점</span></p>
-              <div className="h-2.5 w-full rounded-full bg-indigo-100 overflow-hidden max-w-xs mx-auto">
+              <p className="text-6xl font-bold text-indigo-900 tabular-nums">
+                {scores.total}<span className="text-2xl font-normal ml-1">점</span>
+              </p>
+              <div className="h-3 w-full max-w-xs mx-auto rounded-full bg-indigo-100 overflow-hidden">
                 <div
-                  className={`h-full rounded-full transition-all ${score >= 78 ? 'bg-emerald-400' : score >= 63 ? 'bg-amber-400' : 'bg-rose-400'}`}
-                  style={{ width: `${score}%` }}
+                  className={`h-full rounded-full transition-all duration-700 ${scoreColor(scores.total)}`}
+                  style={{ width: `${scores.total}%` }}
                 />
               </div>
+              <p className="text-sm text-slate-700 leading-relaxed pt-1">{detail.summary}</p>
             </div>
 
+            {/* 4차원 점수 */}
+            <div className="rounded-2xl border border-slate-100 bg-white/90 px-5 py-5 space-y-4 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">4차원 분석</p>
+              {CATEGORY_META.map(({ key, label, subLabel, icon }) => {
+                const score = scores[key] as number
+                const text = detail[key as keyof typeof detail] as string
+                return (
+                  <div key={key} className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-indigo-400 text-sm">{icon}</span>
+                        <span className="text-sm font-semibold text-slate-700">{label}</span>
+                        <span className="text-xs text-slate-400">{subLabel}</span>
+                      </div>
+                      <span className="text-sm font-bold tabular-nums text-indigo-700">{score}점</span>
+                    </div>
+                    <ScoreBar score={score} colorClass={scoreColor(score)} />
+                    <p className="text-xs text-slate-600 leading-relaxed">{text}</p>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* 두 사람 오행 카드 */}
             <div className="grid grid-cols-2 gap-3">
               {([
-                { label: personA.label, elem: elemA },
-                { label: personB.label, elem: elemB }
-              ]).map(({ label, elem }) => (
-                <div key={label} className="rounded-xl border border-indigo-100 bg-white/80 px-3 py-3 space-y-1.5">
-                  <p className="text-xs font-semibold text-indigo-600">{label}</p>
-                  <p className="text-base font-bold text-slate-800">{ELEMENT_LABELS[elem]} 기운</p>
-                  <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">{TEMPERAMENT_BY_ELEMENT[elem]}</p>
-                  <div className="flex flex-wrap gap-1">
-                    {ELEMENT_KEYWORDS[elem].slice(0, 2).map((kw) => (
-                      <span key={kw} className="text-[10px] rounded-full bg-indigo-50 border border-indigo-100 px-2 py-0.5 text-indigo-700">{kw}</span>
-                    ))}
+                { label: personA.label, result: resultA },
+                { label: personB.label, result: resultB }
+              ]).map(({ label, result }) => {
+                const elem = result.summary.strongest.element
+                return (
+                  <div key={label} className="rounded-xl border border-indigo-100 bg-white/80 px-3 py-3 space-y-1.5">
+                    <p className="text-xs font-semibold text-indigo-600">{label}</p>
+                    <p className="text-base font-bold text-slate-800">{ELEMENT_LABELS[elem]} 기운</p>
+                    <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">{TEMPERAMENT_BY_ELEMENT[elem]}</p>
+                    <div className="flex flex-wrap gap-1">
+                      {ELEMENT_KEYWORDS[elem].slice(0, 2).map((kw) => (
+                        <span key={kw} className="text-[10px] rounded-full bg-indigo-50 border border-indigo-100 px-2 py-0.5 text-indigo-700">{kw}</span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="rounded-xl border border-white/80 bg-white/70 px-4 py-4 space-y-1">
-              <p className="text-xs font-semibold text-slate-500">종합 해석</p>
-              <p className="text-sm leading-relaxed text-slate-700">{getCompatComment(score, activeType)}</p>
+                )
+              })}
             </div>
 
             <button

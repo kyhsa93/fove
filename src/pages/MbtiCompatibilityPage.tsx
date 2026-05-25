@@ -1,4 +1,4 @@
-import { JSX, useEffect } from 'react'
+import { JSX, useEffect, useMemo, useState } from 'react'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
 
@@ -191,6 +191,128 @@ const GROUP_BADGE: Record<string, string> = {
   '탐험가': 'bg-amber-100 text-amber-700'
 }
 
+const MBTI_TYPES = MBTI_DATA.map((d) => d.type)
+
+const RATING_SCORE: Record<Rating, number> = { excellent: 92, good: 78, moderate: 62 }
+
+function getMbtiCompat(typeA: string, typeB: string): { rating: Rating; score: number; reason: string; reverse?: string } | null {
+  if (!typeA || !typeB || typeA === typeB) return null
+  const dataA = MBTI_DATA.find((d) => d.type === typeA)
+  const dataB = MBTI_DATA.find((d) => d.type === typeB)
+  if (!dataA || !dataB) return null
+
+  const matchAB = dataA.matches.find((m) => m.type === typeB)
+  const matchBA = dataB.matches.find((m) => m.type === typeA)
+
+  const primary = matchAB ?? matchBA
+  if (!primary) {
+    return { rating: 'moderate', score: 62, reason: `${typeA}와 ${typeB}는 서로 다른 에너지를 가지고 있습니다. 차이를 존중하며 소통하면 의외의 조화를 발견할 수 있습니다.` }
+  }
+
+  const reverse = matchAB && matchBA && matchAB !== matchBA ? matchBA.reason : undefined
+  return { rating: primary.rating, score: RATING_SCORE[primary.rating], reason: primary.reason, reverse }
+}
+
+function MbtiCalculator() {
+  const [typeA, setTypeA] = useState('')
+  const [typeB, setTypeB] = useState('')
+
+  const compat = useMemo(() => getMbtiCompat(typeA, typeB), [typeA, typeB])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    const a = params.get('a')
+    const b = params.get('b')
+    if (a && MBTI_TYPES.includes(a)) setTypeA(a)
+    if (b && MBTI_TYPES.includes(b)) setTypeB(b)
+  }, [])
+
+  const handleShare = () => {
+    if (!typeA || !typeB) return
+    const url = `${window.location.origin}${window.location.pathname}?a=${typeA}&b=${typeB}`
+    navigator.clipboard.writeText(url).catch(() => {})
+  }
+
+  const ratingLabel: Record<Rating, string> = { excellent: '최고 궁합', good: '좋은 궁합', moderate: '보통 궁합' }
+  const ratingColor: Record<Rating, string> = {
+    excellent: 'text-emerald-700 bg-emerald-100 border-emerald-200',
+    good: 'text-sky-700 bg-sky-100 border-sky-200',
+    moderate: 'text-slate-600 bg-slate-100 border-slate-200'
+  }
+  const barColor: Record<Rating, string> = {
+    excellent: 'bg-emerald-400',
+    good: 'bg-sky-400',
+    moderate: 'bg-amber-400'
+  }
+
+  return (
+    <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-5 py-6 space-y-5 shadow-sm">
+      <div>
+        <p className="text-base font-bold text-indigo-900 mb-1">MBTI 궁합 계산기</p>
+        <p className="text-xs text-slate-500">두 사람의 MBTI를 선택하면 궁합을 바로 확인합니다.</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        {([
+          { label: '나의 MBTI', value: typeA, setter: setTypeA },
+          { label: '상대방 MBTI', value: typeB, setter: setTypeB }
+        ] as Array<{ label: string; value: string; setter: (v: string) => void }>).map(({ label, value, setter }) => (
+          <div key={label} className="space-y-1">
+            <p className="text-xs font-medium text-slate-600">{label}</p>
+            <select
+              value={value}
+              onChange={(e) => setter(e.target.value)}
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            >
+              <option value="">선택</option>
+              {MBTI_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </div>
+        ))}
+      </div>
+
+      {compat && typeA && typeB && (
+        <div className="rounded-xl border border-white/80 bg-white/80 px-4 py-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="font-bold text-slate-800">{typeA} × {typeB}</p>
+            <span className={`text-xs font-semibold rounded-full border px-3 py-0.5 ${ratingColor[compat.rating]}`}>
+              {ratingLabel[compat.rating]}
+            </span>
+          </div>
+          <div className="space-y-1">
+            <div className="flex justify-between text-xs text-slate-500">
+              <span>궁합 점수</span>
+              <span className="font-bold text-indigo-700 tabular-nums">{compat.score}점</span>
+            </div>
+            <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${barColor[compat.rating]}`}
+                style={{ width: `${compat.score}%` }}
+              />
+            </div>
+          </div>
+          <p className="text-sm text-slate-700 leading-relaxed">{compat.reason}</p>
+          {compat.reverse && (
+            <p className="text-xs text-slate-500 leading-relaxed border-t border-slate-100 pt-2">{compat.reverse}</p>
+          )}
+          <button
+            type="button"
+            onClick={handleShare}
+            className="w-full rounded-xl border border-indigo-200 bg-indigo-50 py-2 text-xs font-medium text-indigo-700 hover:bg-indigo-100 transition"
+          >
+            이 결과 공유하기 🔗
+          </button>
+        </div>
+      )}
+
+      {typeA === typeB && typeA !== '' && (
+        <p className="text-sm text-slate-500 text-center">같은 MBTI끼리는 다른 타입을 선택해보세요.</p>
+      )}
+    </div>
+  )
+}
+
 export default function MbtiCompatibilityPage(): JSX.Element {
   useEffect(() => {
     document.title = 'MBTI 16타입 궁합 매트릭스 — 나와 맞는 유형은? | Fove'
@@ -217,6 +339,8 @@ export default function MbtiCompatibilityPage(): JSX.Element {
             MBTI 유형별 연애 궁합과 스타일을 분석합니다. 인지 기능의 상호보완성을 바탕으로 최고 궁합·좋은 궁합을 정리했습니다. 참고 자료로 활용하되, 실제 관계는 두 사람의 노력이 더 중요합니다.
           </p>
         </header>
+
+        <MbtiCalculator />
 
         {groups.map((group) => {
           const types = MBTI_DATA.filter((t) => t.group === group)

@@ -15,6 +15,7 @@ import CompatibilityPage from './pages/CompatibilityPage'
 import QuizPage from './pages/QuizPage'
 import SajuYearPage from './pages/SajuYearPage'
 import MbtiCompatibilityPage from './pages/MbtiCompatibilityPage'
+import ZodiacCompatPage from './pages/ZodiacCompatPage'
 import BlogSajuBasicsPage from './pages/BlogSajuBasicsPage'
 import BlogZodiacStandardPage from './pages/BlogZodiacStandardPage'
 import BlogMbtiLoveStylePage from './pages/BlogMbtiLoveStylePage'
@@ -109,6 +110,12 @@ const routes: Record<RoutePath, RouteConfig> = {
     description: 'MBTI 16타입별 연애 궁합을 확인하세요. INTJ, ENFP, INFJ, ENTP 등 각 유형의 최고 궁합과 연애 스타일을 분석합니다.',
     ogTitle: 'MBTI 16타입 궁합 매트릭스 — Fove'
   },
+  [ROUTE_PATHS.zodiacCompatibility]: {
+    component: ZodiacCompatPage,
+    title: '띠 궁합 — 12간지 궁합 보기 | Fove',
+    description: '쥐띠·소띠·호랑이띠 등 12간지 띠별 궁합을 확인하세요. 삼합·육합·충 기반으로 연인·친구·직장 궁합을 분석합니다.',
+    ogTitle: '띠 궁합 — 12간지 궁합 보기 | Fove'
+  },
   [ROUTE_PATHS.blogSajuBasics]: {
     component: BlogSajuBasicsPage,
     title: '사주란 무엇인가? 사주팔자 기초 완벽 정리 | Fove',
@@ -152,6 +159,7 @@ const routeKeys = Object.keys(routes) as RoutePath[]
 const normalizePath = (rawPath: string): RoutePath => {
   if (!rawPath) return ROUTE_PATHS.home
   const cleaned = rawPath.replace(/\/+$/, '') || '/'
+  if (cleaned === ROUTE_PATHS.zodiacCompatibility) return ROUTE_PATHS.zodiacCompatibility
   if (cleaned.startsWith('/zodiac')) return ROUTE_PATHS.zodiac
   if (/^\/saju\/\d{4}$/.test(cleaned)) return ROUTE_PATHS.sajuYear
   const match = routeKeys.find((key) => key === cleaned)
