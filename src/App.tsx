@@ -10,6 +10,9 @@ import FortuneWeekPage from './pages/FortuneWeekPage'
 import FortuneMonthPage from './pages/FortuneMonthPage'
 import FortuneYearPage from './pages/FortuneYearPage'
 import ZodiacPage from './pages/ZodiacPage'
+import InsightPage from './pages/InsightPage'
+import CompatibilityPage from './pages/CompatibilityPage'
+import QuizPage from './pages/QuizPage'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import type { RoutePath } from './routes'
@@ -70,6 +73,24 @@ const routes: Record<RoutePath, RouteConfig> = {
     title: 'Fove · 띠별 운세',
     description: '12간지 띠별 기질·관계·직업·건강 특성과 사주 오행 분석을 확인하세요.',
     ogTitle: '띠별 운세 — Fove'
+  },
+  [ROUTE_PATHS.insight]: {
+    component: InsightPage,
+    title: 'Fove · 사주·MBTI 통합 인사이트',
+    description: '타고난 사주 성향과 현재 MBTI 성향을 결합해 나만의 맞춤 성향 리포트를 확인하세요.',
+    ogTitle: '사주·MBTI 통합 인사이트 — Fove'
+  },
+  [ROUTE_PATHS.compatibility]: {
+    component: CompatibilityPage,
+    title: 'Fove · 궁합 보기',
+    description: '두 사람의 생년월일과 사주 오행을 분석해 연인·친구·직장 궁합 점수를 확인하세요.',
+    ogTitle: '궁합 보기 — Fove'
+  },
+  [ROUTE_PATHS.quiz]: {
+    component: QuizPage,
+    title: 'Fove · 운세 심리테스트',
+    description: '가벼운 심리테스트로 나의 운 흐름과 성향을 확인하고 결과를 공유해 보세요.',
+    ogTitle: '운세 심리테스트 — Fove'
   },
   [ROUTE_PATHS.privacyPolicy]: {
     component: PrivacyPolicyPage,

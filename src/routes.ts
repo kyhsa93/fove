@@ -7,6 +7,9 @@ export const ROUTE_PATHS = {
   fortuneMonth: '/fortune/month',
   fortuneYear: '/fortune/year',
   zodiac: '/zodiac',
+  insight: '/insight',
+  compatibility: '/compatibility',
+  quiz: '/quiz',
   privacyPolicy: '/privacy-policy',
   termsOfService: '/terms-of-service',
   contact: '/contact'
@@ -24,5 +27,6 @@ export const navLinks: Array<{ path: RoutePath; label: string }> = [
   { path: ROUTE_PATHS.home, label: '홈' },
   { path: ROUTE_PATHS.saju, label: '사주' },
   { path: ROUTE_PATHS.mbti, label: 'MBTI' },
-  { path: ROUTE_PATHS.fortune, label: '오늘의 운세' }
+  { path: ROUTE_PATHS.fortune, label: '오늘의 운세' },
+  { path: ROUTE_PATHS.insight, label: '통합 인사이트' }
 ]
