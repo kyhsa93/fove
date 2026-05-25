@@ -31,7 +31,6 @@ export const footerLinks: Array<{ path: RoutePath; label: string }> = [
 ]
 
 export const navLinks: Array<{ path: RoutePath; label: string }> = [
-  { path: ROUTE_PATHS.home, label: '홈' },
   { path: ROUTE_PATHS.saju, label: '사주' },
   { path: ROUTE_PATHS.mbti, label: 'MBTI' },
   { path: ROUTE_PATHS.fortune, label: '오늘의 운세' },
