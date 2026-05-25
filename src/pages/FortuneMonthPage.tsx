@@ -1,8 +1,20 @@
 import { JSX, useMemo } from 'react'
-import { buildMonthlyFortune } from '../lib/saju'
+import { buildMonthlyFortune, buildDailyFortune } from '../lib/saju'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
+import { useSajuCalculator } from '../hooks/useSajuCalculator'
 import type { Element } from '../lib/saju/constants'
+import type { MonthDayFortune } from '../lib/saju/types'
+
+type DayQuality = 'good' | 'caution' | 'neutral'
+
+function getGeneralDayQuality(d: MonthDayFortune): DayQuality {
+  const BASE: Record<Element, number> = { 목: 72, 화: 76, 토: 65, 금: 62, 수: 70 }
+  const score = BASE[d.element] + (d.yinYang === '양' ? 6 : -6)
+  if (score >= 75) return 'good'
+  if (score <= 60) return 'caution'
+  return 'neutral'
+}
 
 const ELEMENT_COLOR: Record<Element, string> = {
   목: 'border-emerald-200 bg-emerald-50 text-emerald-900',
@@ -28,6 +40,26 @@ export default function FortuneMonthPage(): JSX.Element {
   const month = now.getMonth() + 1
   const monthlyFortune = useMemo(() => buildMonthlyFortune(), [])
   const today = monthlyFortune.find((d) => d.isToday)
+  const { result } = useSajuCalculator()
+
+  const dayQualities = useMemo<Record<number, DayQuality>>(() => {
+    const map: Record<number, DayQuality> = {}
+    for (const d of monthlyFortune) {
+      if (result) {
+        const [y, mo, dy] = d.date.split('.').map(Number)
+        try {
+          const ref = new Date(y, mo - 1, dy, 12, 0, 0)
+          const fortune = buildDailyFortune(result, ref)
+          map[d.day] = fortune.score >= 78 ? 'good' : fortune.score <= 55 ? 'caution' : 'neutral'
+        } catch {
+          map[d.day] = getGeneralDayQuality(d)
+        }
+      } else {
+        map[d.day] = getGeneralDayQuality(d)
+      }
+    }
+    return map
+  }, [monthlyFortune, result])
 
   const firstWeekday = useMemo(() => {
     // 0=일, 1=월 ... 6=토
@@ -86,29 +118,71 @@ export default function FortuneMonthPage(): JSX.Element {
             {Array.from({ length: firstWeekday }).map((_, i) => (
               <div key={`empty-${i}`} />
             ))}
-            {monthlyFortune.map((d) => (
-              <div
-                key={d.day}
-                className={`rounded-lg border py-2 text-center space-y-0.5 transition ${
-                  d.isToday
-                    ? 'border-amber-300 bg-amber-50 shadow-sm ring-1 ring-amber-300'
-                    : d.isPast
-                      ? 'border-slate-100 bg-slate-50/60 opacity-60'
-                      : `${ELEMENT_COLOR[d.element]} opacity-90`
-                }`}
-              >
-                <p className={`text-xs font-medium ${d.isToday ? 'text-amber-700' : 'text-inherit opacity-70'}`}>
-                  {d.day}
-                </p>
-                <p className={`text-xs font-bold leading-none ${d.isToday ? 'text-amber-900' : ''}`}>
-                  {d.pillarName}
-                </p>
-                <p className={`text-[10px] leading-tight ${d.isToday ? 'text-amber-700' : 'opacity-70'}`}>
-                  {d.elementLabel.replace(/\(.*?\)/, '')}
-                </p>
-              </div>
-            ))}
+            {monthlyFortune.map((d) => {
+              const quality = dayQualities[d.day] ?? 'neutral'
+              return (
+                <div
+                  key={d.day}
+                  className={`relative rounded-lg border py-2 text-center space-y-0.5 transition ${
+                    d.isToday
+                      ? 'border-amber-300 bg-amber-50 shadow-sm ring-1 ring-amber-300'
+                      : d.isPast
+                        ? 'border-slate-100 bg-slate-50/60 opacity-60'
+                        : `${ELEMENT_COLOR[d.element]} opacity-90`
+                  }`}
+                >
+                  {!d.isPast && !d.isToday && quality !== 'neutral' ? (
+                    <span className={`absolute -top-1 -right-1 h-2 w-2 rounded-full ring-1 ring-white ${quality === 'good' ? 'bg-emerald-400' : 'bg-rose-400'}`} aria-label={quality === 'good' ? '좋은 날' : '조심할 날'} />
+                  ) : null}
+                  <p className={`text-xs font-medium ${d.isToday ? 'text-amber-700' : 'text-inherit opacity-70'}`}>
+                    {d.day}
+                  </p>
+                  <p className={`text-xs font-bold leading-none ${d.isToday ? 'text-amber-900' : ''}`}>
+                    {d.pillarName}
+                  </p>
+                  <p className={`text-[10px] leading-tight ${d.isToday ? 'text-amber-700' : 'opacity-70'}`}>
+                    {d.elementLabel.replace(/\(.*?\)/, '')}
+                  </p>
+                </div>
+              )
+            })}
           </div>
+        </div>
+
+        {/* 좋은날/조심할날 범례 및 요약 */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-4 text-xs text-slate-600">
+            <span className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 ring-1 ring-white ring-offset-1" />
+              좋은 날
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-rose-400 ring-1 ring-white ring-offset-1" />
+              조심할 날
+            </span>
+            <span className="text-slate-400">{result ? '내 사주 기반' : '일반 기준'}</span>
+          </div>
+          {(() => {
+            const goodDays = monthlyFortune.filter((d) => !d.isPast && dayQualities[d.day] === 'good').map((d) => d.day)
+            const cautionDays = monthlyFortune.filter((d) => !d.isPast && dayQualities[d.day] === 'caution').map((d) => d.day)
+            if (!goodDays.length && !cautionDays.length) return null
+            return (
+              <div className="grid gap-2 sm:grid-cols-2">
+                {goodDays.length > 0 && (
+                  <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3 space-y-1">
+                    <p className="text-xs font-semibold text-emerald-700">이번 달 좋은 날</p>
+                    <p className="text-sm text-emerald-900">{goodDays.join('일, ')}일</p>
+                  </div>
+                )}
+                {cautionDays.length > 0 && (
+                  <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-3 space-y-1">
+                    <p className="text-xs font-semibold text-rose-700">이번 달 조심할 날</p>
+                    <p className="text-sm text-rose-900">{cautionDays.join('일, ')}일</p>
+                  </div>
+                )}
+              </div>
+            )
+          })()}
         </div>
 
         {/* 오행 분포 */}
