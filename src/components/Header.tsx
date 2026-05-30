@@ -48,23 +48,6 @@ export function Header({ currentPath, onNavigate }: HeaderProps): JSX.Element {
           })}
         </nav>
 
-        <nav className="sm:hidden">
-          <label htmlFor="mobile-navigation" className="sr-only">
-            페이지 이동
-          </label>
-          <select
-            id="mobile-navigation"
-            value={currentPath}
-            onChange={(event) => onNavigate(event.target.value as RoutePath)}
-            className="rounded-full border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200"
-          >
-            {navLinks.map((item) => (
-              <option key={item.path} value={item.path}>
-                {item.label}
-              </option>
-            ))}
-          </select>
-        </nav>
       </div>
     </header>
   )

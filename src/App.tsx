@@ -22,6 +22,7 @@ import BlogZodiacStandardPage from './pages/BlogZodiacStandardPage'
 import BlogMbtiLoveStylePage from './pages/BlogMbtiLoveStylePage'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
+import { BottomNav } from './components/BottomNav'
 import type { RoutePath } from './routes'
 import { ROUTE_PATHS, footerLinks } from './routes'
 
@@ -251,16 +252,19 @@ export default function App(): JSX.Element {
             ? 'bg-gradient-to-b from-rose-50 via-white to-emerald-50'
             : 'bg-slate-100'
 
+  const isHomeDark = currentPath === ROUTE_PATHS.home
+
   return (
     <div className={`flex min-h-screen flex-col text-slate-900 ${backgroundClass}`}>
       <a href="#main-content" className="skip-link">
         본문으로 바로가기
       </a>
       <Header currentPath={currentPath} onNavigate={navigate} />
-      <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
+      <main id="main-content" tabIndex={-1} className="flex-1 pb-16 sm:pb-0 focus:outline-none">
         <CurrentPage />
       </main>
       <Footer currentPath={currentPath} onNavigate={navigate} />
+      <BottomNav currentPath={currentPath} onNavigate={navigate} isDark={isHomeDark} />
     </div>
   )
 }
