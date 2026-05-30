@@ -1,6 +1,7 @@
 import { JSX, useEffect } from 'react'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
+import { AdUnit } from '../components/AdUnit'
 
 interface LoveStyleData {
   type: string
@@ -211,6 +212,8 @@ export default function BlogMbtiLoveStylePage(): JSX.Element {
             </section>
           )
         })}
+
+        <AdUnit slot="BLOG_MBTI_LOVE_BANNER" format="horizontal" />
 
         <section className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-5 py-6 space-y-3">
           <h2 className="text-base font-semibold text-indigo-900">MBTI 궁합도 확인해보세요</h2>
