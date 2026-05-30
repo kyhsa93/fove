@@ -1,6 +1,6 @@
 # Fove 제품 로드맵
 
-Version: v10
+Version: v11
 Updated: 2026-05-30
 Status: 진행 중
 
@@ -113,14 +113,16 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 
 ---
 
-### 🔲 P-G5 — 궁합 결과 공유 카드 이미지
+### ✅ P-G5 — 궁합 결과 공유 카드 이미지
 
-**목적:** 궁합 결과 SNS 공유 유도, 바이럴 채널화  
-**전제:** P1(공유 카드) 구현 후 ShareCard 컴포넌트 재사용  
-**예상 파일:** `src/components/ShareCard.tsx` 확장, `src/pages/CompatibilityPage.tsx` 등  
-**구현 방법:**
-- ShareCard를 궁합 요약 (두 사람 이름 + 총점 + 차트)으로 확장
-- 사주 궁합·MBTI 궁합·통합 궁합 세 페이지에 동일 컴포넌트 배치
+**완료:** 2026-05-30  
+**변경 파일:** `src/components/ShareCard.tsx` 확장, `src/pages/{CompatibilityPage,MbtiCompatibilityPage,CombinedCompatPage}.tsx`
+
+- `CompatShareData` 인터페이스 + `buildCompatCanvas()` + `CompatShareCardButton` 추가
+- 페이지 종류별 배경 색상 테마 구분 (사주: 보라, MBTI: 파랑, 통합: 인디고)
+- 사주 궁합: 두 이름·총점·4차원 분석 바(총운/감정교류/소통/미래안정)·요약
+- MBTI 궁합: MBTI 타입·점수·등급(최고/좋은/보통)·이유 텍스트
+- 통합 궁합: 두 이름·통합 점수·사주 궁합/MBTI 궁합 2개 바
 
 ---
 
@@ -219,3 +221,4 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 | 2026-05-30 | v8 | P-SEO1 완료 — 블로그 noscript 크롤링 개선, src/data 공유 파일로 자동 동기화 |
 | 2026-05-30 | v9 | P-SEO2 완료 — vite-react-ssg 도입, 20개 라우트 빌드 타임 정적 렌더링, react-router-dom v6 마이그레이션 |
 | 2026-05-30 | v10 | P1 완료 — Canvas 2D API 기반 운세 공유 카드 이미지 저장 (1200×630 PNG) |
+| 2026-05-30 | v11 | P-G5 완료 — 궁합 공유 카드 이미지 (사주·MBTI·통합 3종, 페이지별 색상 테마) |
