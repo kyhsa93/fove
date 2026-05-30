@@ -124,18 +124,6 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 
 ---
 
-### 🔲 P-ADS1 — Google AdSense 광고 배치
-
-**목적:** ads.txt가 이미 존재하지만 실제 광고 코드가 없음. 수익화 빠른 시작  
-**예상 파일:** `index.html`, `src/components/AdUnit.tsx`  
-**구현 방법:**
-- AdSense 스크립트를 `index.html` `<head>`에 추가
-- `AdUnit` 래퍼 컴포넌트 작성 — dev 환경에서는 플레이스홀더 렌더링
-- FortunePage, ZodiacPage, BlogPage 등 콘텐츠 섹션 사이에 배치
-- 모바일/데스크톱 반응형 슬롯 구분
-
----
-
 ### ✅ P-SEO2 — vite-react-ssg 빌드 타임 정적 렌더링
 
 **완료:** 2026-05-30  
