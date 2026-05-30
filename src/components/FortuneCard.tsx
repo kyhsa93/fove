@@ -146,20 +146,20 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
       <div className="space-y-5 text-sm leading-relaxed text-slate-700">
         <OverallScoreBar score={score} />
 
-        <div className="grid gap-4 md:grid-cols-3">
-          <div className="md:col-span-1 space-y-1">
+        <div className="space-y-3">
+          <div className="rounded-xl border border-amber-50 bg-amber-50/40 px-3 py-3 space-y-1">
             <p className="text-xs font-semibold uppercase tracking-wide text-amber-600">
               <TooltipLabel text="ENERGY" description="오늘 하루 전반의 에너지 흐름 요약입니다." className="text-amber-600" />
             </p>
             <p>{combinedTexts.energy}</p>
           </div>
-          <div className="md:col-span-1 space-y-1">
+          <div className="rounded-xl border border-rose-50 bg-rose-50/40 px-3 py-3 space-y-1">
             <p className="text-xs font-semibold uppercase tracking-wide text-rose-600">
               <TooltipLabel text="ACTION" description="실제로 실행하면 도움이 되는 행동 가이드입니다." className="text-rose-600" />
             </p>
             <p>{combinedTexts.action}</p>
           </div>
-          <div className="md:col-span-1 space-y-1">
+          <div className="rounded-xl border border-slate-100 bg-slate-50/40 px-3 py-3 space-y-1">
             <p className="text-xs font-semibold uppercase tracking-wide text-slate-600">
               <TooltipLabel text="CARE" description="균형을 위해 조심하면 좋은 포인트입니다." className="text-slate-600" />
             </p>
@@ -169,7 +169,7 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
 
         <div className="rounded-xl border border-amber-100 bg-white/80 px-2 py-4 sm:px-4">
           <h3 className="text-sm font-semibold text-amber-700">핵심 해설</h3>
-          <dl className="mt-3 grid gap-3 md:grid-cols-2 text-slate-700">
+          <dl className="mt-3 grid gap-3 sm:grid-cols-2 text-slate-700">
             <div className="space-y-1">
               <dt className="text-xs font-medium uppercase tracking-wide text-amber-500">왜 이런 결과가 나왔나요?</dt>
               <dd>{reasonText}</dd>
