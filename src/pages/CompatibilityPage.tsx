@@ -133,7 +133,7 @@ export default function CompatibilityPage(): JSX.Element {
 
   return (
     <section className="py-6 sm:py-8">
-      <div className="mx-auto max-w-xl px-4 space-y-8">
+      <div className="mx-auto max-w-3xl px-4 space-y-8">
         <header className="space-y-2 text-center">
           <h1 className="text-3xl font-bold text-gray-900">궁합 보기</h1>
           <p className="text-sm text-gray-600">두 사람의 생년월일로 사주 오행 궁합을 4개 차원으로 분석합니다.</p>
@@ -141,6 +141,7 @@ export default function CompatibilityPage(): JSX.Element {
 
         {/* 입력 폼 */}
         <div className="rounded-2xl border border-slate-100 bg-white/90 px-5 py-6 space-y-4 shadow-sm">
+          <div className="grid gap-4 sm:grid-cols-2">
           {([
             { state: personA, setter: setPersonA, defaultLabel: '나' },
             { state: personB, setter: setPersonB, defaultLabel: '상대방' }
@@ -183,6 +184,7 @@ export default function CompatibilityPage(): JSX.Element {
                 </div>
               </div>
             ))}
+          </div>
 
           <div className="flex gap-2 flex-wrap">
             {(Object.keys(COMPAT_LABELS) as CompatibilityType[]).map((t) => (

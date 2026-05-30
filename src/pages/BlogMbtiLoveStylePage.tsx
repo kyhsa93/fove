@@ -153,7 +153,7 @@ export default function BlogMbtiLoveStylePage(): JSX.Element {
 
   return (
     <section className="py-6 sm:py-8">
-      <div className="mx-auto max-w-4xl px-4 space-y-10">
+      <div className="mx-auto max-w-2xl px-4 space-y-10">
         <header className="space-y-3 text-center">
           <p className="text-xs font-semibold uppercase tracking-wide text-rose-500">MBTI 연애 분석</p>
           <h1 className="text-3xl font-bold text-gray-900">MBTI별 연애 스타일 완벽 정리</h1>

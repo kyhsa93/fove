@@ -219,8 +219,12 @@ export default function FortunePage(): JSX.Element {
 
   return (
     <section className="py-6 sm:py-8">
-      <div className="mx-auto max-w-4xl space-y-8 px-4">
-        <header className="space-y-2 text-center">
+      <div className="mx-auto max-w-5xl px-4">
+        <div className="lg:grid lg:grid-cols-[360px_1fr] lg:gap-10 lg:items-start">
+
+          {/* 왼쪽: 입력 폼 (sticky) */}
+          <div className="space-y-5 lg:sticky lg:top-[72px]">
+        <header className="space-y-2">
           <h1 className="text-3xl font-bold text-gray-900">오늘의 운세</h1>
           <p className="text-sm text-gray-600">
             사주 기반으로 오늘의 흐름과 실천 포인트를 확인하세요. 사주 입력값이 비어 있으면 오늘 날짜와 현재 시간이 자동으로 채워지고 성별은 남성으로 시작하므로 바로 확인할 수 있어요.
@@ -252,7 +256,10 @@ export default function FortunePage(): JSX.Element {
         <span className="sr-only" aria-live="assertive">
           {error}
         </span>
+          </div>
 
+          {/* 오른쪽: 결과 및 콘텐츠 */}
+          <div className="mt-8 lg:mt-0 space-y-8">
         <section ref={fortuneSectionRef} className="space-y-4">
           <h2 className="text-xl font-semibold text-gray-900">오늘의 운세 카드</h2>
           {isLoading ? (
@@ -462,6 +469,8 @@ export default function FortunePage(): JSX.Element {
             ))}
           </div>
         </section>
+          </div>
+        </div>
       </div>
     </section>
   )

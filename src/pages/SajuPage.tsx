@@ -64,68 +64,78 @@ export default function SajuPage(): JSX.Element {
 
   return (
     <section className="py-6 sm:py-8">
-      <div className="mx-auto max-w-4xl space-y-8 px-4">
-        <header className="space-y-2 text-center">
-          <h1 className="text-3xl font-bold text-gray-900">사주팔자 간편 조회</h1>
-          <p className="text-sm text-gray-600">
-            생년월일과 태어난 시간을 입력하면 사주팔자와 오행 분포를 확인할 수 있습니다.
-          </p>
-        </header>
+      <div className="mx-auto max-w-5xl px-4">
+        <div className="lg:grid lg:grid-cols-[360px_1fr] lg:gap-10 lg:items-start">
 
-        <SajuForm
-          birthDate={birthDate}
-          birthTime={birthTime}
-          gender={gender}
-          onBirthDateChange={setBirthDate}
-          onBirthTimeChange={setBirthTime}
-          onGenderChange={setGender}
-        />
+          {/* 왼쪽: 입력 폼 (sticky) */}
+          <div className="space-y-6 lg:sticky lg:top-[72px]">
+            <header className="space-y-2">
+              <h1 className="text-3xl font-bold text-gray-900">사주팔자 간편 조회</h1>
+              <p className="text-sm text-gray-600">
+                생년월일과 태어난 시간을 입력하면 사주팔자와 오행 분포를 확인할 수 있습니다.
+              </p>
+            </header>
 
-        <span className="sr-only" aria-live="assertive">
-          {error}
-        </span>
+            <SajuForm
+              birthDate={birthDate}
+              birthTime={birthTime}
+              gender={gender}
+              onBirthDateChange={setBirthDate}
+              onBirthTimeChange={setBirthTime}
+              onGenderChange={setGender}
+            />
 
-        <SajuResult result={result} elementBars={elementBars} interpretation={interpretation} isLoading={isLoading} />
+            <span className="sr-only" aria-live="assertive">
+              {error}
+            </span>
+          </div>
 
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">다른 기능 살펴보기</h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            {FEATURE_LINKS.map((flow) => (
-              <article
-                key={flow.id}
-                className={`rounded-2xl border bg-white/70 px-2 py-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg focus-within:-translate-y-1 focus-within:shadow-lg sm:px-5 sm:py-5 ${flow.accent}`}
-              >
-                <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-gray-900">{flow.title}</h3>
-                  <p className="text-sm leading-relaxed text-gray-600">{flow.description}</p>
-                  <button
-                    type="button"
-                    onClick={() => navigateTo(flow.path)}
-                    className={`inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-white shadow-sm transition focus-visible:outline-2 focus-visible:outline-offset-2 ${flow.buttonClass}`}
+          {/* 오른쪽: 결과 */}
+          <div className="mt-8 lg:mt-0 space-y-8">
+            <SajuResult result={result} elementBars={elementBars} interpretation={interpretation} isLoading={isLoading} />
+
+            <section className="space-y-4">
+              <h2 className="text-lg font-semibold text-gray-900">다른 기능 살펴보기</h2>
+              <div className="grid gap-4 md:grid-cols-2">
+                {FEATURE_LINKS.map((flow) => (
+                  <article
+                    key={flow.id}
+                    className={`rounded-2xl border bg-white/70 px-2 py-4 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg focus-within:-translate-y-1 focus-within:shadow-lg sm:px-5 sm:py-5 ${flow.accent}`}
                   >
-                    바로 이동
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
+                    <div className="space-y-3">
+                      <h3 className="text-lg font-semibold text-gray-900">{flow.title}</h3>
+                      <p className="text-sm leading-relaxed text-gray-600">{flow.description}</p>
+                      <button
+                        type="button"
+                        onClick={() => navigateTo(flow.path)}
+                        className={`inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-white shadow-sm transition focus-visible:outline-2 focus-visible:outline-offset-2 ${flow.buttonClass}`}
+                      >
+                        바로 이동
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
 
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold text-gray-900">자주 묻는 질문</h2>
-          <div className="space-y-4">
-            {FAQ_ITEMS.map((item) => (
-              <article key={item.question} className="rounded-2xl border border-slate-100 bg-white/80 px-2 py-4 shadow-sm space-y-3 sm:px-5 sm:py-5">
-                <h3 className="text-base font-semibold text-gray-900">{item.question}</h3>
-                <div className="space-y-2 text-sm leading-relaxed text-gray-600">
-                  {item.answer.map((paragraph, index) => (
-                    <p key={index}>{paragraph}</p>
-                  ))}
-                </div>
-              </article>
-            ))}
+            <section className="space-y-4">
+              <h2 className="text-lg font-semibold text-gray-900">자주 묻는 질문</h2>
+              <div className="space-y-4">
+                {FAQ_ITEMS.map((item) => (
+                  <article key={item.question} className="rounded-2xl border border-slate-100 bg-white/80 px-2 py-4 shadow-sm space-y-3 sm:px-5 sm:py-5">
+                    <h3 className="text-base font-semibold text-gray-900">{item.question}</h3>
+                    <div className="space-y-2 text-sm leading-relaxed text-gray-600">
+                      {item.answer.map((paragraph, index) => (
+                        <p key={index}>{paragraph}</p>
+                      ))}
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </section>
           </div>
-        </section>
+
+        </div>
       </div>
     </section>
   )

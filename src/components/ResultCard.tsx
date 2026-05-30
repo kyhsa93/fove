@@ -111,42 +111,47 @@ export function ResultCard({ badge, title, subtitle, metrics = [], summary, tabs
         </div>
       </header>
 
-      {metrics.length ? (
-        <dl className="mt-6 grid gap-4 sm:grid-cols-2">
-          {metrics.map((metric) => (
-            <div key={metric.label} className="rounded-2xl border border-slate-100 bg-slate-50/80 px-3 py-3 sm:px-4">
-              <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">{metric.label}</dt>
-              <dd className="mt-1 text-lg font-semibold text-slate-900">{metric.value}</dd>
-            </div>
-          ))}
-        </dl>
-      ) : null}
-
-      {summary ? <p className="mt-6 text-sm leading-relaxed text-slate-700">{summary}</p> : null}
-
-      {tabs.length ? (
-        <div className="mt-6 space-y-4">
-          <nav className="flex flex-wrap gap-2">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => { setActiveTab(tab.id); onTabChange?.(tab.id) }}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-                  (displayedTab?.id ?? tabs[0].id) === tab.id
-                    ? 'bg-indigo-500 text-white shadow-sm'
-                    : 'border border-slate-200 text-slate-600 hover:border-indigo-200 hover:text-indigo-600'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </nav>
-          <div className="rounded-2xl border border-slate-100 bg-white/90 px-3 py-4 text-sm leading-relaxed text-slate-700 sm:px-5 sm:py-5">
-            {displayedTab?.content ?? null}
+      <div className="mt-6 lg:grid lg:grid-cols-[260px_1fr] lg:gap-8 lg:items-start">
+        {(metrics.length > 0 || summary) ? (
+          <div className="space-y-4">
+            {metrics.length ? (
+              <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+                {metrics.map((metric) => (
+                  <div key={metric.label} className="rounded-2xl border border-slate-100 bg-slate-50/80 px-3 py-3 sm:px-4">
+                    <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">{metric.label}</dt>
+                    <dd className="mt-1 text-lg font-semibold text-slate-900">{metric.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
+            {summary ? <p className="text-sm leading-relaxed text-slate-700">{summary}</p> : null}
           </div>
-        </div>
-      ) : null}
+        ) : <div />}
+
+        {tabs.length ? (
+          <div className="mt-6 lg:mt-0 lg:border-l lg:border-slate-100 lg:pl-8 space-y-4">
+            <nav className="flex flex-wrap gap-2">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => { setActiveTab(tab.id); onTabChange?.(tab.id) }}
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                    (displayedTab?.id ?? tabs[0].id) === tab.id
+                      ? 'bg-indigo-500 text-white shadow-sm'
+                      : 'border border-slate-200 text-slate-600 hover:border-indigo-200 hover:text-indigo-600'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+            <div className="rounded-2xl border border-slate-100 bg-white/90 px-3 py-4 text-sm leading-relaxed text-slate-700 sm:px-5 sm:py-5">
+              {displayedTab?.content ?? null}
+            </div>
+          </div>
+        ) : null}
+      </div>
 
       {actions ? <div className="mt-6">{actions}</div> : null}
       {footer ? <div className="mt-6 text-xs text-slate-500">{footer}</div> : null}
