@@ -7,6 +7,7 @@ import { ConsentBanner } from './components/ConsentBanner'
 import { ToastProvider } from './components/ToastProvider'
 import { AdConsentProvider } from './lib/adConsent'
 import { injectNavigate } from './lib/router'
+import { checkAndNotifyOnLoad, registerPeriodicSync, isOptedIn, getNotificationPermission } from './lib/notifications'
 import { ROUTE_PATHS } from './routes'
 
 type RouteMeta = { title: string; description: string; ogTitle: string }
@@ -46,6 +47,13 @@ export default function Layout(): JSX.Element {
   useEffect(() => {
     injectNavigate(navigate)
   }, [navigate])
+
+  useEffect(() => {
+    checkAndNotifyOnLoad()
+    if (isOptedIn() && getNotificationPermission() === 'granted') {
+      registerPeriodicSync()
+    }
+  }, [])
 
   useEffect(() => {
     if (typeof document === 'undefined') return
