@@ -6,8 +6,8 @@ import { MBTI_TYPES, getMbtiCompat } from '../lib/mbti/compatibility'
 import type { MbtiRating } from '../lib/mbti/compatibility'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
-import { useToast } from '../components/ToastProvider'
 import { CompatShareCardButton } from '../components/ShareCard'
+import { ShareLinkButton } from '../components/ShareLinkButton'
 
 const COMPAT_LABELS: Record<CompatibilityType, string> = {
   love: '연인 궁합',
@@ -93,7 +93,6 @@ function getInitialState() {
 }
 
 export default function CombinedCompatPage(): JSX.Element {
-  const { showToast } = useToast()
   const initial = useMemo(() => getInitialState(), [])
 
   const [personA, setPersonA] = useState<PersonInput>({ birthDate: '', hour: -1, mbti: '', label: '나' })
@@ -150,14 +149,11 @@ export default function CombinedCompatPage(): JSX.Element {
     if (canCheck) setChecked(true)
   }
 
-  const handleShare = useCallback(() => {
-    const url = `${window.location.origin}${window.location.pathname}?type=${activeType}`
-    navigator.clipboard.writeText(url).then(() => {
-      showToast('링크가 복사됐습니다!', 'success')
-    }).catch(() => {
-      showToast('링크 복사에 실패했습니다.', 'error')
-    })
-  }, [activeType, showToast])
+  const combinedShareOptions = useMemo(() => ({
+    title: combinedScore > 0 ? `사주+MBTI 통합 궁합 ${combinedScore}점 — Fove` : 'Fove 사주+MBTI 통합 궁합',
+    description: '사주 오행과 MBTI를 결합한 통합 궁합을 확인해보세요!',
+    url: `${typeof window !== 'undefined' ? window.location.origin : 'https://kyhsa93.github.io'}${typeof window !== 'undefined' ? window.location.pathname : '/fove/compatibility/combined'}?type=${activeType}`,
+  }), [activeType, combinedScore])
 
   return (
     <section className="py-6 sm:py-8">
@@ -389,13 +385,7 @@ export default function CombinedCompatPage(): JSX.Element {
                   { label: 'MBTI 궁합', score: mbtiCompat?.score ?? 0, color: '#60a5fa' },
                 ],
               }} />
-              <button
-                type="button"
-                onClick={handleShare}
-                className="flex-1 rounded-full border border-indigo-200 bg-white/70 py-2.5 text-sm font-medium text-indigo-700 hover:bg-white transition"
-              >
-                링크 공유 🔗
-              </button>
+              <ShareLinkButton options={combinedShareOptions} label="공유하기 🔗" className="flex-1" />
             </div>
           </div>
         ) : null}

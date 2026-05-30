@@ -1,11 +1,11 @@
-import { JSX, useCallback, useEffect, useMemo, useState } from 'react'
+import { JSX, useEffect, useMemo, useState } from 'react'
 import { ELEMENT_LABELS, ELEMENT_KEYWORDS, TEMPERAMENT_BY_ELEMENT } from '../lib/saju'
 import { parseSajuResult, calcCompatScores, getCompatDetail } from '../lib/saju/compatibility'
 import type { CompatibilityType } from '../lib/saju/compatibility'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
-import { useToast } from '../components/ToastProvider'
 import { CompatShareCardButton } from '../components/ShareCard'
+import { ShareLinkButton } from '../components/ShareLinkButton'
 
 const COMPAT_LABELS: Record<CompatibilityType, string> = {
   love: '연인 궁합',
@@ -75,7 +75,6 @@ function scoreColor(score: number) {
 }
 
 export default function CompatibilityPage(): JSX.Element {
-  const { showToast } = useToast()
   const initial = useMemo(() => getInitialState(), [])
 
   const [personA, setPersonA] = useState<PersonInput>({ birthDate: initial.a, hour: -1, label: '나' })
@@ -120,15 +119,14 @@ export default function CompatibilityPage(): JSX.Element {
     }
   }
 
-  const handleShare = useCallback(() => {
-    const base = `${window.location.origin}${window.location.pathname}`
-    const url = `${base}?a=${personA.birthDate}&b=${personB.birthDate}&type=${activeType}`
-    navigator.clipboard.writeText(url).then(() => {
-      showToast('링크가 복사됐습니다. 친구에게 공유해보세요!', 'success')
-    }).catch(() => {
-      showToast('링크 복사에 실패했습니다.', 'error')
-    })
-  }, [personA.birthDate, personB.birthDate, activeType, showToast])
+  const shareOptions = useMemo(() => {
+    const base = `${typeof window !== 'undefined' ? window.location.origin : 'https://kyhsa93.github.io'}${typeof window !== 'undefined' ? window.location.pathname : '/fove/compatibility'}`
+    return {
+      title: scores ? `${personA.label} × ${personB.label} ${COMPAT_LABELS[activeType]} ${scores.total}점 — Fove` : 'Fove 사주 궁합',
+      description: scores ? `${COMPAT_LABELS[activeType]} 결과 ${scores.total}점. 내 사주 궁합도 확인해보세요!` : '두 사람의 사주 오행 궁합을 4차원으로 분석해보세요.',
+      url: `${base}?a=${personA.birthDate}&b=${personB.birthDate}&type=${activeType}`,
+    }
+  }, [personA, personB, activeType, scores])
 
   const resetChecked = () => setChecked(false)
 
@@ -292,13 +290,7 @@ export default function CompatibilityPage(): JSX.Element {
                   { label: '미래안정', score: scores.future, color: '#34d399' },
                 ],
               }} />
-              <button
-                type="button"
-                onClick={handleShare}
-                className="flex-1 rounded-full border border-indigo-200 bg-white/70 py-2.5 text-sm font-medium text-indigo-700 hover:bg-white transition"
-              >
-                링크 공유 🔗
-              </button>
+              <ShareLinkButton options={shareOptions} label="공유하기 🔗" className="flex-1" />
             </div>
           </div>
         ) : null}

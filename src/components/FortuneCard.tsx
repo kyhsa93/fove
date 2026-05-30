@@ -3,6 +3,7 @@ import { ActionCardDeck, type ActionCardData } from './ActionCards'
 import { TooltipLabel } from './TooltipLabel'
 import { ResultCard } from './ResultCard'
 import { ShareCardButton } from './ShareCard'
+import { ShareLinkButton } from './ShareLinkButton'
 import type { MbtiResult } from './MbtiTest'
 import type { DailyFortune, SajuResult } from '../lib/saju'
 import { trackEvent } from '../lib/analytics'
@@ -325,6 +326,12 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
     trackEvent('shared', { pillar: pillarName, score })
   }, [pillarName, score])
 
+  const fortuneShareOptions = useMemo(() => ({
+    title: `오늘의 운세 ${score}점 — Fove`,
+    description: `${dateLabel} 일진 ${pillarName}. 나의 운세도 확인해보세요!`,
+    url: 'https://kyhsa93.github.io/fove/fortune',
+  }), [score, dateLabel, pillarName])
+
   const handleTabChange = useCallback((tabId: string) => {
     if (tabId === 'advice') {
       trackEvent('fortune_completed', { pillar: pillarName, score })
@@ -340,7 +347,16 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
       summary={combinedTexts.energy}
       tabs={tabs}
       belowGrid={<OverallScoreBar score={score} />}
-      actions={<ShareCardButton fortune={dailyFortune} />}
+      actions={
+        <div className="flex gap-2">
+          <ShareCardButton fortune={dailyFortune} />
+          <ShareLinkButton
+            options={fortuneShareOptions}
+            label="공유 🔗"
+            className="px-3 py-1.5 text-xs"
+          />
+        </div>
+      }
       onShare={handleShare}
       onTabChange={handleTabChange}
     />

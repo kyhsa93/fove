@@ -1,7 +1,7 @@
 import { JSX, useCallback, useEffect, useMemo, useState } from 'react'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
-import { useToast } from '../components/ToastProvider'
+import { ShareLinkButton } from '../components/ShareLinkButton'
 import type { Branch } from '../lib/saju/constants'
 import { BRANCHES, BRANCH_ANIMALS, BRANCH_HARMONIES, BRANCH_CONFLICTS } from '../lib/saju/constants'
 
@@ -187,7 +187,6 @@ function getInitialState() {
 }
 
 export default function ZodiacCompatPage(): JSX.Element {
-  const { showToast } = useToast()
   const initial = useMemo(() => getInitialState(), [])
 
   const [yearA, setYearA] = useState(initial.a)
@@ -231,15 +230,14 @@ export default function ZodiacCompatPage(): JSX.Element {
     if (branchA && branchB) setChecked(true)
   }
 
-  const handleShare = useCallback(() => {
-    const base = `${window.location.origin}${window.location.pathname}`
-    const url = `${base}?a=${yearA}&b=${yearB}&type=${activeType}`
-    navigator.clipboard.writeText(url).then(() => {
-      showToast('링크가 복사됐습니다!', 'success')
-    }).catch(() => {
-      showToast('링크 복사에 실패했습니다.', 'error')
-    })
-  }, [yearA, yearB, activeType, showToast])
+  const zodiacShareOptions = useMemo(() => {
+    const base = `${typeof window !== 'undefined' ? window.location.origin : 'https://kyhsa93.github.io'}${typeof window !== 'undefined' ? window.location.pathname : '/fove/zodiac/compatibility'}`
+    return {
+      title: branchA && branchB ? `${BRANCH_ANIMALS[branchA]}띠 × ${BRANCH_ANIMALS[branchB]}띠 궁합 — Fove` : 'Fove 띠 궁합',
+      description: '12간지 띠 궁합을 삼합·육합·충 기반으로 분석해보세요!',
+      url: `${base}?a=${yearA}&b=${yearB}&type=${activeType}`,
+    }
+  }, [yearA, yearB, activeType, branchA, branchB])
 
   const animalLabel = (branch: Branch | null) =>
     branch ? `${BRANCH_ANIMALS[branch]}띠` : '—'
@@ -391,13 +389,7 @@ export default function ZodiacCompatPage(): JSX.Element {
                 </div>
               )}
 
-              <button
-                type="button"
-                onClick={handleShare}
-                className="w-full rounded-2xl border border-indigo-200 bg-white/70 py-3 text-sm font-medium text-indigo-700 hover:bg-white transition"
-              >
-                이 결과 공유하기 🔗
-              </button>
+              <ShareLinkButton options={zodiacShareOptions} label="이 결과 공유하기 🔗" className="w-full py-3" />
             </div>
           </div>
         ) : null}

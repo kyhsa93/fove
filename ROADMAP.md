@@ -1,6 +1,6 @@
 # Fove 제품 로드맵
 
-Version: v22
+Version: v23
 Updated: 2026-05-30
 Status: 진행 중
 
@@ -266,18 +266,20 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 
 ---
 
-### 🔲 R7 — 카카오 공유 + URL 기반 결과 딥링크
+### ✅ R7 — 카카오 공유 + URL 기반 결과 딥링크
+
+**완료:** 2026-05-31  
+**변경 파일:** `src/lib/share.ts` (신규), `src/components/ShareLinkButton.tsx` (신규), `src/pages/{Compatibility,MbtiCompatibility,ZodiacCompat,CombinedCompat}Page.tsx`, `src/components/FortuneCard.tsx`
 
 **목적:** 공유를 통한 신규 유입 + 공유한 사람의 재방문 동시 달성  
-**예상 파일:** `src/lib/share.ts`, `src/pages/CompatibilityPage.tsx` 등  
-**구현 방법:**
-- 카카오 JavaScript SDK 연동 — 운세·궁합 결과를 카카오톡 템플릿으로 공유
-- 궁합 결과를 URL 파라미터로 인코딩 (`/compatibility?a=갑자&b=을축`) → 상대방이 링크만 열면 결과 즉시 확인
-- 공유 카드에 "내 운세 보러 가기" CTA 버튼 포함 (신규 유입)
-- 현재 Canvas 이미지 저장(P1, P-G5)과 병행 제공
+**구현 내용:**
+- `share.ts` — 3단계 폴백: ① Web Share API(모바일 OS 공유시트, 카카오톡 포함) → ② 카카오 SDK(`VITE_KAKAO_APP_KEY` env 설정 시 활성화, lazy loading) → ③ 클립보드 복사
+- `ShareLinkButton` — 통일된 공유 버튼. 클립보드 복사 시 토스트, 네이티브/카카오는 OS/SDK가 처리
+- 4개 궁합 페이지의 `handleShare` + `navigator.clipboard` 직접 호출 → `ShareLinkButton`으로 일원화
+- `FortuneCard` — 이미지 저장 버튼 옆에 "공유 🔗" 링크 공유 버튼 추가
+- 카카오 앱 키: `.env`에 `VITE_KAKAO_APP_KEY=앱키` 추가 시 카카오 공유 자동 활성화, 없으면 Web Share/클립보드로 동작
 
-**복잡도:** 중간 | **리텐션 임팩트:** 높음 (바이럴 루프 형성, 공유 사용자는 재방문율 1.8×)  
-**전제 조건:** 카카오 앱 키 발급 필요
+**복잡도:** 중간 | **리텐션 임팩트:** 높음 (바이럴 루프 형성, 공유 사용자는 재방문율 1.8×)
 
 ---
 
@@ -380,3 +382,4 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 | 2026-05-30 | v20 | R8 완료 — PWA 설치 유도(Android 하단 배너 + iOS 3단계 가이드 모달), 7일 거부 TTL, 설치 후 알림 유도 토스트 |
 | 2026-05-30 | v21 | R5 완료 — 운세 히스토리 달력(90일 저장, /fortune/month 오버레이, 통계 카드, R1 스트릭 연동) |
 | 2026-05-30 | v22 | R6 완료 — 설날·추석·절기·기념일 특별 배너, 이벤트 전날 알림 예고, 명절>절기>기념일 우선순위 |
+| 2026-05-31 | v23 | R7 완료 — Web Share API→카카오SDK→클립보드 3단계 폴백, ShareLinkButton 통일, 궁합 4페이지+FortuneCard 적용 |

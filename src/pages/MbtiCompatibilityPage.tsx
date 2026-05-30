@@ -4,6 +4,7 @@ import { ROUTE_PATHS } from '../routes'
 import { MBTI_DATA, MBTI_TYPES, getMbtiCompat } from '../lib/mbti/compatibility'
 import type { MbtiRating } from '../lib/mbti/compatibility'
 import { CompatShareCardButton } from '../components/ShareCard'
+import { ShareLinkButton } from '../components/ShareLinkButton'
 
 const RATING_LABEL: Record<MbtiRating, string> = {
   excellent: '최고 궁합',
@@ -58,11 +59,11 @@ function MbtiCalculator() {
     if (b && MBTI_TYPES.includes(b)) setTypeB(b)
   }, [])
 
-  const handleShare = () => {
-    if (!typeA || !typeB) return
-    const url = `${window.location.origin}${window.location.pathname}?a=${typeA}&b=${typeB}`
-    navigator.clipboard.writeText(url).catch(() => {})
-  }
+  const mbtiShareOptions = useMemo(() => ({
+    title: typeA && typeB ? `${typeA} × ${typeB} MBTI 궁합 — Fove` : 'Fove MBTI 궁합',
+    description: 'MBTI 16타입 궁합을 확인해보세요. 나와 잘 맞는 유형은?',
+    url: `${typeof window !== 'undefined' ? window.location.origin : 'https://kyhsa93.github.io'}${typeof window !== 'undefined' ? window.location.pathname : '/fove/mbti/compatibility'}?a=${typeA}&b=${typeB}`,
+  }), [typeA, typeB])
 
   return (
     <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-5 py-6 space-y-5 shadow-sm">
@@ -124,13 +125,7 @@ function MbtiCalculator() {
               summary: compat.reason,
               ratingLabel: RATING_LABEL[compat.rating],
             }} />
-            <button
-              type="button"
-              onClick={handleShare}
-              className="flex-1 rounded-full border border-indigo-200 bg-indigo-50 py-2 text-xs font-medium text-indigo-700 hover:bg-indigo-100 transition"
-            >
-              링크 공유 🔗
-            </button>
+            <ShareLinkButton options={mbtiShareOptions} label="공유하기 🔗" className="flex-1 py-2 text-xs" />
           </div>
         </div>
       )}
