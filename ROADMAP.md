@@ -1,6 +1,6 @@
 # Fove 제품 로드맵
 
-Version: v9
+Version: v10
 Updated: 2026-05-30
 Status: 진행 중
 
@@ -101,15 +101,15 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 
 ---
 
-### 🔲 P1 — 공유 카드 이미지 저장
+### ✅ P1 — 공유 카드 이미지 저장
 
-**목적:** 결과를 이미지로 저장해 카카오톡·인스타그램 공유 유도  
-**예상 파일:** `src/components/ShareCard.tsx`  
-**구현 방법:**
-- `html2canvas` 또는 `canvas` API로 운세 요약 카드를 PNG로 렌더링
-- 오늘의 한 줄 요약 + 총운 점수 + 행운 키워드 포함
-- "이미지 저장" + "링크 복사" 버튼을 FortuneCard 하단에 추가
-- trackEvent 연동 (`shared` 이벤트 활용)
+**완료:** 2026-05-30  
+**변경 파일:** `src/components/ShareCard.tsx` (신규), `src/components/FortuneCard.tsx`
+
+- Canvas 2D API로 1200×630 PNG 생성 (외부 라이브러리 미사용)
+- 일진·오행·점수 원형 게이지·에너지 텍스트·분야별 점수 바(일·관계·재물·건강)·행운 요소·Fove 브랜딩 포함
+- 점수에 따라 게이지 색 자동 변경 (녹색 ≥80 / 노랑 ≥65 / 빨강 <65)
+- `ShareCardButton` → FortuneCard `actions`에 배치, `trackEvent('shared')` 연동
 
 ---
 
@@ -218,3 +218,4 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 | 2026-05-30 | v8 | P-ADS1 완료 — AdUnit(CLS방지·standalone감지), ConsentBanner(GDPR), AdConsentProvider, 블로그+운세 페이지 배치 |
 | 2026-05-30 | v8 | P-SEO1 완료 — 블로그 noscript 크롤링 개선, src/data 공유 파일로 자동 동기화 |
 | 2026-05-30 | v9 | P-SEO2 완료 — vite-react-ssg 도입, 20개 라우트 빌드 타임 정적 렌더링, react-router-dom v6 마이그레이션 |
+| 2026-05-30 | v10 | P1 완료 — Canvas 2D API 기반 운세 공유 카드 이미지 저장 (1200×630 PNG) |
