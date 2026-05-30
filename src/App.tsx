@@ -259,7 +259,7 @@ export default function App(): JSX.Element {
       <a href="#main-content" className="skip-link">
         본문으로 바로가기
       </a>
-      <Header currentPath={currentPath} onNavigate={navigate} />
+      <Header currentPath={currentPath} onNavigate={navigate} isDark={isHomeDark} />
       <main id="main-content" tabIndex={-1} className="flex-1 pb-16 sm:pb-0 focus:outline-none">
         <CurrentPage />
       </main>

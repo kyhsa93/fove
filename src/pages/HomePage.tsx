@@ -59,10 +59,10 @@ function HomeFortune({ dailyFortune, result }: HomeFortuneProps): JSX.Element {
   const { score, categoryScores } = dailyFortune
 
   const SCORE_META = [
-    { key: 'work' as const, label: '일', color: 'text-sky-300' },
-    { key: 'love' as const, label: '관계', color: 'text-rose-300' },
-    { key: 'money' as const, label: '재물', color: 'text-amber-300' },
-    { key: 'health' as const, label: '건강', color: 'text-emerald-300' }
+    { key: 'work' as const, label: '일', color: 'text-sky-300', bar: 'bg-sky-400' },
+    { key: 'love' as const, label: '관계', color: 'text-rose-300', bar: 'bg-rose-400' },
+    { key: 'money' as const, label: '재물', color: 'text-amber-300', bar: 'bg-amber-400' },
+    { key: 'health' as const, label: '건강', color: 'text-emerald-300', bar: 'bg-emerald-400' }
   ]
 
   return (
@@ -87,10 +87,13 @@ function HomeFortune({ dailyFortune, result }: HomeFortuneProps): JSX.Element {
       </div>
 
       <div className="grid grid-cols-4 gap-2">
-        {SCORE_META.map(({ key, label, color }) => (
-          <div key={key} className="rounded-2xl bg-white/10 border border-white/10 px-2 py-3 text-center space-y-1">
+        {SCORE_META.map(({ key, label, color, bar }) => (
+          <div key={key} className="rounded-2xl bg-white/10 border border-white/10 px-2 py-3 text-center space-y-1.5">
             <p className={`text-xs font-semibold ${color}`}>{label}</p>
             <p className="text-lg font-bold tabular-nums">{categoryScores[key]}</p>
+            <div className="h-1 w-full rounded-full bg-white/20 overflow-hidden">
+              <div className={`h-full rounded-full ${bar}`} style={{ width: `${categoryScores[key]}%` }} />
+            </div>
           </div>
         ))}
       </div>
@@ -128,10 +131,31 @@ export default function HomePage(): JSX.Element {
         {isReturning && result && dailyFortune ? (
           <HomeFortune dailyFortune={dailyFortune} result={result} />
         ) : (
-          <div className="rounded-3xl border border-white/20 bg-white/10 backdrop-blur px-4 py-5 text-white shadow-xl space-y-4 sm:px-6 sm:py-6">
+          <div className="rounded-3xl border border-white/20 bg-white/10 backdrop-blur px-4 py-5 text-white shadow-xl space-y-5 sm:px-6 sm:py-6">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">오늘의 Fove 리포트</p>
-            <p className="text-base font-semibold text-white/90">사주 정보를 입력하면 오늘의 개인 운세 리포트가 여기에 표시됩니다.</p>
-            <p className="text-sm text-white/70">총운 · 일·업무 · 사랑·관계 · 재물 · 건강 점수와 오늘의 조언을 한눈에 확인하세요.</p>
+            <div className="space-y-2">
+              <p className="text-base font-semibold text-white/90">사주 정보를 입력하면 오늘의 개인 운세 리포트가 여기에 표시됩니다.</p>
+              <p className="text-sm text-white/60">총운 · 일·업무 · 사랑·관계 · 재물 · 건강 점수와 오늘의 조언을 한눈에 확인하세요.</p>
+            </div>
+            <ol className="flex items-center gap-0" aria-label="시작 단계">
+              {[
+                { step: '1', label: '사주 입력' },
+                { step: '2', label: '리포트 생성' },
+                { step: '3', label: '매일 운세' }
+              ].map(({ step, label }, idx) => (
+                <li key={step} className="flex items-center">
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-indigo-400/60 text-xs font-bold text-white ring-1 ring-indigo-300/40">
+                      {step}
+                    </span>
+                    <span className="text-[10px] text-white/60 whitespace-nowrap">{label}</span>
+                  </div>
+                  {idx < 2 && (
+                    <span className="mx-2 mb-3.5 h-px w-8 bg-white/20 shrink-0" aria-hidden="true" />
+                  )}
+                </li>
+              ))}
+            </ol>
             <button
               type="button"
               onClick={() => navigateTo(ROUTE_PATHS.fortune)}
@@ -148,7 +172,7 @@ export default function HomePage(): JSX.Element {
           <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-white/80">
             <span>Fove Insight</span>
           </div>
-          <h1 className="text-3xl font-bold leading-tight sm:text-4xl">
+          <h1 className="font-heading text-3xl font-bold leading-tight sm:text-4xl">
             하루의 흐름을 읽고
             <br className="hidden sm:block" />
             나만의 루틴을 설계하세요
@@ -159,7 +183,7 @@ export default function HomePage(): JSX.Element {
           </p>
         </header>
 
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2">
           {PRIMARY_ACTIONS.map((action) => (
             <button
               key={action.path}

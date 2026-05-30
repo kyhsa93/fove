@@ -8,6 +8,10 @@
   color-scheme: light;
 }
 
+.font-heading {
+  font-family: 'Noto Serif KR', Georgia, serif;
+}
+
 .skip-link {
   position: fixed;
   top: 1rem;
