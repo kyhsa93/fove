@@ -1,0 +1,44 @@
+import { createContext, useContext, useState, type JSX, type ReactNode } from 'react'
+
+type ConsentState = 'granted' | 'denied' | null
+
+const CONSENT_KEY = 'fove_ad_consent'
+
+interface AdConsentCtx {
+  consent: ConsentState
+  grant: () => void
+  deny: () => void
+}
+
+const AdConsentContext = createContext<AdConsentCtx>({
+  consent: null,
+  grant: () => {},
+  deny: () => {}
+})
+
+export function useAdConsent(): AdConsentCtx {
+  return useContext(AdConsentContext)
+}
+
+export function AdConsentProvider({ children }: { children: ReactNode }): JSX.Element {
+  const [consent, setConsent] = useState<ConsentState>(() => {
+    if (typeof window === 'undefined') return null
+    return (localStorage.getItem(CONSENT_KEY) as ConsentState) ?? null
+  })
+
+  const grant = () => {
+    localStorage.setItem(CONSENT_KEY, 'granted')
+    setConsent('granted')
+  }
+
+  const deny = () => {
+    localStorage.setItem(CONSENT_KEY, 'denied')
+    setConsent('denied')
+  }
+
+  return (
+    <AdConsentContext.Provider value={{ consent, grant, deny }}>
+      {children}
+    </AdConsentContext.Provider>
+  )
+}
