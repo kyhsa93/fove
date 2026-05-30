@@ -3,6 +3,7 @@ import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
 import { MBTI_DATA, MBTI_TYPES, getMbtiCompat } from '../lib/mbti/compatibility'
 import type { MbtiRating } from '../lib/mbti/compatibility'
+import { CompatShareCardButton } from '../components/ShareCard'
 
 const RATING_LABEL: Record<MbtiRating, string> = {
   excellent: '최고 궁합',
@@ -113,13 +114,24 @@ function MbtiCalculator() {
           {compat.reverse && (
             <p className="text-xs text-slate-500 leading-relaxed border-t border-slate-100 pt-2">{compat.reverse}</p>
           )}
-          <button
-            type="button"
-            onClick={handleShare}
-            className="w-full rounded-xl border border-indigo-200 bg-indigo-50 py-2 text-xs font-medium text-indigo-700 hover:bg-indigo-100 transition"
-          >
-            이 결과 공유하기 🔗
-          </button>
+          <div className="flex gap-2">
+            <CompatShareCardButton data={{
+              kind: 'mbti',
+              typeLabel: 'MBTI 궁합',
+              labelA: typeA,
+              labelB: typeB,
+              totalScore: compat.score,
+              summary: compat.reason,
+              ratingLabel: RATING_LABEL[compat.rating],
+            }} />
+            <button
+              type="button"
+              onClick={handleShare}
+              className="flex-1 rounded-full border border-indigo-200 bg-indigo-50 py-2 text-xs font-medium text-indigo-700 hover:bg-indigo-100 transition"
+            >
+              링크 공유 🔗
+            </button>
+          </div>
         </div>
       )}
 

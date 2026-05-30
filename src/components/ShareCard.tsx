@@ -216,6 +216,235 @@ function buildCanvas(fortune: DailyFortune): HTMLCanvasElement {
   return canvas
 }
 
+// ════════════════════════════════════════════════════════
+// 궁합 공유 카드
+// ════════════════════════════════════════════════════════
+
+export interface CompatShareData {
+  kind: 'saju' | 'mbti' | 'combined'
+  typeLabel: string
+  labelA: string
+  labelB: string
+  totalScore: number
+  summary?: string
+  dimensions?: Array<{ label: string; score: number; color: string }>
+  ratingLabel?: string
+}
+
+const COMPAT_BG_START: Record<CompatShareData['kind'], string> = {
+  saju: '#1a0533',
+  mbti: '#0c1a3d',
+  combined: '#0f1f3d',
+}
+const COMPAT_BG_END: Record<CompatShareData['kind'], string> = {
+  saju: '#2e1065',
+  mbti: '#1e3a8a',
+  combined: '#172554',
+}
+const COMPAT_ACCENT: Record<CompatShareData['kind'], string> = {
+  saju: '#a78bfa',
+  mbti: '#60a5fa',
+  combined: '#818cf8',
+}
+
+function buildCompatCanvas(data: CompatShareData): HTMLCanvasElement {
+  const canvas = document.createElement('canvas')
+  canvas.width = W
+  canvas.height = H
+  const ctx = canvas.getContext('2d')!
+
+  // ── 배경 ────────────────────────────────────────────
+  const bg = ctx.createLinearGradient(0, 0, W, H)
+  bg.addColorStop(0, COMPAT_BG_START[data.kind])
+  bg.addColorStop(1, COMPAT_BG_END[data.kind])
+  ctx.fillStyle = bg
+  ctx.fillRect(0, 0, W, H)
+
+  // 그리드 패턴
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)'
+  ctx.lineWidth = 1
+  for (let x = 0; x < W; x += 60) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke()
+  }
+  for (let y = 0; y < H; y += 60) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke()
+  }
+
+  const accent = COMPAT_ACCENT[data.kind]
+
+  // ── 브랜드 ──────────────────────────────────────────
+  ctx.font = `bold 28px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = 'rgba(255,255,255,0.45)'
+  ctx.textAlign = 'left'
+  ctx.textBaseline = 'top'
+  ctx.fillText('Fove', PAD, PAD)
+
+  // ── 종류 라벨 (우상단) ─────────────────────────────
+  ctx.font = `22px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = accent
+  ctx.textAlign = 'right'
+  ctx.fillText(data.typeLabel, W - PAD, PAD + 4)
+  ctx.textAlign = 'left'
+
+  // ── 두 사람 이름 ────────────────────────────────────
+  const nameY = PAD + 70
+  const midX = W / 2
+
+  ctx.font = `bold 56px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = '#ffffff'
+  ctx.textAlign = 'right'
+  ctx.fillText(data.labelA, midX - 50, nameY)
+
+  ctx.font = `bold 40px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = accent
+  ctx.textAlign = 'center'
+  ctx.fillText('×', midX, nameY + 8)
+
+  ctx.font = `bold 56px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = '#ffffff'
+  ctx.textAlign = 'left'
+  ctx.fillText(data.labelB, midX + 50, nameY)
+  ctx.textAlign = 'left'
+
+  // ── 점수 원 (우측) ───────────────────────────────────
+  const cx = W - PAD - 110
+  const cy = PAD + 130
+  const radius = 95
+
+  ctx.beginPath()
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2)
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)'
+  ctx.lineWidth = 14
+  ctx.stroke()
+
+  if (data.totalScore > 0) {
+    ctx.beginPath()
+    ctx.arc(cx, cy, radius, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (data.totalScore / 100))
+    ctx.strokeStyle = scoreColor(data.totalScore)
+    ctx.lineWidth = 14
+    ctx.lineCap = 'round'
+    ctx.stroke()
+  }
+
+  ctx.font = `bold 60px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = '#ffffff'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(`${data.totalScore}`, cx, cy - 10)
+
+  ctx.font = `20px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = 'rgba(255,255,255,0.45)'
+  ctx.fillText('궁합 점수', cx, cy + 38)
+
+  ctx.textAlign = 'left'
+  ctx.textBaseline = 'top'
+
+  // ── 구분선 ──────────────────────────────────────────
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(PAD, PAD + 195)
+  ctx.lineTo(W - PAD, PAD + 195)
+  ctx.stroke()
+
+  // ── 요약 텍스트 ──────────────────────────────────────
+  if (data.summary) {
+    ctx.font = `24px system-ui, -apple-system, sans-serif`
+    ctx.fillStyle = 'rgba(255,255,255,0.8)'
+    const maxW = W - PAD * 2 - 200
+    const lines = wrapText(ctx, data.summary, maxW)
+    lines.slice(0, 3).forEach((line, i) => {
+      ctx.fillText(line, PAD, PAD + 220 + i * 40)
+    })
+  }
+
+  // ── 등급 라벨 (MBTI 전용) ────────────────────────────
+  if (data.ratingLabel) {
+    ctx.font = `bold 26px system-ui, -apple-system, sans-serif`
+    ctx.fillStyle = accent
+    ctx.fillText(data.ratingLabel, PAD, PAD + 345)
+  }
+
+  // ── 분야별 점수 바 ────────────────────────────────────
+  if (data.dimensions && data.dimensions.length > 0) {
+    const dims = data.dimensions
+    const barY = PAD + (data.summary ? 365 : 230)
+    const barW = (W - PAD * 2 - (dims.length - 1) * 20) / dims.length
+    dims.forEach(({ label, score, color }, i) => {
+      const bx = PAD + i * (barW + 20)
+      drawRoundRect(ctx, bx, barY, barW, 60, 12)
+      ctx.fillStyle = 'rgba(255,255,255,0.06)'
+      ctx.fill()
+      const fillW = Math.max(24, (barW - 24) * (score / 100))
+      drawRoundRect(ctx, bx + 12, barY + 36, fillW, 10, 5)
+      ctx.fillStyle = color
+      ctx.fill()
+      ctx.font = `bold 20px system-ui, -apple-system, sans-serif`
+      ctx.fillStyle = color
+      ctx.textBaseline = 'top'
+      ctx.fillText(label, bx + 12, barY + 10)
+      ctx.font = `bold 24px system-ui, -apple-system, sans-serif`
+      ctx.fillStyle = '#ffffff'
+      ctx.textAlign = 'right'
+      ctx.fillText(`${score}`, bx + barW - 12, barY + 8)
+      ctx.textAlign = 'left'
+    })
+  }
+
+  // ── 하단 브랜드 ──────────────────────────────────────
+  ctx.font = `18px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = 'rgba(255,255,255,0.2)'
+  ctx.textAlign = 'right'
+  ctx.textBaseline = 'bottom'
+  ctx.fillText('fove · 사주·MBTI·운세 인사이트', W - PAD, H - PAD + 12)
+
+  return canvas
+}
+
+// ── 궁합 공유 버튼 컴포넌트 ──────────────────────────────
+function DownloadButton({ onSave, label }: { onSave: () => void; label: string }): JSX.Element {
+  const [saving, setSaving] = useState(false)
+  const handleClick = () => {
+    setSaving(true)
+    setTimeout(() => { onSave(); setSaving(false) }, 50)
+  }
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={saving}
+      className="inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50/60 px-5 py-2.5 text-sm font-semibold text-violet-700 transition hover:bg-violet-100 disabled:opacity-50"
+    >
+      <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </svg>
+      {saving ? '생성 중…' : label}
+    </button>
+  )
+}
+
+export function CompatShareCardButton({ data }: { data: CompatShareData }): JSX.Element {
+  const handleSave = useCallback(() => {
+    const canvas = buildCompatCanvas(data)
+    canvas.toBlob((blob) => {
+      if (!blob) return
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `fove-궁합-${data.labelA}-${data.labelB}.png`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    }, 'image/png')
+    trackEvent('shared', { pillar: `${data.labelA}x${data.labelB}`, score: data.totalScore })
+  }, [data])
+
+  return <DownloadButton onSave={handleSave} label="궁합 카드 저장" />
+}
+
 // ── 훅 ──────────────────────────────────────────────────
 export function useShareCard(fortune: DailyFortune) {
   const downloadImage = useCallback(() => {

@@ -5,6 +5,7 @@ import type { CompatibilityType } from '../lib/saju/compatibility'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
 import { useToast } from '../components/ToastProvider'
+import { CompatShareCardButton } from '../components/ShareCard'
 
 const COMPAT_LABELS: Record<CompatibilityType, string> = {
   love: '연인 궁합',
@@ -276,13 +277,29 @@ export default function CompatibilityPage(): JSX.Element {
               })}
             </div>
 
-            <button
-              type="button"
-              onClick={handleShare}
-              className="w-full rounded-2xl border border-indigo-200 bg-white/70 py-3 text-sm font-medium text-indigo-700 hover:bg-white transition"
-            >
-              이 결과 공유하기 🔗
-            </button>
+            <div className="flex gap-3">
+              <CompatShareCardButton data={{
+                kind: 'saju',
+                typeLabel: COMPAT_LABELS[activeType],
+                labelA: personA.label,
+                labelB: personB.label,
+                totalScore: scores.total,
+                summary: detail.summary,
+                dimensions: [
+                  { label: '총운', score: scores.overall, color: '#818cf8' },
+                  { label: '감정교류', score: scores.love, color: '#f472b6' },
+                  { label: '소통', score: scores.communication, color: '#fbbf24' },
+                  { label: '미래안정', score: scores.future, color: '#34d399' },
+                ],
+              }} />
+              <button
+                type="button"
+                onClick={handleShare}
+                className="flex-1 rounded-full border border-indigo-200 bg-white/70 py-2.5 text-sm font-medium text-indigo-700 hover:bg-white transition"
+              >
+                링크 공유 🔗
+              </button>
+            </div>
           </div>
         ) : null}
 
