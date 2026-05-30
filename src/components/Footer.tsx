@@ -1,18 +1,9 @@
-import { JSX, MouseEvent } from 'react'
-import type { RoutePath } from '../routes'
+import { JSX } from 'react'
+import { useLocation, Link } from 'react-router-dom'
 import { footerLinks, blogLinks } from '../routes'
 
-type FooterProps = {
-  currentPath: RoutePath
-  onNavigate: (path: RoutePath) => void
-}
-
-export function Footer({ currentPath, onNavigate }: FooterProps): JSX.Element {
-  const handleNavigate = (event: MouseEvent<HTMLAnchorElement>, path: RoutePath) => {
-    event.preventDefault()
-    onNavigate(path)
-  }
-
+export function Footer(): JSX.Element {
+  const location = useLocation()
   const year = new Date().getFullYear()
 
   return (
@@ -23,12 +14,11 @@ export function Footer({ currentPath, onNavigate }: FooterProps): JSX.Element {
             <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">읽어보기</p>
             <nav className="flex flex-wrap gap-2" aria-label="블로그 글 링크">
               {blogLinks.map((item) => {
-                const active = currentPath === item.path
+                const active = location.pathname === item.path
                 return (
-                  <a
+                  <Link
                     key={item.path}
-                    href={item.path}
-                    onClick={(event) => handleNavigate(event, item.path)}
+                    to={item.path}
                     className={`rounded-full px-3 py-1 transition ${
                       active
                         ? 'bg-slate-900 text-white shadow-sm'
@@ -37,7 +27,7 @@ export function Footer({ currentPath, onNavigate }: FooterProps): JSX.Element {
                     aria-current={active ? 'page' : undefined}
                   >
                     {item.label}
-                  </a>
+                  </Link>
                 )
               })}
             </nav>
@@ -45,12 +35,11 @@ export function Footer({ currentPath, onNavigate }: FooterProps): JSX.Element {
 
           <nav className="flex flex-wrap gap-2" aria-label="법적 고지 및 지원 링크">
             {footerLinks.map((item) => {
-              const active = currentPath === item.path
+              const active = location.pathname === item.path
               return (
-                <a
+                <Link
                   key={item.path}
-                  href={item.path}
-                  onClick={(event) => handleNavigate(event, item.path)}
+                  to={item.path}
                   className={`rounded-full px-2 py-1 transition sm:px-4 ${
                     active
                       ? 'bg-slate-900 text-white shadow-sm'
@@ -59,7 +48,7 @@ export function Footer({ currentPath, onNavigate }: FooterProps): JSX.Element {
                   aria-current={active ? 'page' : undefined}
                 >
                   {item.label}
-                </a>
+                </Link>
               )
             })}
           </nav>

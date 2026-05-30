@@ -1,18 +1,5 @@
-import React from 'react'
-import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App'
-import { ToastProvider } from './components/ToastProvider'
+import { ViteReactSSG } from 'vite-react-ssg'
+import { routes } from './router'
 
-const container = document.getElementById('root')
-if (!container) {
-  throw new Error('Root element가 존재하지 않습니다.')
-}
-
-createRoot(container).render(
-  <React.StrictMode>
-    <ToastProvider>
-      <App />
-    </ToastProvider>
-  </React.StrictMode>
-)
+export const createRoot = ViteReactSSG({ routes })

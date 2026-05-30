@@ -4,6 +4,18 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
   base: '/',
+  ssgOptions: {
+    script: 'async',
+    formatting: 'none',
+    includedRoutes: () => [
+      '/', '/saju', '/mbti', '/fortune', '/fortune/week', '/fortune/month', '/fortune/year',
+      '/zodiac', '/zodiac/compatibility',
+      '/insight', '/compatibility', '/mbti/compatibility', '/compatibility/combined',
+      '/quiz',
+      '/blog/saju-basics', '/blog/zodiac-standard', '/blog/mbti-love-style',
+      '/privacy-policy', '/terms-of-service', '/contact',
+    ],
+  },
   plugins: [
     react(),
     VitePWA({

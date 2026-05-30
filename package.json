@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite-react-ssg build",
     "preview": "vite preview --port 5173",
     "start": "vite",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx,.html --fix",
@@ -17,7 +17,9 @@
   },
   "dependencies": {
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "react-router-dom": "^6.30.4",
+    "vite-react-ssg": "^0.9.1-beta.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

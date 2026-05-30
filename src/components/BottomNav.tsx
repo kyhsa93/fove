@@ -1,10 +1,8 @@
 import { JSX } from 'react'
-import type { RoutePath } from '../routes'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { ROUTE_PATHS } from '../routes'
 
 type BottomNavProps = {
-  currentPath: RoutePath
-  onNavigate: (path: RoutePath) => void
   isDark?: boolean
 }
 
@@ -51,7 +49,7 @@ function SparkleIcon(): JSX.Element {
   )
 }
 
-const TABS: Array<{ path: RoutePath; label: string; Icon: () => JSX.Element }> = [
+const TABS = [
   { path: ROUTE_PATHS.home, label: '홈', Icon: HomeIcon },
   { path: ROUTE_PATHS.fortune, label: '운세', Icon: SunIcon },
   { path: ROUTE_PATHS.saju, label: '사주', Icon: CalendarIcon },
@@ -59,21 +57,22 @@ const TABS: Array<{ path: RoutePath; label: string; Icon: () => JSX.Element }> =
   { path: ROUTE_PATHS.insight, label: '인사이트', Icon: SparkleIcon },
 ]
 
-export function BottomNav({ currentPath, onNavigate, isDark = false }: BottomNavProps): JSX.Element {
-  const isTabActive = (tabPath: RoutePath): boolean => {
+export function BottomNav({ isDark = false }: BottomNavProps): JSX.Element {
+  const location = useLocation()
+  const navigate = useNavigate()
+  const pathname = location.pathname
+
+  const isTabActive = (tabPath: string): boolean => {
     if (tabPath === ROUTE_PATHS.fortune) {
-      return currentPath === ROUTE_PATHS.fortune ||
-        currentPath === ROUTE_PATHS.fortuneWeek ||
-        currentPath === ROUTE_PATHS.fortuneMonth ||
-        currentPath === ROUTE_PATHS.fortuneYear
+      return pathname.startsWith('/fortune')
     }
     if (tabPath === ROUTE_PATHS.saju) {
-      return currentPath === ROUTE_PATHS.saju || currentPath === ROUTE_PATHS.sajuYear
+      return pathname === '/saju' || /^\/saju\/\d{4}$/.test(pathname)
     }
     if (tabPath === ROUTE_PATHS.mbti) {
-      return currentPath === ROUTE_PATHS.mbti || currentPath === ROUTE_PATHS.mbtiCompatibility
+      return pathname === '/mbti' || pathname === '/mbti/compatibility'
     }
-    return currentPath === tabPath
+    return pathname === tabPath
   }
 
   const containerClass = isDark
@@ -97,7 +96,7 @@ export function BottomNav({ currentPath, onNavigate, isDark = false }: BottomNav
             <li key={path} className="flex-1">
               <button
                 type="button"
-                onClick={() => onNavigate(path)}
+                onClick={() => { navigate(path); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
                 aria-current={active ? 'page' : undefined}
                 className={`relative flex w-full flex-col items-center gap-0.5 py-2.5 pt-3 text-[10px] font-semibold tracking-wide transition-colors ${active ? activeClass : inactiveClass}`}
               >

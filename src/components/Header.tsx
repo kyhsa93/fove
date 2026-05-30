@@ -1,18 +1,14 @@
-import { JSX, MouseEvent } from 'react'
-import type { RoutePath } from '../routes'
+import { JSX } from 'react'
+import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { ROUTE_PATHS, navLinks } from '../routes'
 
 type HeaderProps = {
-  currentPath: RoutePath
-  onNavigate: (path: RoutePath) => void
   isDark?: boolean
 }
 
-export function Header({ currentPath, onNavigate, isDark = false }: HeaderProps): JSX.Element {
-  const handleNavigate = (event: MouseEvent<HTMLAnchorElement>, path: RoutePath) => {
-    event.preventDefault()
-    onNavigate(path)
-  }
+export function Header({ isDark = false }: HeaderProps): JSX.Element {
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const headerClass = isDark
     ? 'sticky top-0 z-30 border-b border-white/10 bg-slate-900/80 backdrop-blur'
@@ -44,28 +40,23 @@ export function Header({ currentPath, onNavigate, isDark = false }: HeaderProps)
   return (
     <header className={headerClass}>
       <div className="mx-auto flex max-w-4xl items-center justify-between px-3 py-3 sm:px-6">
-        <a
-          href={ROUTE_PATHS.home}
-          onClick={(event) => handleNavigate(event, ROUTE_PATHS.home)}
-          className={logoClass}
-        >
+        <Link to={ROUTE_PATHS.home} className={logoClass}>
           <span className={logoBadgeClass}>F</span>
           Fove
-        </a>
+        </Link>
 
         <nav className="hidden items-center gap-1 text-sm font-medium sm:flex" aria-label="주요 페이지">
           {navLinks.map((item) => {
-            const active = currentPath === item.path
+            const active = location.pathname === item.path
             return (
-              <a
+              <Link
                 key={item.path}
-                href={item.path}
-                onClick={(event) => handleNavigate(event, item.path)}
+                to={item.path}
                 className={getNavItemClass(active)}
                 aria-current={active ? 'page' : undefined}
               >
                 {item.label}
-              </a>
+              </Link>
             )
           })}
         </nav>

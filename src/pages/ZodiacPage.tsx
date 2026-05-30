@@ -1,14 +1,7 @@
 import { JSX, useEffect, useMemo } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
-
-function navigateToZodiac(slug?: string): void {
-  if (typeof window === 'undefined') return
-  const path = slug ? `/zodiac/${slug}` : '/zodiac'
-  window.history.pushState({}, '', path)
-  window.dispatchEvent(new PopStateEvent('popstate'))
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
 import {
   BRANCH_ANIMALS,
   BRANCH_ELEMENTS,
@@ -93,7 +86,7 @@ function ZodiacAnimalCard({ branch, onClick }: { branch: Branch; onClick: () => 
   )
 }
 
-function ZodiacOverview(): JSX.Element {
+function ZodiacOverview({ navigateToZodiac }: { navigateToZodiac: (slug?: string) => void }): JSX.Element {
   return (
     <section className="py-6 sm:py-8">
       <div className="mx-auto max-w-2xl space-y-8 px-4">
@@ -133,7 +126,7 @@ function ZodiacOverview(): JSX.Element {
   )
 }
 
-function ZodiacDetail({ branch }: { branch: Branch }): JSX.Element {
+function ZodiacDetail({ branch, navigateToZodiac }: { branch: Branch; navigateToZodiac: (slug?: string) => void }): JSX.Element {
   const animal = BRANCH_ANIMALS[branch]
   const element = BRANCH_ELEMENTS[branch]
   const yinyang = BRANCH_YINYANG[branch]
@@ -267,13 +260,19 @@ function ZodiacDetail({ branch }: { branch: Branch }): JSX.Element {
 }
 
 export default function ZodiacPage(): JSX.Element {
-  const slug = typeof window !== 'undefined'
-    ? window.location.pathname.replace('/zodiac/', '').replace('/zodiac', '')
-    : ''
+  const { type: slug = '' } = useParams<{ type?: string }>()
+  const navigate = useNavigate()
+
   const branch = SLUG_TO_BRANCH[slug]
 
-  if (branch) {
-    return <ZodiacDetail branch={branch} />
+  const navigateToZodiac = (newSlug?: string) => {
+    const path = newSlug ? `/zodiac/${newSlug}` : '/zodiac'
+    navigate(path)
+    if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' })
   }
-  return <ZodiacOverview />
+
+  if (branch) {
+    return <ZodiacDetail branch={branch} navigateToZodiac={navigateToZodiac} />
+  }
+  return <ZodiacOverview navigateToZodiac={navigateToZodiac} />
 }

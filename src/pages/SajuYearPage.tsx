@@ -1,4 +1,5 @@
 import { JSX, useEffect, useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 import {
   STEMS,
   BRANCHES,
@@ -34,18 +35,14 @@ function getYearPillar(year: number) {
   return { stem, branch, element, animal }
 }
 
-function getCurrentYear(): number | null {
-  if (typeof window === 'undefined') return null
-  const parts = window.location.pathname.split('/')
-  const rawYear = parts[2]
-  if (!rawYear) return null
-  const n = parseInt(rawYear, 10)
-  if (isNaN(n) || n < 1900 || n > 2100) return null
-  return n
-}
-
 export default function SajuYearPage(): JSX.Element {
-  const year = useMemo(() => getCurrentYear(), [])
+  const { year: yearParam } = useParams<{ year: string }>()
+  const year = useMemo(() => {
+    if (!yearParam) return null
+    const n = parseInt(yearParam, 10)
+    if (isNaN(n) || n < 1900 || n > 2100) return null
+    return n
+  }, [yearParam])
   const pillar = useMemo(() => (year ? getYearPillar(year) : null), [year])
 
   useEffect(() => {

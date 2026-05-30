@@ -191,14 +191,20 @@ const template = fs.readFileSync(templatePath, 'utf8')
 let generated = 0
 
 for (const route of routes) {
-  let html = injectOg(template, route)
+  const outDir = path.join(distDir, route.path)
+  const outFile = path.join(outDir, 'index.html')
+
+  // SSG 가 이미 파일을 생성한 경우 그 파일을 베이스로 사용, 없으면 템플릿 사용
+  const baseHtml = fs.existsSync(outFile)
+    ? fs.readFileSync(outFile, 'utf8')
+    : template
+
+  let html = injectOg(baseHtml, route)
   const noscript = buildNoscript(route.path)
-  if (noscript) {
+  if (noscript && !html.includes('<noscript>')) {
     html = html.replace('</body>', `${noscript}</body>`)
   }
-  const outDir = path.join(distDir, route.path)
   fs.mkdirSync(outDir, { recursive: true })
-  const outFile = path.join(outDir, 'index.html')
   fs.writeFileSync(outFile, html, 'utf8')
   generated++
 }
