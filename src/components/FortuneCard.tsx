@@ -144,8 +144,6 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
 
     return (
       <div className="space-y-5 text-sm leading-relaxed text-slate-700">
-        <OverallScoreBar score={score} />
-
         <div className="space-y-3">
           <div className="rounded-xl border border-amber-50 bg-amber-50/40 px-3 py-3 space-y-1">
             <p className="text-xs font-semibold uppercase tracking-wide text-amber-600">
@@ -266,6 +264,7 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
       metrics={metrics}
       summary={combinedTexts.energy}
       tabs={tabs}
+      belowGrid={<OverallScoreBar score={score} />}
       onShare={handleShare}
       onTabChange={handleTabChange}
     />

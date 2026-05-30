@@ -21,11 +21,12 @@ interface ResultCardProps {
   tabs?: ResultTab[]
   footer?: ReactNode
   actions?: ReactNode
+  belowGrid?: ReactNode
   onShare?: () => void
   onTabChange?: (tabId: string) => void
 }
 
-export function ResultCard({ badge, title, subtitle, metrics = [], summary, tabs = [], footer, actions, onShare, onTabChange }: ResultCardProps): JSX.Element {
+export function ResultCard({ badge, title, subtitle, metrics = [], summary, tabs = [], footer, actions, belowGrid, onShare, onTabChange }: ResultCardProps): JSX.Element {
   const { showToast } = useToast()
   const [activeTab, setActiveTab] = useState<string>(tabs[0]?.id ?? '')
 
@@ -153,6 +154,7 @@ export function ResultCard({ badge, title, subtitle, metrics = [], summary, tabs
         ) : null}
       </div>
 
+      {belowGrid ? <div className="mt-6">{belowGrid}</div> : null}
       {actions ? <div className="mt-6">{actions}</div> : null}
       {footer ? <div className="mt-6 text-xs text-slate-500">{footer}</div> : null}
     </section>
