@@ -2,6 +2,7 @@ import { JSX, useCallback, useMemo } from 'react'
 import { ActionCardDeck, type ActionCardData } from './ActionCards'
 import { TooltipLabel } from './TooltipLabel'
 import { ResultCard } from './ResultCard'
+import { ShareCardButton } from './ShareCard'
 import type { MbtiResult } from './MbtiTest'
 import type { DailyFortune, SajuResult } from '../lib/saju'
 import { trackEvent } from '../lib/analytics'
@@ -265,6 +266,7 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
       summary={combinedTexts.energy}
       tabs={tabs}
       belowGrid={<OverallScoreBar score={score} />}
+      actions={<ShareCardButton fortune={dailyFortune} />}
       onShare={handleShare}
       onTabChange={handleTabChange}
     />
