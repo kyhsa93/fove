@@ -1,6 +1,6 @@
 # Fove 제품 로드맵
 
-Version: v8
+Version: v9
 Updated: 2026-05-30
 Status: 진행 중
 
@@ -136,6 +136,21 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 
 ---
 
+### ✅ P-SEO2 — vite-react-ssg 빌드 타임 정적 렌더링
+
+**완료:** 2026-05-30  
+**변경 파일:** `src/main.tsx`, `src/router.tsx` (신규), `src/Layout.tsx` (신규), `src/lib/router.ts`, `src/components/{Header,Footer,BottomNav}.tsx`, `src/pages/{SajuYearPage,ZodiacPage}.tsx`, `vite.config.ts`, `package.json`, `scripts/generate-og-pages.mjs`
+
+- `vite-react-ssg` + `react-router-dom v6` 도입 — 커스텀 클라이언트 라우터 교체
+- 빌드 시 20개 라우트 HTML 사전 렌더링 (`data-server-rendered="true"`)
+  - 운세, 사주, MBTI, 궁합, 블로그 등 모든 주요 페이지 포함
+- JS 미실행 크롤러(Mediapartners-Google 등)가 각 페이지 실제 콘텐츠를 읽을 수 있음
+- 기존 `navigateTo()` 호출 18개 페이지 무변경 유지 (navigate 주입 패턴 적용)
+- `SajuYearPage`, `ZodiacPage`: `window.location.pathname` → `useParams()` 전환
+- `generate-og-pages.mjs`: SSG 생성 파일 우선 사용 후 OG 태그 업데이트
+
+---
+
 ### 🔲 P-NTF1 — Web Push 일일 알림 고도화
 
 **목적:** `lib/notifications.ts` 인프라가 있지만 실제 알림 예약(스케줄링)이 없음. 재방문율 개선  
@@ -194,9 +209,8 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 | 항목 | 설명 | 우선도 |
 |------|------|--------|
 | analytics 이벤트 빈약 | `trackEvent` EventName이 5종 — 페이지뷰·버튼클릭·공유 등 세분화 필요 | 낮음 |
-| 사주 연도 SEO 비 pre-rendered | `/saju/:year` 동적 라우팅 — Googlebot이 크롤하려면 JS 실행 필요 | 낮음 |
+| 사주 연도 SSG 미포함 | `/saju/:year` 80개 연도 페이지 — `ssgOptions.includedRoutes`에 추가하면 사전 렌더링 가능 | 낮음 |
 | AdSense slot ID 미교체 | `AdUnit` 컴포넌트에 placeholder slot ID 사용 중 — AdSense 대시보드에서 실제 ID 발급 후 교체 필요 | 높음 |
-| SPA 동적 페이지 크롤링 | 운세·사주 페이지는 CSR로 Mediapartners-Google 크롤 불가 — 블로그 외 페이지는 OG 메타 태그만 인식 | 낮음 |
 
 ---
 
@@ -215,3 +229,4 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 | 2026-05-30 | v8 | P-LAYOUT 완료 — 사주·운세 페이지 사이드바 분할, ResultCard 2단, 궁합 입력 나란히, 블로그 max-w 최적화 |
 | 2026-05-30 | v8 | P-ADS1 완료 — AdUnit(CLS방지·standalone감지), ConsentBanner(GDPR), AdConsentProvider, 블로그+운세 페이지 배치 |
 | 2026-05-30 | v8 | P-SEO1 완료 — 블로그 noscript 크롤링 개선, src/data 공유 파일로 자동 동기화 |
+| 2026-05-30 | v9 | P-SEO2 완료 — vite-react-ssg 도입, 20개 라우트 빌드 타임 정적 렌더링, react-router-dom v6 마이그레이션 |
