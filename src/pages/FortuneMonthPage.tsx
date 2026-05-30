@@ -3,6 +3,8 @@ import { buildMonthlyFortune, buildDailyFortune } from '../lib/saju'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
+import { getMonthHistory, getMonthStats, scoreGrade } from '../lib/fortuneHistory'
+import { getStreakCount } from '../lib/streak'
 import type { Element } from '../lib/saju/constants'
 import type { MonthDayFortune } from '../lib/saju/types'
 
@@ -34,6 +36,12 @@ const ELEMENT_TIP: Record<Element, string> = {
 
 const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
 
+const HISTORY_GRADE_STYLE = {
+  good: 'border-emerald-300 bg-emerald-50 text-emerald-800',
+  neutral: 'border-amber-200 bg-amber-50 text-amber-800',
+  caution: 'border-rose-200 bg-rose-50 text-rose-800',
+}
+
 export default function FortuneMonthPage(): JSX.Element {
   const now = new Date()
   const year = now.getFullYear()
@@ -41,6 +49,10 @@ export default function FortuneMonthPage(): JSX.Element {
   const monthlyFortune = useMemo(() => buildMonthlyFortune(), [])
   const today = monthlyFortune.find((d) => d.isToday)
   const { result } = useSajuCalculator()
+
+  const dayHistory = useMemo(() => getMonthHistory(year, month), [year, month])
+  const historyStats = useMemo(() => getMonthStats(year, month), [year, month])
+  const streakCount = useMemo(() => getStreakCount(), [])
 
   const dayQualities = useMemo<Record<number, DayQuality>>(() => {
     const map: Record<number, DayQuality> = {}
@@ -88,6 +100,39 @@ export default function FortuneMonthPage(): JSX.Element {
           </p>
         </header>
 
+        {/* 나의 운세 기록 통계 */}
+        {historyStats.count > 0 && (
+          <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-4 py-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-indigo-900">나의 이번 달 운세 기록</p>
+              {streakCount >= 2 && (
+                <span className="text-xs font-semibold text-amber-700 bg-amber-100 border border-amber-200 rounded-full px-2.5 py-0.5">
+                  🔥 {streakCount}일 연속
+                </span>
+              )}
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="rounded-xl bg-white/80 border border-indigo-100 px-2 py-2.5 space-y-0.5">
+                <p className="text-xs text-indigo-500">기록한 날</p>
+                <p className="text-lg font-bold text-indigo-900">{historyStats.count}일</p>
+              </div>
+              <div className="rounded-xl bg-white/80 border border-indigo-100 px-2 py-2.5 space-y-0.5">
+                <p className="text-xs text-indigo-500">평균 점수</p>
+                <p className="text-lg font-bold text-indigo-900">{historyStats.avg}점</p>
+              </div>
+              <div className="rounded-xl bg-white/80 border border-indigo-100 px-2 py-2.5 space-y-0.5">
+                <p className="text-xs text-indigo-500">최고점</p>
+                <p className="text-lg font-bold text-emerald-700">
+                  {historyStats.best ? `${historyStats.best.score}점` : '-'}
+                </p>
+                {historyStats.best && (
+                  <p className="text-[10px] text-indigo-400">{historyStats.best.day}일</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {dominantElement ? (
           <div className={`rounded-2xl border px-4 py-4 space-y-1.5 ${ELEMENT_COLOR[dominantElement[0]]}`}>
             <p className="text-sm font-semibold">
@@ -120,17 +165,24 @@ export default function FortuneMonthPage(): JSX.Element {
             ))}
             {monthlyFortune.map((d) => {
               const quality = dayQualities[d.day] ?? 'neutral'
+              const histScore = dayHistory[d.day]
+              const histGrade = histScore !== undefined ? scoreGrade(histScore) : null
+
+              // 과거 날 + 히스토리 있으면 점수 기반 색상, 없으면 기존 흐릿한 스타일
+              const cellClass = d.isToday
+                ? 'border-amber-300 bg-amber-50 shadow-sm ring-1 ring-amber-300'
+                : d.isPast
+                  ? histGrade
+                    ? HISTORY_GRADE_STYLE[histGrade]
+                    : 'border-slate-100 bg-slate-50/60 opacity-50'
+                  : `${ELEMENT_COLOR[d.element]} opacity-90`
+
               return (
                 <div
                   key={d.day}
-                  className={`relative rounded-lg border py-2 text-center space-y-0.5 transition ${
-                    d.isToday
-                      ? 'border-amber-300 bg-amber-50 shadow-sm ring-1 ring-amber-300'
-                      : d.isPast
-                        ? 'border-slate-100 bg-slate-50/60 opacity-60'
-                        : `${ELEMENT_COLOR[d.element]} opacity-90`
-                  }`}
+                  className={`relative rounded-lg border py-2 text-center space-y-0.5 transition ${cellClass}`}
                 >
+                  {/* 미래 날 품질 도트 */}
                   {!d.isPast && !d.isToday && quality !== 'neutral' ? (
                     <span className={`absolute -top-1 -right-1 h-2 w-2 rounded-full ring-1 ring-white ${quality === 'good' ? 'bg-emerald-400' : 'bg-rose-400'}`} aria-label={quality === 'good' ? '좋은 날' : '조심할 날'} />
                   ) : null}
@@ -140,9 +192,16 @@ export default function FortuneMonthPage(): JSX.Element {
                   <p className={`text-xs font-bold leading-none ${d.isToday ? 'text-amber-900' : ''}`}>
                     {d.pillarName}
                   </p>
-                  <p className={`text-[10px] leading-tight ${d.isToday ? 'text-amber-700' : 'opacity-70'}`}>
-                    {d.elementLabel.replace(/\(.*?\)/, '')}
-                  </p>
+                  {/* 히스토리 점수 (과거 날) */}
+                  {histScore !== undefined ? (
+                    <p className="text-[10px] font-semibold leading-tight tabular-nums">
+                      {histScore}점
+                    </p>
+                  ) : (
+                    <p className={`text-[10px] leading-tight ${d.isToday ? 'text-amber-700' : 'opacity-70'}`}>
+                      {d.elementLabel.replace(/\(.*?\)/, '')}
+                    </p>
+                  )}
                 </div>
               )
             })}
@@ -151,17 +210,33 @@ export default function FortuneMonthPage(): JSX.Element {
 
         {/* 좋은날/조심할날 범례 및 요약 */}
         <div className="space-y-3">
-          <div className="flex items-center gap-4 text-xs text-slate-600">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
             <span className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 ring-1 ring-white ring-offset-1" />
-              좋은 날
+              좋은 날 (미래)
             </span>
             <span className="flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 rounded-full bg-rose-400 ring-1 ring-white ring-offset-1" />
-              조심할 날
+              조심할 날 (미래)
             </span>
             <span className="text-slate-400">{result ? '내 사주 기반' : '일반 기준'}</span>
           </div>
+          {historyStats.count > 0 && (
+            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-300 ring-1 ring-white ring-offset-1" />
+                기록 78점+
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-amber-300 ring-1 ring-white ring-offset-1" />
+                기록 62~77점
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-rose-300 ring-1 ring-white ring-offset-1" />
+                기록 61점 이하
+              </span>
+            </div>
+          )}
           {(() => {
             const goodDays = monthlyFortune.filter((d) => !d.isPast && dayQualities[d.day] === 'good').map((d) => d.day)
             const cautionDays = monthlyFortune.filter((d) => !d.isPast && dayQualities[d.day] === 'caution').map((d) => d.day)

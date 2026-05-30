@@ -4,11 +4,65 @@ import { Header } from './components/Header'
 import { Footer } from './components/Footer'
 import { BottomNav } from './components/BottomNav'
 import { ConsentBanner } from './components/ConsentBanner'
-import { ToastProvider } from './components/ToastProvider'
+import { InstallBanner } from './components/InstallBanner'
+import { ToastProvider, useToast } from './components/ToastProvider'
 import { AdConsentProvider } from './lib/adConsent'
 import { injectNavigate } from './lib/router'
-import { checkAndNotifyOnLoad, registerPeriodicSync, isOptedIn, getNotificationPermission } from './lib/notifications'
+import {
+  checkAndNotifyOnLoad,
+  registerPeriodicSync,
+  isOptedIn,
+  getNotificationPermission,
+  shouldShowEveningStreakReminder,
+  markEveningStreakReminderShown,
+} from './lib/notifications'
+import { recordVisit, getStreakCount } from './lib/streak'
+import { isStandalone, isInstalled } from './lib/installPrompt'
 import { ROUTE_PATHS } from './routes'
+
+const STREAK_MILESTONES: Record<number, string> = {
+  7: '🔥 7일 연속 방문! 일주일 개근이에요!',
+  30: '🔥 30일 연속! 한 달 개근 달성!',
+  100: '🔥 100일 연속! 전설이 되었어요!',
+}
+
+function AppInit(): null {
+  const { showToast } = useToast()
+
+  useEffect(() => {
+    const streak = recordVisit()
+    if (streak.isFirstToday && streak.count >= 2) {
+      const milestone = STREAK_MILESTONES[streak.count]
+      if (milestone) {
+        showToast(milestone, 'success', 6000)
+      } else {
+        showToast(`🔥 ${streak.count}일 연속 방문 중이에요`, 'info', 3000)
+      }
+    }
+
+    // 저녁 스트릭 리마인더 (20시 이후, 스트릭 2일+, 오늘 첫 방문인 경우)
+    if (streak.isFirstToday && shouldShowEveningStreakReminder()) {
+      const count = getStreakCount()
+      showToast(`🔥 ${count}일 스트릭 진행 중이에요. 내일도 방문하면 계속 유지돼요!`, 'info', 6000)
+      markEveningStreakReminderShown()
+    }
+
+    checkAndNotifyOnLoad()
+    if (isOptedIn() && getNotificationPermission() === 'granted') {
+      registerPeriodicSync()
+    }
+
+    // PWA 설치 직후 알림 구독 유도 (standalone 모드로 진입 + 알림 미설정)
+    if (isStandalone() && isInstalled() && !isOptedIn()) {
+      setTimeout(() => {
+        showToast('알림을 켜면 매일 운세를 자동으로 받을 수 있어요!', 'info', 6000)
+      }, 2000)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return null
+}
 
 type RouteMeta = { title: string; description: string; ogTitle: string }
 
@@ -48,12 +102,6 @@ export default function Layout(): JSX.Element {
     injectNavigate(navigate)
   }, [navigate])
 
-  useEffect(() => {
-    checkAndNotifyOnLoad()
-    if (isOptedIn() && getNotificationPermission() === 'granted') {
-      registerPeriodicSync()
-    }
-  }, [])
 
   useEffect(() => {
     if (typeof document === 'undefined') return
@@ -82,6 +130,7 @@ export default function Layout(): JSX.Element {
 
   return (
     <ToastProvider>
+      <AppInit />
       <AdConsentProvider>
         <div className={`flex min-h-screen flex-col text-slate-900 ${backgroundClass}`}>
           <a href="#main-content" className="skip-link">
@@ -94,6 +143,7 @@ export default function Layout(): JSX.Element {
           <Footer />
           <BottomNav isDark={isHomeDark} />
           <ConsentBanner />
+          <InstallBanner />
         </div>
       </AdConsentProvider>
     </ToastProvider>

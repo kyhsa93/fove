@@ -1,5 +1,4 @@
 import { JSX, useEffect } from 'react'
-import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
 import { AdUnit } from '../components/AdUnit'
 import { LOVE_STYLES as LOVE_STYLES_DATA } from '../data/blogMbtiLoveStyle.js'
@@ -109,40 +108,36 @@ export default function BlogMbtiLoveStylePage(): JSX.Element {
             내 유형과 상대 유형의 궁합 점수를 매트릭스로 확인하거나, 사주 오행 기반 궁합 점수를 계산해보세요.
           </p>
           <div className="flex gap-3 flex-wrap">
-            <button
-              type="button"
-              onClick={() => navigateTo(ROUTE_PATHS.mbtiCompatibility)}
+            <a
+              href={ROUTE_PATHS.mbtiCompatibility}
               className="rounded-full bg-indigo-500 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-600 transition shadow-sm"
             >
               MBTI 궁합 매트릭스
-            </button>
-            <button
-              type="button"
-              onClick={() => navigateTo(ROUTE_PATHS.compatibility)}
+            </a>
+            <a
+              href={ROUTE_PATHS.compatibility}
               className="rounded-full border border-indigo-200 bg-white px-5 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-50 transition"
             >
               사주 궁합 보기
-            </button>
+            </a>
           </div>
         </section>
 
         <nav className="rounded-2xl border border-slate-100 bg-white/80 px-5 py-5 space-y-3">
           <h2 className="text-sm font-semibold text-slate-600">관련 글</h2>
           <div className="space-y-2">
-            <button
-              type="button"
-              onClick={() => navigateTo(ROUTE_PATHS.blogSajuBasics)}
-              className="block w-full text-left text-sm text-slate-700 hover:text-rose-600 transition"
+            <a
+              href={ROUTE_PATHS.blogSajuBasics}
+              className="block text-sm text-slate-700 hover:text-rose-600 transition"
             >
               → 사주란 무엇인가? 사주팔자 기초 완벽 정리
-            </button>
-            <button
-              type="button"
-              onClick={() => navigateTo(ROUTE_PATHS.blogZodiacStandard)}
-              className="block w-full text-left text-sm text-slate-700 hover:text-rose-600 transition"
+            </a>
+            <a
+              href={ROUTE_PATHS.blogZodiacStandard}
+              className="block text-sm text-slate-700 hover:text-rose-600 transition"
             >
               → 띠 기준은 입춘인가 음력 설인가?
-            </button>
+            </a>
           </div>
         </nav>
       </div>

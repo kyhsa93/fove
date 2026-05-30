@@ -1,4 +1,6 @@
 import { JSX, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { getName, setName } from '../lib/profile'
+import { recordFortune } from '../lib/fortuneHistory'
 import { SajuForm } from '../components/SajuForm'
 import { CombinedFortuneCard } from '../components/FortuneCard'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
@@ -91,9 +93,25 @@ const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
   }
 ]
 
+const FAQ_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ_ITEMS.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer.join(' ') },
+  })),
+}
+
 export default function FortunePage(): JSX.Element {
   const { showToast } = useToast()
   const { birthDate, birthTime, gender, result, error, dailyFortune, isLoading, setBirthTime, setGender, setBirthDate } = useSajuCalculator()
+  const [name, setNameState] = useState(() => getName())
+
+  const handleNameChange = (value: string) => {
+    setNameState(value)
+    setName(value)
+  }
 
   const [notifPermission, setNotifPermission] = useState<NotificationPermission | 'unsupported'>(() => getNotificationPermission())
   const [notifOptedIn, setNotifOptedIn] = useState(() => isOptedIn())
@@ -163,6 +181,7 @@ export default function FortunePage(): JSX.Element {
     if (dailyFortune && !generatedTracked.current) {
       generatedTracked.current = true
       trackEvent('fortune_generated', { pillar: dailyFortune.pillarName, score: dailyFortune.score })
+      recordFortune(dailyFortune.score)
     }
   }, [dailyFortune])
 
@@ -195,7 +214,7 @@ export default function FortunePage(): JSX.Element {
     if (!result) {
       return (
         <div className="rounded-2xl border border-amber-100 bg-white/60 px-2 py-4 text-sm text-gray-700 sm:px-6 sm:py-6">
-          사주 정보를 먼저 입력해 주세요. 기본 정보를 입력하면 오늘의 운세가 자동으로 생성됩니다.
+          왼쪽 폼에 생년월일을 입력하면 오늘의 개인 맞춤 운세가 바로 만들어져요.
         </div>
       )
     }
@@ -210,8 +229,11 @@ export default function FortunePage(): JSX.Element {
       <div className="space-y-4">
         <CombinedFortuneCard dailyFortune={dailyFortune} sajuResult={result} mbtiResult={mbtiResult} />
         {!mbtiResult ? (
-          <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 px-2 py-4 text-sm text-indigo-900/80 sm:px-4">
-            MBTI 페이지에서 검사를 완료하면 성향에 맞춘 교차 인사이트가 함께 제공됩니다.
+          <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 px-2 py-4 text-sm text-indigo-900/80 sm:px-4 flex items-center justify-between gap-3 flex-wrap">
+            <p>MBTI 검사를 완료하면 오늘 운세에 성향 기반 맞춤 조언이 추가돼요.</p>
+            <a href="/mbti" className="shrink-0 rounded-full bg-indigo-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-600 transition">
+              MBTI 진단 →
+            </a>
           </div>
         ) : null}
       </div>
@@ -219,7 +241,9 @@ export default function FortunePage(): JSX.Element {
   }
 
   return (
-    <section className="py-6 sm:py-8">
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }} />
+      <section className="py-6 sm:py-8">
       <div className="mx-auto max-w-5xl px-4">
         <div className="lg:grid lg:grid-cols-[360px_1fr] lg:gap-10 lg:items-start">
 
@@ -228,7 +252,7 @@ export default function FortunePage(): JSX.Element {
         <header className="space-y-2">
           <h1 className="text-3xl font-bold text-gray-900">오늘의 운세</h1>
           <p className="text-sm text-gray-600">
-            사주 기반으로 오늘의 흐름과 실천 포인트를 확인하세요. 사주 입력값이 비어 있으면 오늘 날짜와 현재 시간이 자동으로 채워지고 성별은 남성으로 시작하므로 바로 확인할 수 있어요.
+            오늘의 일진과 내 사주를 결합해 집중할 것, 조심할 것, 행운 요소를 한 번에 알려드려요. 생년월일을 입력하지 않아도 오늘 날짜 기준으로 바로 확인할 수 있어요.
           </p>
         </header>
 
@@ -250,9 +274,11 @@ export default function FortunePage(): JSX.Element {
           birthDate={birthDate}
           birthTime={birthTime}
           gender={gender}
+          name={name}
           onBirthDateChange={setBirthDate}
           onBirthTimeChange={setBirthTime}
           onGenderChange={setGender}
+          onNameChange={handleNameChange}
         />
         <span className="sr-only" aria-live="assertive">
           {error}
@@ -476,5 +502,6 @@ export default function FortunePage(): JSX.Element {
         </div>
       </div>
     </section>
+    </>
   )
 }

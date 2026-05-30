@@ -1,4 +1,4 @@
-import { JSX, useCallback, useMemo } from 'react'
+import { JSX, useCallback, useMemo, useState } from 'react'
 import { ActionCardDeck, type ActionCardData } from './ActionCards'
 import { TooltipLabel } from './TooltipLabel'
 import { ResultCard } from './ResultCard'
@@ -6,6 +6,18 @@ import { ShareCardButton } from './ShareCard'
 import type { MbtiResult } from './MbtiTest'
 import type { DailyFortune, SajuResult } from '../lib/saju'
 import { trackEvent } from '../lib/analytics'
+
+const SCORE_GRADES: Array<{ min: number; label: string; emoji: string; colorClass: string }> = [
+  { min: 90, label: '대길', emoji: '⭐', colorClass: 'border-amber-200 bg-amber-50 text-amber-700' },
+  { min: 80, label: '길', emoji: '🌟', colorClass: 'border-emerald-200 bg-emerald-50 text-emerald-700' },
+  { min: 70, label: '보통', emoji: '☁️', colorClass: 'border-slate-200 bg-slate-50 text-slate-600' },
+  { min: 60, label: '소길', emoji: '🌧', colorClass: 'border-blue-200 bg-blue-50 text-blue-600' },
+  { min: 0, label: '주의', emoji: '⚡', colorClass: 'border-rose-200 bg-rose-50 text-rose-600' },
+]
+
+function getScoreGrade(score: number) {
+  return SCORE_GRADES.find((g) => score >= g.min) ?? SCORE_GRADES[SCORE_GRADES.length - 1]
+}
 
 const MBTI_DIMENSION_TIPS: Record<string, { positive: string; negative: string }> = {
   EI: {
@@ -81,11 +93,71 @@ function buildFortuneActionCards(combinedTexts: CombinedFortuneText, dailyFortun
       tone: 'avoid'
     },
     {
-      title: '대인관계/업무 팁',
+      title: '관계 · 소통 팁',
       description: `${YINYANG_RELATION_TIPS[dailyFortune.yinYang]} ${combinedTexts.energy}`,
       tone: 'relation'
     }
   ]
+}
+
+const LUCKY_ITEMS = [
+  { key: 'color' as const, label: '행운색', emoji: '🎨' },
+  { key: 'number' as const, label: '행운 숫자', emoji: '🔢' },
+  { key: 'direction' as const, label: '행운 방위', emoji: '🧭' },
+  { key: 'food' as const, label: '행운 음식', emoji: '🍀' },
+]
+
+function LuckyCard({ lucky, dateLabel }: { lucky: DailyFortune['lucky']; dateLabel: string }): JSX.Element {
+  const [copied, setCopied] = useState(false)
+
+  const shareText = `✨ ${dateLabel} 오늘의 행운 요소\n🎨 행운색: ${lucky.color}\n🔢 행운 숫자: ${lucky.number}\n🧭 행운 방위: ${lucky.direction}\n🍀 행운 음식: ${lucky.food}\n⚡ 오늘 피할 것: ${lucky.avoid}\n\nFove에서 오늘 운세 확인 → https://kyhsa93.github.io/fove`
+
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(shareText)
+    } catch {
+      const el = document.createElement('textarea')
+      el.value = shareText
+      document.body.appendChild(el)
+      el.select()
+      document.execCommand('copy')
+      document.body.removeChild(el)
+    }
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }, [shareText])
+
+  return (
+    <div className="rounded-xl border border-amber-100 bg-white/80 px-3 py-4 space-y-3">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold text-amber-700">✨ 오늘의 행운 요소</p>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="text-xs text-amber-600 hover:text-amber-800 transition font-medium"
+        >
+          {copied ? '✓ 복사됨' : '텍스트 복사'}
+        </button>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {LUCKY_ITEMS.map(({ key, label, emoji }) => (
+          <div key={key} className="rounded-lg bg-amber-50/60 border border-amber-100 px-2 py-2.5 text-center space-y-1">
+            <p className="text-[10px] text-slate-500">{emoji} {label}</p>
+            <p className="text-sm font-semibold text-slate-800 leading-snug">{lucky[key]}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-lg border border-rose-100 bg-rose-50/50 px-3 py-2.5 flex items-start gap-2">
+        <span className="text-base shrink-0">⚡</span>
+        <div>
+          <p className="text-[10px] font-semibold text-rose-600 mb-0.5">오늘 피할 것</p>
+          <p className="text-xs text-rose-900 leading-relaxed">{lucky.avoid}</p>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 interface CombinedFortuneCardProps {
@@ -95,10 +167,10 @@ interface CombinedFortuneCardProps {
 }
 
 const CATEGORY_META = [
-  { key: 'work' as const, label: '일·업무', icon: '💼', bar: 'bg-blue-400', border: 'border-blue-100 bg-blue-50/60 text-blue-900' },
-  { key: 'love' as const, label: '사랑·관계', icon: '🌸', bar: 'bg-rose-400', border: 'border-rose-100 bg-rose-50/60 text-rose-900' },
-  { key: 'money' as const, label: '재물', icon: '💰', bar: 'bg-amber-400', border: 'border-amber-100 bg-amber-50/60 text-amber-900' },
-  { key: 'health' as const, label: '건강', icon: '🌿', bar: 'bg-emerald-400', border: 'border-emerald-100 bg-emerald-50/60 text-emerald-900' }
+  { key: 'work' as const, label: '일·업무', tooltip: '직장·공부·프로젝트에서 발휘되는 에너지 수준이에요.', icon: '💼', bar: 'bg-blue-400', border: 'border-blue-100 bg-blue-50/60 text-blue-900' },
+  { key: 'love' as const, label: '사랑·관계', tooltip: '연인·가족·친구와의 관계 흐름을 나타내요.', icon: '🌸', bar: 'bg-rose-400', border: 'border-rose-100 bg-rose-50/60 text-rose-900' },
+  { key: 'money' as const, label: '재물', tooltip: '금전·소비·투자 관련 에너지 흐름이에요.', icon: '💰', bar: 'bg-amber-400', border: 'border-amber-100 bg-amber-50/60 text-amber-900' },
+  { key: 'health' as const, label: '건강', tooltip: '오늘 몸과 마음의 컨디션 지수예요.', icon: '🌿', bar: 'bg-emerald-400', border: 'border-emerald-100 bg-emerald-50/60 text-emerald-900' }
 ]
 
 function ScoreBar({ score, label, color }: { score: number; label: string; color: string }): JSX.Element {
@@ -117,7 +189,23 @@ function ScoreBar({ score, label, color }: { score: number; label: string; color
 
 function OverallScoreBar({ score }: { score: number }): JSX.Element {
   const color = score >= 80 ? 'bg-emerald-400' : score >= 65 ? 'bg-amber-400' : 'bg-rose-400'
-  return <ScoreBar score={score} label="오늘의 운세 지수" color={color} />
+  const grade = getScoreGrade(score)
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between text-xs text-slate-500">
+        <span>오늘의 운세 지수</span>
+        <div className="flex items-center gap-1.5">
+          <span className={`inline-flex items-center gap-0.5 rounded-full border px-2 py-0.5 text-xs font-semibold ${grade.colorClass}`}>
+            {grade.emoji} {grade.label}
+          </span>
+          <span className="font-semibold text-slate-700">{score}점</span>
+        </div>
+      </div>
+      <div className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+        <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${score}%` }} />
+      </div>
+    </div>
+  )
 }
 
 export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: CombinedFortuneCardProps): JSX.Element {
@@ -194,10 +282,12 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
   const categoriesTab = useMemo(() => (
     <div className="space-y-4 text-sm leading-relaxed">
       <div className="grid gap-3 sm:grid-cols-2">
-        {CATEGORY_META.map(({ key, label, icon, bar, border }) => (
+        {CATEGORY_META.map(({ key, label, tooltip, icon, bar, border }) => (
           <div key={key} className={`rounded-xl border px-3 py-4 space-y-2.5 ${border}`}>
             <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold">{icon} {label}</p>
+              <p className="text-xs font-semibold">
+                <TooltipLabel text={`${icon} ${label}`} description={tooltip} />
+              </p>
               <span className="text-lg font-bold tabular-nums">{categoryScores[key]}점</span>
             </div>
             <div className="h-1.5 w-full rounded-full bg-black/10 overflow-hidden">
@@ -208,25 +298,9 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
         ))}
       </div>
 
-      <div className="rounded-xl border border-amber-100 bg-white/80 px-3 py-4">
-        <p className="text-xs font-semibold text-amber-700 mb-3">✨ 오늘의 행운 요소</p>
-        <div className="grid grid-cols-3 gap-3 text-center">
-          <div className="space-y-1">
-            <p className="text-xs text-slate-500">행운색</p>
-            <p className="font-semibold text-slate-800">{lucky.color}</p>
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs text-slate-500">행운 숫자</p>
-            <p className="font-semibold text-slate-800">{lucky.number}</p>
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs text-slate-500">행운 방위</p>
-            <p className="font-semibold text-slate-800">{lucky.direction}</p>
-          </div>
-        </div>
-      </div>
+      <LuckyCard lucky={lucky} dateLabel={dateLabel} />
     </div>
-  ), [categories, categoryScores, lucky])
+  ), [categories, categoryScores, lucky, dateLabel])
 
   const adviceTab = useMemo(() => (
     <div className="space-y-5 text-sm leading-relaxed text-slate-700">

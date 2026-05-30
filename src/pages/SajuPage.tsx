@@ -1,8 +1,9 @@
-import { JSX, useEffect } from 'react'
+import { JSX, useEffect, useState } from 'react'
 import { SajuForm } from '../components/SajuForm'
 import { SajuResult } from '../components/SajuResult'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
 import { useToast } from '../components/ToastProvider'
+import { getName, setName } from '../lib/profile'
 import type { RoutePath } from '../routes'
 import { ROUTE_PATHS } from '../routes'
 import { navigateTo } from '../lib/router'
@@ -51,10 +52,26 @@ const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
   }
 ]
 
+const FAQ_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ_ITEMS.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer.join(' ') },
+  })),
+}
+
 export default function SajuPage(): JSX.Element {
   const { showToast } = useToast()
   const { birthDate, birthTime, gender, result, error, elementBars, interpretation, isLoading, setBirthDate, setBirthTime, setGender } =
     useSajuCalculator()
+  const [name, setNameState] = useState(() => getName())
+
+  const handleNameChange = (value: string) => {
+    setNameState(value)
+    setName(value)
+  }
 
   useEffect(() => {
     if (error) {
@@ -63,7 +80,9 @@ export default function SajuPage(): JSX.Element {
   }, [error, showToast])
 
   return (
-    <section className="py-6 sm:py-8">
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }} />
+      <section className="py-6 sm:py-8">
       <div className="mx-auto max-w-5xl px-4">
         <div className="lg:grid lg:grid-cols-[360px_1fr] lg:gap-10 lg:items-start">
 
@@ -80,9 +99,11 @@ export default function SajuPage(): JSX.Element {
               birthDate={birthDate}
               birthTime={birthTime}
               gender={gender}
+              name={name}
               onBirthDateChange={setBirthDate}
               onBirthTimeChange={setBirthTime}
               onGenderChange={setGender}
+              onNameChange={handleNameChange}
             />
 
             <span className="sr-only" aria-live="assertive">
@@ -138,5 +159,6 @@ export default function SajuPage(): JSX.Element {
         </div>
       </div>
     </section>
+    </>
   )
 }

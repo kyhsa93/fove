@@ -1,9 +1,11 @@
 import { JSX } from 'react'
 import { SeasonalBanner } from '../components/SeasonalBanner'
+import { StreakBadge } from '../components/StreakBadge'
 import type { RoutePath } from '../routes'
 import { ROUTE_PATHS } from '../routes'
 import { navigateTo } from '../lib/router'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
+import { getName } from '../lib/profile'
 import { ELEMENT_LABELS, ELEMENT_KEYWORDS, TEMPERAMENT_BY_ELEMENT } from '../lib/saju'
 import type { DailyFortune, SajuResult } from '../lib/saju'
 
@@ -11,49 +13,60 @@ const PRIMARY_ACTIONS: Array<{ path: RoutePath; label: string; description: stri
   {
     path: ROUTE_PATHS.saju,
     label: '사주 풀이 시작하기',
-    description: '생년월일과 시간을 입력하고 개인 사주 리포트를 받아보세요.'
+    description: '타고난 기질·강점·직업 성향을 생년월일 하나로 바로 확인할 수 있어요.'
   },
   {
     path: ROUTE_PATHS.fortune,
     label: '오늘의 운세 보기',
-    description: '사주 정보와 계절 흐름을 조합한 데일리 가이드를 확인하세요.'
+    description: '오늘 집중할 것, 조심할 것, 행운 요소를 한 카드에서 확인하세요.'
   },
   {
     path: ROUTE_PATHS.mbti,
     label: 'MBTI 성향 진단',
-    description: '20개의 문항으로 심리적 경향을 측정하고 사주 결과와 함께 분석합니다.'
+    description: '20문항으로 내 MBTI를 확인하고 사주와 어떻게 연결되는지 바로 분석해드려요.'
   },
   {
     path: ROUTE_PATHS.zodiac,
     label: '띠별 운세 보기',
-    description: '12간지 띠별 기질·관계·직업·건강 특성을 사주 오행으로 분석합니다.'
+    description: '내 띠가 가진 기질·인간관계·직업 성향을 오행 분석으로 확인하세요.'
   }
 ]
 
 const HIGHLIGHTS: Array<{ title: string; description: string }> = [
   {
-    title: '데이터 기반 사주 해석',
+    title: '내 타고난 기질 파악',
     description:
-      '천간·지지·오행 분포를 정량화해 강점과 보완 포인트를 한눈에 제공합니다. 계산 결과는 브라우저에만 저장되어 안전합니다.'
+      '생년월일을 입력하면 오행 에너지 분포로 강점과 보완 포인트를 숫자로 확인할 수 있어요. 개인정보는 기기 밖으로 나가지 않아 안전해요.'
   },
   {
-    title: '맞춤 하루 가이드',
+    title: '오늘 뭘 하면 좋을까?',
     description:
-      '사주 흐름과 오늘의 일진을 결합해 컨디션 포인트와 추천 활동을 균형 있게 제안합니다.'
+      '오늘의 일진과 내 사주를 결합해 지금 집중하면 좋은 활동과 피해야 할 것을 한눈에 알려드려요.'
   },
   {
-    title: '심리 유형과의 연동',
+    title: 'MBTI와 사주를 같이 보면?',
     description:
-      'MBTI 결과를 사주의 음양·오행 흐름과 비교해 협업 방식, 휴식 전략, 집중 시간대를 추천합니다.'
+      'MBTI 성향과 사주 에너지를 함께 분석해 나에게 맞는 협업 스타일, 휴식법, 집중 시간대를 알려드려요.'
   }
 ]
+
+function getTimeGreeting(): string {
+  const hour = new Date().getHours()
+  if (hour >= 5 && hour < 12) return '좋은 아침이에요 ☀️'
+  if (hour >= 12 && hour < 14) return '점심은 잘 챙기셨나요?'
+  if (hour >= 14 && hour < 18) return '오후도 좋은 흐름이에요'
+  if (hour >= 18 && hour < 22) return '오늘 하루 어떠셨나요?'
+  return '오늘도 고생하셨어요 🌙'
+}
 
 interface HomeFortuneProps {
   dailyFortune: DailyFortune
   result: SajuResult
+  name: string
+  greeting: string
 }
 
-function HomeFortune({ dailyFortune, result }: HomeFortuneProps): JSX.Element {
+function HomeFortune({ dailyFortune, result, name, greeting }: HomeFortuneProps): JSX.Element {
   const strongest = result.summary.strongest.element
   const keywords = ELEMENT_KEYWORDS[strongest]
   const { score, categoryScores } = dailyFortune
@@ -68,9 +81,15 @@ function HomeFortune({ dailyFortune, result }: HomeFortuneProps): JSX.Element {
   return (
     <div className="rounded-3xl border border-white/20 bg-white/10 backdrop-blur px-4 py-5 text-white shadow-xl space-y-4 sm:px-6 sm:py-6">
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">오늘의 Fove 리포트</p>
+        <div className="flex items-center gap-2 flex-wrap">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+            {name ? `${name}님의 오늘 리포트` : '오늘의 Fove 리포트'}
+          </p>
+          <StreakBadge />
+        </div>
         <p className="text-xs text-white/60">{dailyFortune.dateLabel}</p>
       </div>
+      <p className="text-sm font-medium text-white/70">{greeting}</p>
 
       <div className="space-y-1">
         <div className="flex items-center gap-3 flex-wrap">
@@ -122,6 +141,8 @@ function HomeFortune({ dailyFortune, result }: HomeFortuneProps): JSX.Element {
 
 export default function HomePage(): JSX.Element {
   const { result, dailyFortune } = useSajuCalculator()
+  const name = getName()
+  const greeting = getTimeGreeting()
   const isReturning = Boolean(result && dailyFortune)
 
   return (
@@ -129,10 +150,16 @@ export default function HomePage(): JSX.Element {
       <div className="mx-auto flex max-w-5xl flex-col gap-12 px-4 py-12 sm:py-16">
 
         {isReturning && result && dailyFortune ? (
-          <HomeFortune dailyFortune={dailyFortune} result={result} />
+          <HomeFortune dailyFortune={dailyFortune} result={result} name={name} greeting={greeting} />
         ) : (
           <div className="rounded-3xl border border-white/20 bg-white/10 backdrop-blur px-4 py-5 text-white shadow-xl space-y-5 sm:px-6 sm:py-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">오늘의 Fove 리포트</p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
+                {name ? `${name}님의 오늘 리포트` : '오늘의 Fove 리포트'}
+              </p>
+              <StreakBadge />
+            </div>
+            <p className="text-sm font-medium text-white/70">{greeting}</p>
             <div className="space-y-2">
               <p className="text-base font-semibold text-white/90">사주 정보를 입력하면 오늘의 개인 운세 리포트가 여기에 표시됩니다.</p>
               <p className="text-sm text-white/60">총운 · 일·업무 · 사랑·관계 · 재물 · 건강 점수와 오늘의 조언을 한눈에 확인하세요.</p>
@@ -173,13 +200,12 @@ export default function HomePage(): JSX.Element {
             <span>Fove Insight</span>
           </div>
           <h1 className="font-heading text-3xl font-bold leading-tight sm:text-4xl">
-            하루의 흐름을 읽고
+            오늘의 흐름을 알면
             <br className="hidden sm:block" />
-            나만의 루틴을 설계하세요
+            하루가 달라져요
           </h1>
           <p className="mx-auto max-w-2xl text-sm leading-relaxed text-white/80 sm:text-base">
-            Fove는 사주, 오늘의 운세, MBTI를 결합해 균형 잡힌 결정과 휴식을 돕는 인사이트 허브입니다. 필요한 기능을 선택해 바로
-            시작해 보세요.
+            사주와 MBTI, 오늘의 일진을 한 곳에서 연결해 지금 나에게 맞는 행동과 쉬는 방식을 알려드려요. 복잡한 해석 없이 바로 시작할 수 있어요.
           </p>
         </header>
 

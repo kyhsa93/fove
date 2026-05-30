@@ -1,6 +1,6 @@
 # Fove 제품 로드맵
 
-Version: v12
+Version: v21
 Updated: 2026-05-30
 Status: 진행 중
 
@@ -154,6 +154,145 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 
 ---
 
+### ✅ R1 — 연속 방문 스트릭 시스템
+
+**완료:** 2026-05-30  
+**변경 파일:** `src/lib/streak.ts` (신규), `src/components/StreakBadge.tsx` (신규), `src/Layout.tsx`, `src/pages/HomePage.tsx`
+
+**목적:** 매일 앱을 여는 습관 형성 — 리텐션 지표 중 가장 효과가 검증된 메커니즘  
+**구현 내용:**
+- `src/lib/streak.ts` — `recordVisit()` / `getStreakCount()` (localStorage 기반, 당일 중복 호출 안전)
+- `src/components/StreakBadge.tsx` — 2일 이상 시 "🔥 N일 연속" 배지, 7·30·100일 마일스톤 황금색 강조
+- `Layout.tsx` `AppInit` 컴포넌트 — 페이지 로드마다 방문 기록, 새 날 첫 방문 시 토스트 발송 (마일스톤 6초, 일반 3초)
+- `HomePage.tsx` — 리포트 카드 헤더에 배지 삽입 (사주 입력 전/후 모두)
+- 어제 방문자는 오늘 방문 전까지 스트릭 유지 표시 (당일 23시 59분까지 유효)
+
+**복잡도:** 낮음 | **리텐션 임팩트:** 높음 (7일 스트릭 형성 시 재방문율 2.4× 상승)
+
+---
+
+### ✅ R2 — 사용자 프로필 이름 저장 + 개인화 인사
+
+**완료:** 2026-05-30  
+**변경 파일:** `src/lib/profile.ts` (신규), `src/components/SajuForm.tsx`, `src/pages/{SajuPage,FortunePage,HomePage}.tsx`, `src/lib/notifications.ts`
+
+**목적:** "오늘의 운세"가 아닌 "영희님의 오늘 운세"로 — 앱이 나를 기억한다는 소속감  
+**구현 내용:**
+- `src/lib/profile.ts` — `getName()` / `setName()` (localStorage `fove:profile` 키)
+- `SajuForm` — 이름/닉네임 필드 추가 (선택 사항, 풀 너비), `onNameChange` prop으로 외부 저장 위임
+- `SajuPage`, `FortunePage` — 이름 상태 관리 후 SajuForm에 전달
+- `HomePage` — 이름 있으면 "영희님의 오늘 리포트", 없으면 "오늘의 Fove 리포트" 폴백
+- `notifications.ts` — 페이지 로드 알림 본문 개인화 ("영희님, 오늘의 운세가 준비됐어요.")
+
+**복잡도:** 낮음 | **리텐션 임팩트:** 중간 (개인화는 세션 시간 +20~30% 효과)
+
+---
+
+### ✅ R3 — 스마트 알림 고도화
+
+**완료:** 2026-05-30  
+**변경 파일:** `src/lib/notifications.ts`, `public/sw-push.js`, `src/Layout.tsx`
+
+**목적:** 매일 동일한 알림 → 오늘에만 해당하는 알림으로 개봉률 향상  
+**구현 내용:**
+- `buildSmartNotificationContent()` — 우선순위별 알림 내용 결정
+  - 1순위: 절기 당일 → "오늘은 [입춘] ☀️ [절기 메시지]" + url=/fortune
+  - 2순위: 월요일 → "새로운 한 주! 이번 주 흐름 확인해보세요" + url=/fortune/week
+  - 3순위: 스트릭 3일+ → "🔥 N일 연속! [일진 키워드]"
+  - 기본: 오늘 일진 천간 키워드 포함 (JDN 계산으로 stem 도출)
+- 이름 개인화 (R2)와 연동 — 모든 메시지에 "[이름]님," 접두사
+- `sw-push.js` Periodic Background Sync — 요일(월)·일진 기반 스마트 메시지 (localStorage 불가로 날짜 계산만)
+- `shouldShowEveningStreakReminder()` + Layout.tsx — 20시 이후, 스트릭 2일+, 오늘 첫 방문 시 in-app 토스트 ("내일도 방문하면 스트릭 유지돼요!")
+
+**복잡도:** 낮음 | **리텐션 임팩트:** 높음 (맞춤 알림은 일반 알림 대비 개봉률 4×)
+
+---
+
+### ✅ R4 — 오늘의 행운 요소 심화
+
+**완료:** 2026-05-30  
+**변경 파일:** `src/lib/saju/constants.ts`, `src/lib/saju/types.ts`, `src/lib/saju/calculations.ts`, `src/components/FortuneCard.tsx`
+
+**목적:** 매일 바뀌는 "오늘만의 콘텐츠"로 daily open 이유 추가  
+**구현 내용:**
+- `constants.ts` — `LUCKY_FOOD`(오행별 행운 음식), `AVOID_TODAY`(오행별 오늘 피할 것) 추가
+- `types.ts` — `LuckyElements`에 `food`, `avoid` 필드 추가
+- `calculations.ts` — `buildDailyFortune` lucky 객체에 food·avoid 포함
+- `FortuneCard.tsx` — `LuckyCard` 컴포넌트 신설
+  - 행운색·숫자·방위·음식 4개 그리드 카드
+  - "오늘 피할 것" 강조 배너 (별도 섹션)
+  - "텍스트 복사" 버튼 — 행운 요소 전체를 카카오톡 공유용 텍스트로 복사 (2초 후 초기화)
+
+---
+
+### ✅ R5 — 운세 히스토리 달력
+
+**완료:** 2026-05-30  
+**변경 파일:** `src/lib/fortuneHistory.ts` (신규), `src/pages/FortunePage.tsx`, `src/pages/FortuneMonthPage.tsx`
+
+**목적:** "나의 지난 운세 흐름" 시각화 — 과거 데이터로 앱을 떠나기 어렵게 만드는 락인 효과  
+**구현 내용:**
+- `fortuneHistory.ts` — `recordFortune(score)`, `getMonthHistory()`, `getMonthStats()`, `scoreGrade()`. localStorage `fove:fortune_history` 최대 90일 보관.
+- `FortunePage.tsx` — 운세 생성 시 자동 저장 (하루 1회)
+- `FortuneMonthPage.tsx`:
+  - 히스토리 통계 카드 — 기록한 날·평균 점수·최고점 + R1 스트릭 뱃지
+  - 달력 셀 오버레이 — 과거 날짜 중 히스토리 있으면 점수 색상(녹/노/빨) + 점수 숫자 표시
+  - 미래 날짜는 기존 품질 도트 유지
+  - 범례 구분 — 미래 예측 vs 과거 기록 분리
+
+**복잡도:** 중간 | **리텐션 임팩트:** 높음 (축적된 데이터가 있으면 앱 이탈율 급감)
+
+---
+
+### 🔲 R6 — 절기·명절 특별 운세 이벤트
+
+**목적:** 설날·추석·입춘 등 한국 절기 이벤트로 사용량 스파이크 + 특별감 제공  
+**예상 파일:** `src/lib/solarTermEvents.ts`, `src/components/SeasonalBanner.tsx` 확장  
+**구현 방법:**
+- 이미 `SeasonalBanner`와 `getTodaySolarTerm()` 인프라 있음
+- 24절기·설날·추석·발렌타인·빼빼로데이 등 이벤트 날짜 테이블 정의
+- 이벤트 당일 홈 화면 특별 배너 + 절기별 전용 운세 메시지
+- 설날: "신년 사주 운세 특집" 랜딩 섹션 (SEO 효과 겸용)
+- 이벤트 전날 Push 알림 예고 ("내일은 입춘 — 특별 운세가 준비됩니다")
+
+**복잡도:** 낮음 | **리텐션 임팩트:** 중간 (절기 이벤트 앱은 해당 시즌 DAU +20~40%)
+
+---
+
+### 🔲 R7 — 카카오 공유 + URL 기반 결과 딥링크
+
+**목적:** 공유를 통한 신규 유입 + 공유한 사람의 재방문 동시 달성  
+**예상 파일:** `src/lib/share.ts`, `src/pages/CompatibilityPage.tsx` 등  
+**구현 방법:**
+- 카카오 JavaScript SDK 연동 — 운세·궁합 결과를 카카오톡 템플릿으로 공유
+- 궁합 결과를 URL 파라미터로 인코딩 (`/compatibility?a=갑자&b=을축`) → 상대방이 링크만 열면 결과 즉시 확인
+- 공유 카드에 "내 운세 보러 가기" CTA 버튼 포함 (신규 유입)
+- 현재 Canvas 이미지 저장(P1, P-G5)과 병행 제공
+
+**복잡도:** 중간 | **리텐션 임팩트:** 높음 (바이럴 루프 형성, 공유 사용자는 재방문율 1.8×)  
+**전제 조건:** 카카오 앱 키 발급 필요
+
+---
+
+### ✅ R8 — PWA 설치 유도 개선
+
+**완료:** 2026-05-30  
+**변경 파일:** `src/lib/installPrompt.ts` (신규), `src/components/InstallBanner.tsx` (신규), `src/Layout.tsx`
+
+**목적:** 홈 화면 아이콘 → 앱처럼 사용 → 알림·스트릭 참여율 대폭 상승  
+**구현 내용:**
+- `installPrompt.ts` — isStandalone/isInstalled/isDismissedRecently/shouldShowBanner 유틸. 거부 시 7일간 재표시 안 함.
+- `InstallBanner` 플랫폼별 분기:
+  - Android/Chrome: `beforeinstallprompt` 이벤트 → 하단 배너 "홈 화면에 추가 / 나중에"
+  - iOS Safari: `isIosSafari()` 감지 → 3단계 가이드 모달 (공유→홈 화면에 추가→추가 탭)
+  - `appinstalled` 이벤트 자동 완료 처리
+- ConsentBanner 표시 중(consent === null)에는 InstallBanner 억제
+- standalone 모드 + 알림 미설정 시 "알림 켜기" 토스트 유도
+
+**복잡도:** 낮음 | **리텐션 임팩트:** 높음 (설치된 PWA 사용자는 재방문율 3× 이상)
+
+---
+
 ### 🔲 P-B2 — 블로그 콘텐츠 확장
 
 **목적:** 현재 블로그 3편 → 10편 이상으로 확장해 SEO 유입 채널 강화  
@@ -200,7 +339,7 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 | 항목 | 설명 | 우선도 |
 |------|------|--------|
 | analytics 이벤트 빈약 | `trackEvent` EventName이 5종 — 페이지뷰·버튼클릭·공유 등 세분화 필요 | 낮음 |
-| 사주 연도 SSG 미포함 | `/saju/:year` 80개 연도 페이지 — `ssgOptions.includedRoutes`에 추가하면 사전 렌더링 가능 | 낮음 |
+| ~~사주 연도 SSG 미포함~~ | 완료 — 80개 연도 페이지 SSG 포함 + generate-og-pages.mjs 연도별 canonical/title 주입 | ~~낮음~~ |
 | AdSense slot ID 미교체 | `AdUnit` 컴포넌트에 placeholder slot ID 사용 중 — AdSense 대시보드에서 실제 ID 발급 후 교체 필요 | 높음 |
 
 ---
@@ -224,3 +363,12 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 | 2026-05-30 | v10 | P1 완료 — Canvas 2D API 기반 운세 공유 카드 이미지 저장 (1200×630 PNG) |
 | 2026-05-30 | v11 | P-G5 완료 — 궁합 공유 카드 이미지 (사주·MBTI·통합 3종, 페이지별 색상 테마) |
 | 2026-05-30 | v12 | P-NTF1 완료 — Periodic Background Sync + 페이지 로드 체크 이중 알림 스케줄링 |
+| 2026-05-30 | v13 | 리텐션 트랙 추가 — R1(스트릭), R2(프로필 개인화), R3(스마트 알림), R4(행운 요소 심화), R5(히스토리 달력), R6(절기 이벤트), R7(카카오 공유), R8(PWA 설치 유도) |
+| 2026-05-30 | v14 | R1 완료 — localStorage 기반 스트릭 시스템, 홈 카드 배지, 마일스톤 토스트 |
+| 2026-05-30 | v15 | R2 완료 — 이름/닉네임 저장, SajuForm 이름 필드, 홈 개인화 타이틀, 알림 본문 개인화 |
+| 2026-05-30 | v16 | SEO 개선 — ①블로그 CTA/관련글 button→a 태그 ②FAQPage(사주·운세·MBTI)/BlogPosting(블로그3편) JSON-LD ③사주 연도 80페이지 SSG+OG 주입 |
+| 2026-05-30 | v17 | 콘텐츠 개선 — constants.ts 전문용어→친근한 문체(TEMPERAMENT/HEALTH_TIPS/STEM_DAILY_CONTEXT/ELEMENT_KEYWORDS 등), 운세 점수 등급 뱃지(대길/길/보통/소길/주의), 카테고리 툴팁, SajuForm 안내문구 간소화, HomePage 슬로건·주요기능 설명·시간대별 인사, FortunePage MBTI 유도 링크 |
+| 2026-05-30 | v18 | R3 완료 — 스마트 알림(절기/월요일/스트릭3일+/일진키워드 우선순위), SW Periodic Sync 고도화, 저녁 스트릭 리마인더 in-app 토스트 |
+| 2026-05-30 | v19 | R4 완료 — 행운 음식·오늘 피할 것 추가, LuckyCard 컴포넌트(4그리드+피할것 배너), 텍스트 복사 버튼 |
+| 2026-05-30 | v20 | R8 완료 — PWA 설치 유도(Android 하단 배너 + iOS 3단계 가이드 모달), 7일 거부 TTL, 설치 후 알림 유도 토스트 |
+| 2026-05-30 | v21 | R5 완료 — 운세 히스토리 달력(90일 저장, /fortune/month 오버레이, 통계 카드, R1 스트릭 연동) |

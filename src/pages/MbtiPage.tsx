@@ -65,6 +65,16 @@ const FAQ_ITEMS: Array<{ question: string; answer: string[] }> = [
   }
 ]
 
+const FAQ_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ_ITEMS.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer.join(' ') },
+  })),
+}
+
 export default function MbtiPage(): JSX.Element {
   const [activeResult, setActiveResult] = useState<MbtiResult | null>(null)
 
@@ -73,7 +83,9 @@ export default function MbtiPage(): JSX.Element {
   const summaryDescription = hasResult ? activeResult?.summary.description : '20문항에 모두 응답하면 강점과 성장 포인트를 포함한 상세 분석을 확인할 수 있어요.'
 
   return (
-    <section className="py-6 sm:py-8">
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }} />
+      <section className="py-6 sm:py-8">
       <div className="mx-auto max-w-4xl space-y-8 px-4">
         <header className="space-y-2 text-center">
           <h1 className="text-3xl font-bold text-gray-900">MBTI 성향 진단</h1>
@@ -131,5 +143,6 @@ export default function MbtiPage(): JSX.Element {
         </section>
       </div>
     </section>
+    </>
   )
 }

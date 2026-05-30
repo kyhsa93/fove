@@ -4,6 +4,22 @@ import { SAJU_BASICS_META, SAJU_BASICS_SECTIONS } from '../src/data/blogSajuBasi
 import { ZODIAC_STANDARD_META, ZODIAC_STANDARD_SUMMARY, ZODIAC_STANDARD_SECTIONS } from '../src/data/blogZodiacStandard.js'
 import { MBTI_LOVE_STYLE_META, LOVE_STYLES } from '../src/data/blogMbtiLoveStyle.js'
 
+// 사주 연도 계산 (vite.config.ts 와 동일 로직)
+const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸']
+const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥']
+const BRANCH_ANIMALS = { 子:'쥐',丑:'소',寅:'호랑이',卯:'토끼',辰:'용',巳:'뱀',午:'말',未:'양',申:'원숭이',酉:'닭',戌:'개',亥:'돼지' }
+const STEM_ELEMENTS = { 甲:'목',乙:'목',丙:'화',丁:'화',戊:'토',己:'토',庚:'금',辛:'금',壬:'수',癸:'수' }
+
+function mod(n, m) { return ((n % m) + m) % m }
+function getYearPillar(year) {
+  const stem = STEMS[mod(year - 4, 10)]
+  const branch = BRANCHES[mod(year - 4, 12)]
+  return { stem, branch, animal: BRANCH_ANIMALS[branch], element: STEM_ELEMENTS[stem] }
+}
+
+const currentYear = new Date().getFullYear()
+const sajuYears = Array.from({ length: 80 }, (_, i) => currentYear - 70 + i)
+
 const distDir = path.resolve('dist')
 const baseUrlRaw = process.env.SITE_BASE_URL ?? 'https://kyhsa93.github.io'
 const baseUrl = baseUrlRaw.endsWith('/') ? baseUrlRaw.slice(0, -1) : baseUrlRaw
@@ -162,13 +178,34 @@ function buildNoscript(routePath) {
   return ''
 }
 
+const BLOG_DATE_PUBLISHED = '2026-05-25'
+const BLOG_DATE_MODIFIED = '2026-05-30'
+
+function buildBlogPostingSchema(route) {
+  if (!route.path.startsWith('/blog/')) return ''
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: route.ogTitle.replace(/ — Fove$/, '').trim(),
+    description: route.description,
+    url: `${siteBase}${route.path}`,
+    datePublished: BLOG_DATE_PUBLISHED,
+    dateModified: BLOG_DATE_MODIFIED,
+    author: { '@type': 'Organization', name: 'Fove', url: siteBase },
+    publisher: { '@type': 'Organization', name: 'Fove', url: siteBase },
+    inLanguage: 'ko-KR',
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `${siteBase}${route.path}` },
+  }
+  return `<script type="application/ld+json">${JSON.stringify(schema)}</script>`
+}
+
 function injectOg(template, route) {
   const canonicalUrl = `${siteBase}${route.path}`
   const title = escapeAttr(route.title)
   const ogTitle = escapeAttr(route.ogTitle)
   const description = escapeAttr(route.description)
 
-  return template
+  let html = template
     .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
     .replace(/(<meta name="description" content=")[^"]*(")/,  `$1${description}$2`)
     .replace(/(<meta property="og:title" content=")[^"]*(")/,  `$1${ogTitle}$2`)
@@ -179,6 +216,13 @@ function injectOg(template, route) {
     .replace(/(<meta name="twitter:description" content=")[^"]*(")/,  `$1${description}$2`)
     .replace(/(<meta name="twitter:image" content=")[^"]*(")/,  `$1${socialCard}$2`)
     .replace(/(<link rel="canonical" href=")[^"]*(")/,  `$1${canonicalUrl}$2`)
+
+  const blogSchema = buildBlogPostingSchema(route)
+  if (blogSchema && !html.includes('"BlogPosting"')) {
+    html = html.replace('</head>', `${blogSchema}</head>`)
+  }
+
+  return html
 }
 
 const templatePath = path.join(distDir, 'index.html')
@@ -206,6 +250,39 @@ for (const route of routes) {
   }
   fs.mkdirSync(outDir, { recursive: true })
   fs.writeFileSync(outFile, html, 'utf8')
+  generated++
+}
+
+// 사주 연도 페이지 처리 (SSG는 flat .html 파일로 생성)
+for (const year of sajuYears) {
+  const outFile = path.join(distDir, 'saju', `${year}.html`)
+
+  // SSG가 생성한 파일이 없으면 건너뜀
+  if (!fs.existsSync(outFile)) continue
+
+  const { stem, branch, animal, element } = getYearPillar(year)
+  const canonicalUrl = `${siteBase}/saju/${year}`
+  const title = `${year}년생 사주 특성 · ${animal}띠 ${element} 기운 — Fove`
+  const ogTitle = `${year}년생(${animal}띠) 사주 특성 — Fove`
+  const description = `${year}년생(${animal}띠)의 사주 특성을 확인하세요. ${stem}${branch}년, ${element} 기운의 성향·직업·재물·건강 분석을 제공합니다.`
+
+  const baseHtml = fs.readFileSync(outFile, 'utf8')
+  const html = baseHtml
+    .replace(/<title>[^<]*<\/title>/, `<title>${escapeAttr(title)}</title>`)
+    .replace(/(<meta name="description" content=")[^"]*(")/,  `$1${escapeAttr(description)}$2`)
+    .replace(/(<meta property="og:title" content=")[^"]*(")/,  `$1${escapeAttr(ogTitle)}$2`)
+    .replace(/(<meta property="og:description" content=")[^"]*(")/,  `$1${escapeAttr(description)}$2`)
+    .replace(/(<meta property="og:url" content=")[^"]*(")/,  `$1${canonicalUrl}$2`)
+    .replace(/(<meta name="twitter:title" content=")[^"]*(")/,  `$1${escapeAttr(ogTitle)}$2`)
+    .replace(/(<meta name="twitter:description" content=")[^"]*(")/,  `$1${escapeAttr(description)}$2`)
+    .replace(/(<link rel="canonical" href=")[^"]*(")/,  `$1${canonicalUrl}$2`)
+
+  fs.writeFileSync(outFile, html, 'utf8')
+  // directory-based 접근용 index.html도 동일하게 생성
+  const dirFile = path.join(distDir, 'saju', String(year), 'index.html')
+  if (fs.existsSync(dirFile)) {
+    fs.writeFileSync(dirFile, html, 'utf8')
+  }
   generated++
 }
 

@@ -1,5 +1,4 @@
 import { JSX, useEffect } from 'react'
-import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
 import { AdUnit } from '../components/AdUnit'
 import { ZODIAC_STANDARD_SECTIONS } from '../data/blogZodiacStandard.js'
@@ -72,32 +71,29 @@ export default function BlogZodiacStandardPage(): JSX.Element {
           <p className="text-sm text-amber-800 leading-relaxed">
             입춘 기준으로 계산한 사주 네 기둥을 바로 확인할 수 있습니다. 1~2월생이라면 예상과 다른 연주가 나올 수 있습니다.
           </p>
-          <button
-            type="button"
-            onClick={() => navigateTo(ROUTE_PATHS.saju)}
-            className="rounded-full bg-amber-500 px-5 py-2 text-sm font-medium text-white hover:bg-amber-600 transition shadow-sm"
+          <a
+            href={ROUTE_PATHS.saju}
+            className="inline-block rounded-full bg-amber-500 px-5 py-2 text-sm font-medium text-white hover:bg-amber-600 transition shadow-sm"
           >
             사주 계산하기
-          </button>
+          </a>
         </aside>
 
         <nav className="rounded-2xl border border-slate-100 bg-white/80 px-5 py-5 space-y-3">
           <h2 className="text-sm font-semibold text-slate-600">관련 글</h2>
           <div className="space-y-2">
-            <button
-              type="button"
-              onClick={() => navigateTo(ROUTE_PATHS.blogSajuBasics)}
-              className="block w-full text-left text-sm text-slate-700 hover:text-amber-700 transition"
+            <a
+              href={ROUTE_PATHS.blogSajuBasics}
+              className="block text-sm text-slate-700 hover:text-amber-700 transition"
             >
               → 사주란 무엇인가? 사주팔자 기초 완벽 정리
-            </button>
-            <button
-              type="button"
-              onClick={() => navigateTo(ROUTE_PATHS.blogMbtiLoveStyle)}
-              className="block w-full text-left text-sm text-slate-700 hover:text-amber-700 transition"
+            </a>
+            <a
+              href={ROUTE_PATHS.blogMbtiLoveStyle}
+              className="block text-sm text-slate-700 hover:text-amber-700 transition"
             >
               → MBTI별 연애 스타일 완벽 정리
-            </button>
+            </a>
           </div>
         </nav>
       </div>

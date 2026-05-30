@@ -28,6 +28,8 @@ import {
   LUCKY_COLOR,
   LUCKY_NUMBER,
   LUCKY_DIRECTION,
+  LUCKY_FOOD,
+  AVOID_TODAY,
   SCORE_BASE,
   SCORE_BRANCH_BONUS,
   ELEMENT_CONTROLS,
@@ -590,7 +592,9 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
   const lucky = {
     color: LUCKY_COLOR[element],
     number: LUCKY_NUMBER[stem],
-    direction: LUCKY_DIRECTION[branch]
+    direction: LUCKY_DIRECTION[branch],
+    food: LUCKY_FOOD[element],
+    avoid: AVOID_TODAY[element]
   }
 
   return {

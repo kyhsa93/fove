@@ -7,14 +7,19 @@ export default defineConfig({
   ssgOptions: {
     script: 'async',
     formatting: 'none',
-    includedRoutes: () => [
-      '/', '/saju', '/mbti', '/fortune', '/fortune/week', '/fortune/month', '/fortune/year',
-      '/zodiac', '/zodiac/compatibility',
-      '/insight', '/compatibility', '/mbti/compatibility', '/compatibility/combined',
-      '/quiz',
-      '/blog/saju-basics', '/blog/zodiac-standard', '/blog/mbti-love-style',
-      '/privacy-policy', '/terms-of-service', '/contact',
-    ],
+    includedRoutes: () => {
+      const currentYear = new Date().getFullYear()
+      const sajuYears = Array.from({ length: 80 }, (_, i) => currentYear - 70 + i)
+      return [
+        '/', '/saju', '/mbti', '/fortune', '/fortune/week', '/fortune/month', '/fortune/year',
+        '/zodiac', '/zodiac/compatibility',
+        '/insight', '/compatibility', '/mbti/compatibility', '/compatibility/combined',
+        '/quiz',
+        '/blog/saju-basics', '/blog/zodiac-standard', '/blog/mbti-love-style',
+        '/privacy-policy', '/terms-of-service', '/contact',
+        ...sajuYears.map((y) => `/saju/${y}`),
+      ]
+    },
   },
   plugins: [
     react(),

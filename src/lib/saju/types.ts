@@ -115,6 +115,8 @@ export interface LuckyElements {
   color: string
   number: number
   direction: string
+  food: string
+  avoid: string
 }
 
 export interface DailyFortune {
