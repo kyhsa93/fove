@@ -1,7 +1,7 @@
 # Fove 제품 로드맵
 
-Version: v6
-Updated: 2026-05-25
+Version: v8
+Updated: 2026-05-30
 Status: 진행 중
 
 ---
@@ -45,6 +45,59 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 ---
 
 ## 로드맵
+
+---
+
+### ✅ P-UI — UI 전반 개선
+
+**완료:** 2026-05-30  
+**변경 파일:** `src/components/{BottomNav,Header,FortuneCard,ResultCard}.tsx`, `src/pages/HomePage.tsx`, `src/index.css`, `index.html`
+
+- 모바일 하단 탭 바 (`BottomNav`) — 홈·운세·사주·MBTI·인사이트 5탭, 아이콘+라벨, 활성 인디케이터, iOS safe-area, 홈 다크/라이트 테마 전환
+- 헤더 다크 테마 — 홈 페이지에서 `bg-slate-900/80` 자동 전환
+- 홈 PRIMARY_ACTIONS 그리드 `sm:grid-cols-3` → `sm:grid-cols-2` (4개 카드 2×2 정렬)
+- 홈 점수 카드에 색상별 미니 게이지 바 추가
+- 홈 미입력 상태에 ① 사주 입력 → ② 리포트 생성 → ③ 매일 운세 단계 표시
+- 홈 h1에 Noto Serif KR 폰트 적용 (Google Fonts)
+- FortuneCard 해석 탭 ENERGY/ACTION/CARE 3열 → 단일 컬럼 카드 스택 (가독성 개선)
+- `오늘의 운세 지수` 바를 ResultCard 2단 레이아웃 하단(full-width)으로 이동
+
+---
+
+### ✅ P-LAYOUT — 전 페이지 레이아웃 개선
+
+**완료:** 2026-05-30  
+**변경 파일:** `src/pages/{SajuPage,FortunePage,CompatibilityPage,BlogMbtiLoveStylePage}.tsx`, `src/components/ResultCard.tsx`
+
+- 사주 페이지: `lg+` 에서 폼(좌, sticky) + 결과(우) 2단 분할, `max-w-5xl`
+- 운세 페이지: 동일 패턴 — 폼/절기정보(좌) + 운세카드·주간·FAQ(우)
+- ResultCard: `lg+` 에서 지표·요약(좌 260px) + 탭 콘텐츠(우) 2단, `belowGrid` prop 추가
+- 궁합 페이지: `sm+` 에서 A·B 입력 폼 나란히 (`grid-cols-2`), `max-w-3xl`
+- MBTI 연애 블로그: `max-w-4xl` → `max-w-2xl` 가독성 개선
+
+---
+
+### ✅ P-ADS1 — Google AdSense 광고 인프라
+
+**완료:** 2026-05-30 (slot ID 교체는 AdSense 대시보드에서 별도 진행)  
+**변경 파일:** `src/components/{AdUnit,ConsentBanner}.tsx`, `src/lib/adConsent.tsx`, `src/App.tsx`, `src/pages/{FortunePage,BlogSajuBasicsPage,BlogZodiacStandardPage,BlogMbtiLoveStylePage}.tsx`
+
+- `AdConsentProvider` — React context로 동의 상태 관리 (localStorage 영속)
+- `ConsentBanner` — 첫 방문 시 GDPR 동의 배너, 모바일 하단 탭 위 배치
+- `AdUnit` — CLS 방지(minHeight 예약) + PWA standalone 감지 + dev 플레이스홀더, 동의 전 렌더링 안 함
+- FortunePage 운세카드↔주간흐름 사이, 블로그 3페이지 콘텐츠↔CTA 사이에 배치
+- **남은 작업:** AdSense 대시보드에서 광고 단위 생성 후 slot ID 교체
+  - `FORTUNE_PAGE_BANNER`, `BLOG_SAJU_BASICS_BANNER`, `BLOG_ZODIAC_STANDARD_BANNER`, `BLOG_MBTI_LOVE_BANNER`
+
+---
+
+### ✅ P-SEO1 — 블로그 noscript 크롤링 개선
+
+**완료:** 2026-05-30  
+**변경 파일:** `scripts/generate-og-pages.mjs`, `src/data/{blogSajuBasics,blogZodiacStandard,blogMbtiLoveStyle}.js`, 블로그 페이지 3개
+
+- 빌드 시 블로그 3페이지 HTML에 `<noscript><article>` 본문 주입 — JS 미실행 크롤러(Mediapartners-Google 등) 가독
+- 블로그 콘텐츠를 `src/data/*.js` 공유 파일로 추출 — 컴포넌트와 빌드 스크립트가 동일 소스 사용, 수정 시 자동 동기화
 
 ---
 
@@ -142,6 +195,8 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 |------|------|--------|
 | analytics 이벤트 빈약 | `trackEvent` EventName이 5종 — 페이지뷰·버튼클릭·공유 등 세분화 필요 | 낮음 |
 | 사주 연도 SEO 비 pre-rendered | `/saju/:year` 동적 라우팅 — Googlebot이 크롤하려면 JS 실행 필요 | 낮음 |
+| AdSense slot ID 미교체 | `AdUnit` 컴포넌트에 placeholder slot ID 사용 중 — AdSense 대시보드에서 실제 ID 발급 후 교체 필요 | 높음 |
+| SPA 동적 페이지 크롤링 | 운세·사주 페이지는 CSR로 Mediapartners-Google 크롤 불가 — 블로그 외 페이지는 OG 메타 태그만 인식 | 낮음 |
 
 ---
 
@@ -156,3 +211,7 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 | 2026-05-25 | v5 | P-OG 완료 — 빌드 후 라우트별 index.html OG 태그 주입 (16개 라우트), og:image:width/height/alt 추가 |
 | 2026-05-25 | v6 | 제품 현황 재검토 후 로드맵 보강 — P-B1(블로그 목록), P-ADS1(AdSense), P-NTF1(Push 알림), P-B2(블로그 확장) 추가. 기술 부채 섹션 신설 |
 | 2026-05-25 | v7 | P-B1 완료 — /blog 목록 페이지 대신 Footer에 블로그 링크 섹션 추가 (routes.ts blogLinks, Footer.tsx 개선) |
+| 2026-05-30 | v8 | P-UI 완료 — 모바일 하단 탭 바, 헤더 다크 테마, 홈 그리드·게이지·온보딩·폰트 개선, FortuneCard 레이아웃 정리 |
+| 2026-05-30 | v8 | P-LAYOUT 완료 — 사주·운세 페이지 사이드바 분할, ResultCard 2단, 궁합 입력 나란히, 블로그 max-w 최적화 |
+| 2026-05-30 | v8 | P-ADS1 완료 — AdUnit(CLS방지·standalone감지), ConsentBanner(GDPR), AdConsentProvider, 블로그+운세 페이지 배치 |
+| 2026-05-30 | v8 | P-SEO1 완료 — 블로그 noscript 크롤링 개선, src/data 공유 파일로 자동 동기화 |
