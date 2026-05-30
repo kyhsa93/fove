@@ -1,6 +1,6 @@
 # Fove 제품 로드맵
 
-Version: v11
+Version: v12
 Updated: 2026-05-30
 Status: 진행 중
 
@@ -141,15 +141,16 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 
 ---
 
-### 🔲 P-NTF1 — Web Push 일일 알림 고도화
+### ✅ P-NTF1 — Web Push 일일 알림 고도화
 
-**목적:** `lib/notifications.ts` 인프라가 있지만 실제 알림 예약(스케줄링)이 없음. 재방문율 개선  
-**예상 파일:** `public/sw.js` (Service Worker), `src/lib/notifications.ts` 확장  
-**구현 방법:**
-- Service Worker에 `setTimeout`/`setInterval` 기반 로컬 알림 스케줄 추가
-  - 매일 오전 8시 "오늘의 운세 준비됐어요" 알림
-- FortunePage에 opt-in UI 개선 (현재 동의 UI 확인 후 보완)
-- Push API (VAPID) 서버리스 연동은 P2 이메일과 함께 검토
+**완료:** 2026-05-30  
+**변경 파일:** `public/sw-push.js` (신규), `src/lib/notifications.ts`, `src/Layout.tsx`, `vite.config.ts`
+
+- **Periodic Background Sync** (Chrome Android/데스크탑): SW `periodicsync` 핸들러로 앱 미실행 시에도 24h 주기 알림, 알림 클릭 시 `/fortune` 이동
+- **페이지 로드 체크** (모든 브라우저 폴백): 앱 열 때 오전 5시~오후 10시, 하루 1회 자동 발송, `localStorage`로 중복 방지
+- `requestNotificationPermission()`에 `registerPeriodicSync()` 자동 연동
+- `optOut()` 시 마지막 알림 날짜 초기화
+- `vite.config.ts` workbox `importScripts`로 `sw-push.js` SW에 포함
 
 ---
 
@@ -222,3 +223,4 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 | 2026-05-30 | v9 | P-SEO2 완료 — vite-react-ssg 도입, 20개 라우트 빌드 타임 정적 렌더링, react-router-dom v6 마이그레이션 |
 | 2026-05-30 | v10 | P1 완료 — Canvas 2D API 기반 운세 공유 카드 이미지 저장 (1200×630 PNG) |
 | 2026-05-30 | v11 | P-G5 완료 — 궁합 공유 카드 이미지 (사주·MBTI·통합 3종, 페이지별 색상 테마) |
+| 2026-05-30 | v12 | P-NTF1 완료 — Periodic Background Sync + 페이지 로드 체크 이중 알림 스케줄링 |
