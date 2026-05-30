@@ -1,7 +1,7 @@
 import { getName } from './profile'
-import { getTodaySolarTerm } from './solarTermUtils'
 import { getStreakCount } from './streak'
 import { STEMS, STEM_DAILY_CONTEXT } from './saju/constants'
+import { getTodaySpecialEvent, getTomorrowSpecialEvent } from './specialEvents'
 
 const NOTIF_OPT_IN_KEY = 'fove_notif_optin'
 const LAST_NOTIFIED_KEY = 'fove_last_notified_date'
@@ -48,15 +48,25 @@ function buildSmartNotificationContent(): NotificationContent {
   const name = getName()
   const namePrefix = name ? `${name}님, ` : ''
   const streakCount = getStreakCount()
-  const solarTerm = getTodaySolarTerm()
   const isMonday = new Date().getDay() === 1
   const stemContext = getTodayStemContext()
 
-  // 1순위: 절기 당일
-  if (solarTerm?.isExactDay) {
+  // 1순위: 오늘 특별 이벤트 (명절·절기·기념일)
+  const todayEvent = getTodaySpecialEvent()
+  if (todayEvent) {
     return {
-      title: `Fove · 오늘은 ${solarTerm.nameKr}`,
-      body: `${namePrefix}${solarTerm.element} 기운의 전환점이에요. ${solarTerm.message}`,
+      title: `Fove · 오늘은 ${todayEvent.name}`,
+      body: `${namePrefix}${todayEvent.message}`,
+      url: todayEvent.ctaPath,
+    }
+  }
+
+  // 1.5순위: 내일 특별 이벤트 예고
+  const tomorrowEvent = getTomorrowSpecialEvent()
+  if (tomorrowEvent) {
+    return {
+      title: `Fove · 내일은 ${tomorrowEvent.name}`,
+      body: `${namePrefix}내일 특별한 날이에요. 오늘 운세를 확인하고 준비해보세요!`,
       url: '/fortune',
     }
   }
