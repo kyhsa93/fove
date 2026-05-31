@@ -2,6 +2,8 @@ import { JSX, useEffect, useMemo, useState } from 'react'
 import { BLOOD_TYPES, BLOOD_TRAITS, getBloodCompat } from '../data/bloodCompat'
 import type { BloodType } from '../data/bloodCompat'
 import { ShareLinkButton } from '../components/ShareLinkButton'
+import { ScoreBar } from '../components/ScoreBar'
+import { getCompatParams } from '../lib/compatParams'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
 
@@ -12,16 +14,6 @@ const GRADE_STYLE = {
   '도전': 'text-rose-600 bg-rose-50 border-rose-200',
 }
 
-function getInitial(): { a: BloodType | ''; b: BloodType | '' } {
-  if (typeof window === 'undefined') return { a: '', b: '' }
-  const p = new URLSearchParams(window.location.search)
-  const a = p.get('a') as BloodType | null
-  const b = p.get('b') as BloodType | null
-  return {
-    a: BLOOD_TYPES.includes(a as BloodType) ? (a as BloodType) : '',
-    b: BLOOD_TYPES.includes(b as BloodType) ? (b as BloodType) : '',
-  }
-}
 
 function ScoreRing({ score }: { score: number }) {
   const color = score >= 83 ? 'text-amber-500' : score >= 72 ? 'text-emerald-500' : score >= 62 ? 'text-slate-500' : 'text-rose-500'
@@ -56,9 +48,13 @@ const FAQ_SCHEMA = {
 }
 
 export default function BloodCompatPage(): JSX.Element {
-  const init = useMemo(() => getInitial(), [])
-  const [typeA, setTypeA] = useState<BloodType | ''>(init.a)
-  const [typeB, setTypeB] = useState<BloodType | ''>(init.b)
+  const init = useMemo(() => getCompatParams(), [])
+  const [typeA, setTypeA] = useState<BloodType | ''>(
+    BLOOD_TYPES.includes(init.a as BloodType) ? (init.a as BloodType) : ''
+  )
+  const [typeB, setTypeB] = useState<BloodType | ''>(
+    BLOOD_TYPES.includes(init.b as BloodType) ? (init.b as BloodType) : ''
+  )
   const [labelA, setLabelA] = useState('나')
   const [labelB, setLabelB] = useState('상대방')
 
@@ -159,12 +155,11 @@ export default function BloodCompatPage(): JSX.Element {
               </span>
               <ScoreRing score={result.score} />
               <p className="text-sm font-semibold text-slate-800">{result.summary}</p>
-              <div className="h-2.5 w-full max-w-xs mx-auto rounded-full bg-slate-100 overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all duration-700 ${result.score >= 83 ? 'bg-amber-400' : result.score >= 72 ? 'bg-emerald-400' : result.score >= 62 ? 'bg-slate-400' : 'bg-rose-400'}`}
-                  style={{ width: `${result.score}%` }}
-                />
-              </div>
+              <ScoreBar
+                score={result.score}
+                colorClass={result.score >= 83 ? 'bg-amber-400' : result.score >= 72 ? 'bg-emerald-400' : result.score >= 62 ? 'bg-slate-400' : 'bg-rose-400'}
+                className="h-2.5 max-w-xs mx-auto"
+              />
             </div>
 
             <div className="rounded-2xl border border-slate-100 bg-white/90 px-5 py-5 shadow-sm space-y-4">

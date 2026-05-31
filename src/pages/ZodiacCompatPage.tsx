@@ -2,6 +2,8 @@ import { JSX, useCallback, useEffect, useMemo, useState } from 'react'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
 import { ShareLinkButton } from '../components/ShareLinkButton'
+import { ScoreBar } from '../components/ScoreBar'
+import { getCompatParams } from '../lib/compatParams'
 import type { Branch } from '../lib/saju/constants'
 import { BRANCHES, BRANCH_ANIMALS, BRANCH_HARMONIES, BRANCH_CONFLICTS } from '../lib/saju/constants'
 
@@ -176,25 +178,16 @@ function yearToBranch(year: number): Branch {
   return BRANCHES[idx]
 }
 
-function getInitialState() {
-  if (typeof window === 'undefined') return { a: '', b: '', type: 'love' as CompatType }
-  const params = new URLSearchParams(window.location.search)
-  return {
-    a: params.get('a') ?? '',
-    b: params.get('b') ?? '',
-    type: (params.get('type') as CompatType) ?? 'love'
-  }
-}
-
 export default function ZodiacCompatPage(): JSX.Element {
-  const initial = useMemo(() => getInitialState(), [])
+  const initial = useMemo(() => getCompatParams(), [])
 
   const [yearA, setYearA] = useState(initial.a)
   const [yearB, setYearB] = useState(initial.b)
   const [nameA, setNameA] = useState('나')
   const [nameB, setNameB] = useState('상대방')
-  const [activeType, setActiveType] = useState<CompatType>(initial.type)
+  const [activeType, setActiveType] = useState<CompatType>(initial.type as CompatType)
   const [checked, setChecked] = useState(() => initial.a.length === 4 && initial.b.length === 4)
+  const [isCalculating, setIsCalculating] = useState(false)
 
   useEffect(() => {
     document.title = '띠 궁합 — 12간지 궁합 보기 | Fove'
@@ -228,8 +221,15 @@ export default function ZodiacCompatPage(): JSX.Element {
     [relation, branchA, branchB, activeType]
   )
 
+  useEffect(() => {
+    if (isCalculating && score !== null) setIsCalculating(false)
+  }, [isCalculating, score])
+
   const handleCheck = () => {
-    if (branchA && branchB) setChecked(true)
+    if (branchA && branchB) {
+      setIsCalculating(true)
+      setChecked(true)
+    }
   }
 
   const zodiacShareOptions = useMemo(() => {
@@ -335,8 +335,15 @@ export default function ZodiacCompatPage(): JSX.Element {
           </p>
         </div>
 
+        {/* 계산 중 */}
+        {isCalculating && (
+          <div className="rounded-2xl border border-indigo-100 bg-indigo-50/40 px-5 py-8 text-center text-sm text-indigo-500">
+            궁합을 계산하고 있어요...
+          </div>
+        )}
+
         {/* 결과 */}
-        {checked && relation && score !== null && branchA && branchB ? (
+        {!isCalculating && checked && relation && score !== null && branchA && branchB ? (
           <div className="space-y-4">
             <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-5 py-6 space-y-4 shadow-sm">
               <div className="text-center space-y-2">
@@ -351,12 +358,7 @@ export default function ZodiacCompatPage(): JSX.Element {
                 <p className="text-5xl font-bold text-indigo-900 tabular-nums">
                   {score}<span className="text-xl font-normal ml-1">점</span>
                 </p>
-                <div className="h-2.5 w-full rounded-full bg-indigo-100 overflow-hidden max-w-xs mx-auto">
-                  <div
-                    className={`h-full rounded-full transition-all duration-700 ${RELATION_BAR[relation]}`}
-                    style={{ width: `${score}%` }}
-                  />
-                </div>
+                <ScoreBar score={score} colorClass={RELATION_BAR[relation]} className="h-2.5 max-w-xs mx-auto" />
                 <span className={`inline-block text-xs font-semibold rounded-full border px-3 py-0.5 ${RELATION_COLOR[relation]}`}>
                   {RELATION_LABEL[relation]}
                 </span>

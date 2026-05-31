@@ -6,6 +6,8 @@ import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
 import { CompatShareCardButton } from '../components/ShareCard'
 import { ShareLinkButton } from '../components/ShareLinkButton'
+import { ScoreBar, scoreColor } from '../components/ScoreBar'
+import { getCompatParams } from '../lib/compatParams'
 
 const COMPAT_LABELS: Record<CompatibilityType, string> = {
   love: '연인 궁합',
@@ -47,40 +49,15 @@ interface PersonInput {
   label: string
 }
 
-function getInitialState() {
-  if (typeof window === 'undefined') return { a: '', b: '', type: 'love' as CompatibilityType }
-  const params = new URLSearchParams(window.location.search)
-  return {
-    a: params.get('a') ?? '',
-    b: params.get('b') ?? '',
-    type: (params.get('type') as CompatibilityType) ?? 'love'
-  }
-}
-
-function ScoreBar({ score, colorClass }: { score: number; colorClass: string }) {
-  return (
-    <div className="h-2 w-full rounded-full bg-indigo-100 overflow-hidden">
-      <div
-        className={`h-full rounded-full transition-all duration-500 ${colorClass}`}
-        style={{ width: `${score}%` }}
-      />
-    </div>
-  )
-}
-
-function scoreColor(score: number) {
-  if (score >= 80) return 'bg-emerald-400'
-  if (score >= 65) return 'bg-amber-400'
-  return 'bg-rose-400'
-}
 
 export default function CompatibilityPage(): JSX.Element {
-  const initial = useMemo(() => getInitialState(), [])
+  const initial = useMemo(() => getCompatParams(), [])
 
   const [personA, setPersonA] = useState<PersonInput>({ birthDate: initial.a, hour: -1, label: '나' })
   const [personB, setPersonB] = useState<PersonInput>({ birthDate: initial.b, hour: -1, label: '상대방' })
-  const [activeType, setActiveType] = useState<CompatibilityType>(initial.type)
+  const [activeType, setActiveType] = useState<CompatibilityType>(initial.type as CompatibilityType)
   const [checked, setChecked] = useState(() => initial.a.length >= 10 && initial.b.length >= 10)
+  const [isCalculating, setIsCalculating] = useState(false)
 
   const resultA = useMemo(
     () => (checked ? parseSajuResult(personA.birthDate, personA.hour === -1 ? undefined : personA.hour) : null),
@@ -115,8 +92,13 @@ export default function CompatibilityPage(): JSX.Element {
     setMeta('meta[name="twitter:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
   }, [checked, personA, personB, activeType, scores])
 
+  useEffect(() => {
+    if (isCalculating && scores) setIsCalculating(false)
+  }, [isCalculating, scores])
+
   const handleCheck = () => {
     if (personA.birthDate.length >= 10 && personB.birthDate.length >= 10) {
+      setIsCalculating(true)
       setChecked(true)
     }
   }
@@ -214,8 +196,15 @@ export default function CompatibilityPage(): JSX.Element {
           </button>
         </div>
 
+        {/* 계산 중 */}
+        {isCalculating && (
+          <div className="rounded-2xl border border-indigo-100 bg-indigo-50/40 px-5 py-8 text-center text-sm text-indigo-500">
+            궁합을 계산하고 있어요...
+          </div>
+        )}
+
         {/* 결과 */}
-        {checked && scores && detail && resultA && resultB ? (
+        {!isCalculating && checked && scores && detail && resultA && resultB ? (
           <div className="space-y-4">
             {/* 총점 카드 */}
             <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-5 py-6 space-y-3 shadow-sm text-center">
