@@ -1,6 +1,6 @@
 # Fove 제품 로드맵
 
-Version: v29
+Version: v30
 Updated: 2026-05-31
 Status: 진행 중
 
@@ -99,6 +99,61 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 
 ---
 
+### 🔲 P-SEO3 — og:image 전 페이지 추가
+
+**목적:** 소셜 공유 시 이미지 없어 CTR 저하 — 카카오·인스타 링크 공유 미리보기 개선  
+**복잡도:** 낮음 | **SEO 임팩트:** 높음
+
+**현황:** 전체 페이지에 `og:image` 미설정. `Layout.tsx` 기본 메타에도 없음  
+**구현:**
+- `/public`에 기본 og 이미지(1200×630) 추가 → `Layout.tsx`에 기본 og:image 설정
+- 사주·운세·궁합 등 핵심 페이지는 공유 카드(Canvas)가 이미 있으므로 해당 이미지 URL 활용
+
+---
+
+### 🔲 P-SEO4 — 핵심 페이지 메타·JSON-LD 보강
+
+**목적:** 주요 기능 페이지 크롤러 유입 강화  
+**복잡도:** 낮음 | **SEO 임팩트:** 높음
+
+**현황:**
+- `SajuPage`, `MbtiPage`, `FortunePage`, `ZodiacPage` — 동적 메타 업데이트 없음 (Layout 기본값에만 의존)
+- `TaekIlPage`, `QuizPage`, `BloodCompatPage` — JSON-LD 스키마 없음
+
+**구현:**
+- 위 5개 페이지에 `useEffect` 내 `document.title` + og 메타 설정 추가 (BlogSajuBasicsPage 패턴 동일 적용)
+- `TaekIlPage` → `FAQPage` JSON-LD, `QuizPage` → `Quiz` JSON-LD, `BloodCompatPage` → `FAQPage` JSON-LD 추가
+
+---
+
+### 🔲 P-UX1 — 페이지 내 CTA·공유 완성도 정비
+
+**목적:** 페이지 간 기능 연결 일관성 확보, 이탈 방지  
+**복잡도:** 낮음
+
+**현황 (구체적 누락):**
+- `TarotPage` — 결과 이후 사주·운세 연결 CTA 없음
+- `TaekIlPage` — 결과 공유 버튼 없음 (다른 기능 페이지 대비 불일치)
+- `QuizPage` — 결과 화면에서 운세·인사이트 등 관련 기능 링크 없음
+- `BloodCompatPage` — 이름/호칭 입력 필드 없음, `CompatShareCardButton` 없음 (ZodiacCompatPage 대비 불일치)
+
+**구현:** 각 페이지 결과 섹션 하단에 관련 기능 버튼·공유 UI 추가
+
+---
+
+### 🔲 P-UX2 — 모바일 입력 UX 개선
+
+**목적:** 모바일 터치 영역 확보, 입력 편의성 향상  
+**복잡도:** 낮음
+
+**현황:**
+- `SajuForm.tsx:189-224` — 년/월/일 입력 필드 너비 `w-12(48px)` → 모바일 터치 기준(44px 이상 권고) 아슬아슬
+- `ZodiacCompatPage.tsx:119-134` — 일부 버튼 패딩 작아 터치 영역 미달
+
+**구현:** 입력 필드 너비 확대, 버튼 패딩 최소 `py-2.5` 이상 통일
+
+---
+
 ### 🔲 T3 — AI 운세 질문 (서버 필요)
 
 **목적:** 헬로우봇·포스텔러 AI 채팅 대응. "내 사주로 질문하기"  
@@ -143,3 +198,5 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 |------|------|--------|
 | AdSense slot ID 미교체 | `AdUnit` placeholder slot ID → AdSense 대시보드에서 실제 ID 발급 후 교체 | **높음** |
 | analytics 이벤트 빈약 | `trackEvent` 5종 → 페이지뷰·버튼클릭 등 세분화 필요 | 낮음 |
+| 궁합 페이지 중복 로직 | `getInitialState()`, `ScoreBar` 컴포넌트가 `CompatibilityPage` · `ZodiacCompatPage` · `BloodCompatPage`에 각각 구현됨 → 공통 훅/컴포넌트로 추출 | 낮음 |
+| 궁합 페이지 로딩 상태 누락 | `CompatibilityPage`, `BloodCompatPage`, `ZodiacCompatPage` — useMemo 계산 중 로딩 표시 없음 (SajuPage는 있음) | 낮음 |
