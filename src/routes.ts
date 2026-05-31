@@ -38,7 +38,8 @@ export const navLinks: Array<{ path: RoutePath; label: string }> = [
   { path: ROUTE_PATHS.saju, label: '사주' },
   { path: ROUTE_PATHS.mbti, label: 'MBTI' },
   { path: ROUTE_PATHS.fortune, label: '오늘의 운세' },
-  { path: ROUTE_PATHS.insight, label: '통합 인사이트' }
+  { path: ROUTE_PATHS.insight, label: '통합 인사이트' },
+  { path: ROUTE_PATHS.tarot, label: '타로' }
 ]
 
 export const blogLinks: Array<{ path: RoutePath; label: string }> = [
