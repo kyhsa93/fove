@@ -2,6 +2,8 @@ import { JSX, useEffect, useMemo, useState } from 'react'
 import { BLOOD_TYPES, BLOOD_TRAITS, getBloodCompat } from '../data/bloodCompat'
 import type { BloodType } from '../data/bloodCompat'
 import { ShareLinkButton } from '../components/ShareLinkButton'
+import { navigateTo } from '../lib/router'
+import { ROUTE_PATHS } from '../routes'
 
 const GRADE_STYLE = {
   '환상': 'text-amber-700 bg-amber-50 border-amber-200',
@@ -35,6 +37,8 @@ export default function BloodCompatPage(): JSX.Element {
   const init = useMemo(() => getInitial(), [])
   const [typeA, setTypeA] = useState<BloodType | ''>(init.a)
   const [typeB, setTypeB] = useState<BloodType | ''>(init.b)
+  const [labelA, setLabelA] = useState('나')
+  const [labelB, setLabelB] = useState('상대방')
 
   const result = useMemo(
     () => (typeA && typeB ? getBloodCompat(typeA as BloodType, typeB as BloodType) : null),
@@ -48,10 +52,10 @@ export default function BloodCompatPage(): JSX.Element {
   }, [typeA, typeB])
 
   const shareOptions = useMemo(() => ({
-    title: typeA && typeB ? `${typeA}형 × ${typeB}형 혈액형 궁합 ${result?.score ?? ''}점 — Fove` : 'Fove 혈액형 궁합',
+    title: typeA && typeB ? `${labelA}(${typeA}형) × ${labelB}(${typeB}형) 혈액형 궁합 ${result?.score ?? ''}점 — Fove` : 'Fove 혈액형 궁합',
     description: result ? `${result.grade} 궁합! ${result.summary}` : '내 혈액형 궁합을 확인해보세요.',
     url: `${typeof window !== 'undefined' ? window.location.origin : 'https://kyhsa93.github.io'}${typeof window !== 'undefined' ? window.location.pathname : '/fove/blood-compatibility'}${typeA && typeB ? `?a=${typeA}&b=${typeB}` : ''}`,
-  }), [typeA, typeB, result])
+  }), [typeA, typeB, labelA, labelB, result])
 
   function TypeSelector({ value, onChange, label }: { value: BloodType | ''; onChange: (v: BloodType) => void; label: string }) {
     return (
@@ -88,12 +92,36 @@ export default function BloodCompatPage(): JSX.Element {
         {/* 혈액형 선택 */}
         <div className="rounded-2xl border border-slate-100 bg-white/90 px-5 py-6 shadow-sm space-y-5">
           <div className="grid gap-6 sm:grid-cols-2">
-            <TypeSelector value={typeA} onChange={setTypeA} label="나의 혈액형" />
-            <TypeSelector value={typeB} onChange={setTypeB} label="상대방 혈액형" />
+            <div className="space-y-3">
+              <TypeSelector value={typeA} onChange={setTypeA} label="나의 혈액형" />
+              <div className="space-y-1">
+                <label className="text-xs text-slate-500">이름/호칭 <span className="text-slate-400">(선택)</span></label>
+                <input
+                  type="text"
+                  placeholder="나"
+                  value={labelA !== '나' ? labelA : ''}
+                  onChange={(e) => setLabelA(e.target.value || '나')}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
+                />
+              </div>
+            </div>
+            <div className="space-y-3">
+              <TypeSelector value={typeB} onChange={setTypeB} label="상대방 혈액형" />
+              <div className="space-y-1">
+                <label className="text-xs text-slate-500">이름/호칭 <span className="text-slate-400">(선택)</span></label>
+                <input
+                  type="text"
+                  placeholder="상대방"
+                  value={labelB !== '상대방' ? labelB : ''}
+                  onChange={(e) => setLabelB(e.target.value || '상대방')}
+                  className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-300"
+                />
+              </div>
+            </div>
           </div>
           {typeA && typeB && (
             <div className="pt-1 text-center text-sm text-slate-500">
-              {typeA}형 × {typeB}형
+              {labelA}({typeA}형) × {labelB}({typeB}형)
             </div>
           )}
         </div>
@@ -128,8 +156,9 @@ export default function BloodCompatPage(): JSX.Element {
 
             {/* 두 혈액형 특성 */}
             <div className="grid grid-cols-2 gap-3">
-              {([typeA, typeB] as BloodType[]).map((t) => (
+              {([{ type: typeA, label: labelA }, { type: typeB, label: labelB }] as Array<{ type: BloodType; label: string }>).map(({ type: t, label }) => (
                 <div key={t} className="rounded-xl border border-slate-100 bg-white/80 px-3 py-3 space-y-1.5">
+                  <p className="text-xs font-semibold text-rose-500">{label}</p>
                   <p className="text-base font-bold text-rose-600">{t}형</p>
                   <p className="text-xs font-semibold text-slate-600">{BLOOD_TRAITS[t].keyword}</p>
                   <p className="text-xs text-slate-600 leading-relaxed">{BLOOD_TRAITS[t].desc}</p>
@@ -138,6 +167,25 @@ export default function BloodCompatPage(): JSX.Element {
             </div>
 
             <ShareLinkButton options={shareOptions} label="이 결과 공유하기 🔗" className="w-full py-3" />
+
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => navigateTo(ROUTE_PATHS.compatibility)}
+                className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-4 py-4 text-left transition hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <p className="text-sm font-semibold text-indigo-900">사주 궁합</p>
+                <p className="mt-0.5 text-xs text-indigo-700">오행 기반 4차원 분석</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => navigateTo(ROUTE_PATHS.starSignCompatibility)}
+                className="rounded-2xl border border-violet-100 bg-violet-50/60 px-4 py-4 text-left transition hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <p className="text-sm font-semibold text-violet-900">별자리 궁합</p>
+                <p className="mt-0.5 text-xs text-violet-700">12별자리 원소 기반 분석</p>
+              </button>
+            </div>
           </div>
         )}
 

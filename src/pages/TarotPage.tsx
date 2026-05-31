@@ -1,6 +1,8 @@
 import { JSX, useMemo, useState } from 'react'
 import { getDailyDraw } from '../lib/tarotDraw'
 import { POSITIONS } from '../data/tarot'
+import { navigateTo } from '../lib/router'
+import { ROUTE_PATHS } from '../routes'
 
 const ARCANA_LABEL: Record<string, string> = {
   major: '메이저 아르카나',
@@ -139,6 +141,25 @@ export default function TarotPage(): JSX.Element {
                 {draw.reversed[2] ? draw.cards[2].reversed : draw.cards[2].upright}
               </p>
             </div>
+          </div>
+        )}
+
+        {allRevealed && (
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => navigateTo(ROUTE_PATHS.fortune)}
+              className="flex-1 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-amber-600 transition"
+            >
+              오늘의 운세 보기
+            </button>
+            <button
+              type="button"
+              onClick={() => navigateTo(ROUTE_PATHS.saju)}
+              className="flex-1 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+            >
+              사주 풀이 보기
+            </button>
           </div>
         )}
 

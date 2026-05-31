@@ -3,6 +3,7 @@ import { buildMonthlyFortune, buildDailyFortune } from '../lib/saju'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
+import { ShareLinkButton } from '../components/ShareLinkButton'
 import type { Element } from '../lib/saju/constants'
 
 type Purpose = 'wedding' | 'moving' | 'contract' | 'business' | 'travel' | 'exam'
@@ -182,6 +183,36 @@ export default function TaekIlPage(): JSX.Element {
 
             {recommendations.length === 0 && (
               <p className="text-center text-sm text-slate-500">이번 달 남은 날이 없어요.</p>
+            )}
+
+            {recommendations.length > 0 && (
+              <>
+                <ShareLinkButton
+                  options={{
+                    title: `${PURPOSES.find((p) => p.key === purpose)?.label} 택일 결과 — Fove`,
+                    description: `${monthLabel} 중 ${PURPOSES.find((p) => p.key === purpose)?.label}에 가장 좋은 날: ${month}월 ${recommendations[0]?.day}일 (${recommendations[0]?.score}점)`,
+                    url: typeof window !== 'undefined' ? window.location.href : '',
+                  }}
+                  label="이 결과 공유하기 🔗"
+                  className="w-full py-3"
+                />
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => navigateTo(ROUTE_PATHS.fortune)}
+                    className="flex-1 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-amber-600 transition"
+                  >
+                    오늘의 운세 보기
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigateTo(ROUTE_PATHS.tarot)}
+                    className="flex-1 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
+                  >
+                    타로 카드 보기
+                  </button>
+                </div>
+              </>
             )}
           </div>
         )}

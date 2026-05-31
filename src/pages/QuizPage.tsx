@@ -269,6 +269,41 @@ export default function QuizPage(): JSX.Element {
               다른 테스트 하기
             </button>
           </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => navigateTo(ROUTE_PATHS.fortune)}
+              className="rounded-2xl border border-amber-100 bg-amber-50/60 px-4 py-4 text-left transition hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <p className="text-sm font-semibold text-amber-900">오늘의 운세</p>
+              <p className="mt-0.5 text-xs text-amber-700">일진 기반 오늘의 흐름 확인</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigateTo(ROUTE_PATHS.insight)}
+              className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-4 py-4 text-left transition hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <p className="text-sm font-semibold text-indigo-900">통합 인사이트</p>
+              <p className="mt-0.5 text-xs text-indigo-700">사주·MBTI 교차 분석</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigateTo(ROUTE_PATHS.mbti)}
+              className="rounded-2xl border border-violet-100 bg-violet-50/60 px-4 py-4 text-left transition hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <p className="text-sm font-semibold text-violet-900">MBTI 검사</p>
+              <p className="mt-0.5 text-xs text-violet-700">20문항 성향 진단</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigateTo(ROUTE_PATHS.tarot)}
+              className="rounded-2xl border border-slate-100 bg-white/80 px-4 py-4 text-left transition hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <p className="text-sm font-semibold text-slate-900">타로 카드</p>
+              <p className="mt-0.5 text-xs text-slate-600">오늘의 타로 3장 뽑기</p>
+            </button>
+          </div>
         </div>
       </section>
     )
