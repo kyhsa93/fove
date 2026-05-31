@@ -1,6 +1,6 @@
 # Fove 제품 로드맵
 
-Version: v33
+Version: v34
 Updated: 2026-05-31
 Status: 진행 중
 
@@ -81,6 +81,7 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 | UX | P-UX1 | 05-31 | CTA·공유 완성도 정비 — TarotPage 결과 후 CTA, TaekIlPage 공유 버튼, QuizPage 결과 후 4종 CTA, BloodCompatPage 이름 입력·관련 궁합 CTA |
 | UX | P-UX2 | 05-31 | 모바일 터치 영역 개선 — SajuForm 월/일 w-12→w-14·py-2→py-2.5, 궁합 유형 토글 py-1.5→py-2 |
 | SEO | P-SEO3 | 05-31 | og:image·twitter:image 전 페이지 추가 — Layout.tsx 라우트 이동 시 업데이트 + 개별 setMeta 11개 페이지 보강 |
+| SEO | P-SEO4 | 05-31 | 핵심 페이지 메타·JSON-LD 보강 — Layout ROUTE_META 4개 경로 추가(/tarot·/taekil·/blood-compatibility·/starsign-compatibility), TaekIlPage·QuizPage·BloodCompatPage FAQPage JSON-LD 추가 |
 
 ---
 
@@ -114,7 +115,7 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 
 ---
 
-### 🔲 P-SEO4 — 핵심 페이지 메타·JSON-LD 보강
+### ✅ P-SEO4 — 핵심 페이지 메타·JSON-LD 보강 (완료)
 
 **목적:** 주요 기능 페이지 크롤러 유입 강화  
 **복잡도:** 낮음 | **SEO 임팩트:** 높음
