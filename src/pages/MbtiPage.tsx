@@ -90,7 +90,7 @@ export default function MbtiPage(): JSX.Element {
         <header className="space-y-2 text-center">
           <h1 className="text-3xl font-bold text-gray-900">MBTI 성향 진단</h1>
           <p className="text-sm text-gray-600">
-            직관적인 20문항을 통해 오늘의 심리적 성향과 행동 가이드를 확인하세요. 저장된 답변이 없다면 모든 문항이 무작위로 선택된 상태로 시작되므로, 초깃값을 참고한 뒤 원하는 항목만 빠르게 수정할 수 있습니다.
+            20문항으로 성향을 진단합니다. 처음 진입하면 무작위 초깃값이 채워지므로, 원하는 항목만 수정해 제출하세요.
           </p>
         </header>
 

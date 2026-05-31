@@ -4,8 +4,11 @@ import type { CheckinMood } from '../lib/checkin'
 
 export function FortuneCheckin(): JSX.Element {
   const [saved, setSaved] = useState<CheckinMood | null>(() => getTodayCheckin())
+  const [isSelecting, setIsSelecting] = useState(false)
 
   const handleSelect = (mood: CheckinMood) => {
+    if (isSelecting) return
+    setIsSelecting(true)
     recordCheckin(mood)
     setSaved(mood)
   }
@@ -41,7 +44,9 @@ export function FortuneCheckin(): JSX.Element {
               key={mood}
               type="button"
               onClick={() => handleSelect(mood)}
-              className={`flex-1 rounded-xl border py-2.5 text-center transition hover:scale-105 ${meta.color}`}
+              disabled={isSelecting}
+              aria-label={`${meta.label} 체크인`}
+              className={`flex-1 rounded-xl border py-2.5 text-center transition hover:scale-105 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed ${meta.color}`}
             >
               <p className="text-xl">{meta.emoji}</p>
               <p className="text-[10px] font-medium mt-0.5">{meta.label}</p>

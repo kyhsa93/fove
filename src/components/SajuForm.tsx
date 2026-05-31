@@ -131,7 +131,7 @@ export function SajuForm({
       <header className="space-y-2">
         <h2 className="text-lg font-semibold text-gray-900">기본 정보 입력</h2>
         <p className="text-sm text-amber-700 bg-amber-50/80 border border-amber-100 rounded-xl px-3 py-2">
-          양력 날짜로 입력해주세요 (음력 변환 미지원). 생년월일만으로도 기본 분석이 가능하고, 태어난 시간까지 추가하면 더 상세한 결과를 확인할 수 있어요.
+          양력 기준으로 입력해주세요. 음력 변환은 지원하지 않습니다.
         </p>
       </header>
 

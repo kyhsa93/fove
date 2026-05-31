@@ -282,8 +282,13 @@ export default function ZodiacPage(): JSX.Element {
   const branch = SLUG_TO_BRANCH[slug]
 
   const navigateToZodiac = (newSlug?: string) => {
-    const path = newSlug ? `/zodiac/${newSlug}` : '/zodiac'
-    navigate(path)
+    if (newSlug) {
+      navigate(`/zodiac/${newSlug}`)
+    } else if (window.history.length > 1) {
+      navigate(-1)
+    } else {
+      navigate('/zodiac')
+    }
     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 

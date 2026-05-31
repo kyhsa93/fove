@@ -254,7 +254,7 @@ export default function FortunePage(): JSX.Element {
         <header className="space-y-2">
           <h1 className="text-3xl font-bold text-gray-900">오늘의 운세</h1>
           <p className="text-sm text-gray-600">
-            오늘의 일진과 내 사주를 결합해 집중할 것, 조심할 것, 행운 요소를 한 번에 알려드려요. 생년월일을 입력하지 않아도 오늘 날짜 기준으로 바로 확인할 수 있어요.
+            오늘의 일진과 사주를 결합해 운세·행운 요소를 한 번에 확인하세요.
           </p>
         </header>
 
