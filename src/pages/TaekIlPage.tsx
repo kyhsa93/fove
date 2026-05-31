@@ -54,6 +54,28 @@ function scoreGrade(score: number): { label: string; color: string } {
   return { label: '비추', color: 'text-rose-500 bg-rose-50 border-rose-200' }
 }
 
+const FAQ_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '택일(擇日)이란 무엇인가요?',
+      acceptedAnswer: { '@type': 'Answer', text: '택일은 결혼·이사·개업 등 중요한 행사에 좋은 날짜를 고르는 전통적인 방법입니다. 천간·지지의 오행 에너지와 목적에 맞는 기운을 조합해 길한 날을 선별합니다.' },
+    },
+    {
+      '@type': 'Question',
+      name: '택일은 어떤 기준으로 계산되나요?',
+      acceptedAnswer: { '@type': 'Answer', text: 'Fove의 택일은 그날의 일진(천간·지지)이 가진 오행 기운과 목적별 선호 오행을 비교해 점수를 산출합니다. 사주 정보를 입력하면 개인 사주와의 상호작용을 추가로 반영해 더 정확한 결과를 제공합니다.' },
+    },
+    {
+      '@type': 'Question',
+      name: '사주 정보가 없어도 택일을 사용할 수 있나요?',
+      acceptedAnswer: { '@type': 'Answer', text: '사주 정보 없이도 일진 오행 기반의 기본 택일 분석을 이용할 수 있습니다. 생년월일을 입력하면 개인 사주와 일진의 상호작용을 반영한 더 정확한 맞춤 결과를 확인할 수 있습니다.' },
+    },
+  ],
+}
+
 export default function TaekIlPage(): JSX.Element {
   const [purpose, setPurpose] = useState<Purpose | null>(null)
   const { result } = useSajuCalculator()
@@ -107,7 +129,9 @@ export default function TaekIlPage(): JSX.Element {
   }, [purpose, monthlyFortune, result, year, month])
 
   return (
-    <section className="py-6 sm:py-8">
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }} />
+      <section className="py-6 sm:py-8">
       <div className="mx-auto max-w-lg px-4 space-y-8">
         <header className="text-center space-y-2">
           <h1 className="text-3xl font-bold text-gray-900">택일</h1>
@@ -239,5 +263,6 @@ export default function TaekIlPage(): JSX.Element {
         </p>
       </div>
     </section>
+    </>
   )
 }

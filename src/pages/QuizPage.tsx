@@ -165,6 +165,28 @@ function calcResult(quiz: QuizDef, answers: Record<string, string>): string {
   return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'B'
 }
 
+const FAQ_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '심리테스트 결과는 어떻게 계산되나요?',
+      acceptedAnswer: { '@type': 'Answer', text: '각 문항의 선택지(A·B·C)별 응답 빈도를 집계해 가장 많이 선택된 유형을 결과로 제시합니다. 동점일 경우 마지막으로 응답한 항목의 유형이 우선됩니다.' },
+    },
+    {
+      '@type': 'Question',
+      name: '결과를 친구와 공유할 수 있나요?',
+      acceptedAnswer: { '@type': 'Answer', text: '결과 화면에서 공유 버튼을 누르면 결과 링크를 공유하거나 클립보드에 복사할 수 있습니다. 카카오톡, 인스타그램 등 메신저로 자유롭게 공유해보세요.' },
+    },
+    {
+      '@type': 'Question',
+      name: '사주나 MBTI 결과와 함께 활용할 수 있나요?',
+      acceptedAnswer: { '@type': 'Answer', text: '네, 심리테스트 결과 화면에서 MBTI 검사, 통합 인사이트, 오늘의 운세 페이지로 바로 이동할 수 있습니다. 여러 분석을 함께 활용하면 더 입체적인 자기 이해가 가능합니다.' },
+    },
+  ],
+}
+
 export default function QuizPage(): JSX.Element {
   const [selectedQuiz, setSelectedQuiz] = useState<QuizDef | null>(null)
   const [answers, setAnswers] = useState<Record<string, string>>({})
@@ -186,7 +208,9 @@ export default function QuizPage(): JSX.Element {
 
   if (!selectedQuiz) {
     return (
-      <section className="py-6 sm:py-8">
+      <>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }} />
+        <section className="py-6 sm:py-8">
         <div className="mx-auto max-w-xl px-4 space-y-8">
           <header className="space-y-2 text-center">
             <h1 className="text-3xl font-bold text-gray-900">운세 심리테스트</h1>
@@ -222,7 +246,8 @@ export default function QuizPage(): JSX.Element {
             </button>
           </div>
         </div>
-      </section>
+        </section>
+      </>
     )
   }
 

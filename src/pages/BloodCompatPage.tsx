@@ -33,6 +33,28 @@ function ScoreRing({ score }: { score: number }) {
   )
 }
 
+const FAQ_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '혈액형 궁합은 어떻게 계산되나요?',
+      acceptedAnswer: { '@type': 'Answer', text: 'A·B·O·AB형 16가지 조합별로 성향 특성을 분석합니다. 각 혈액형이 가진 성격 패턴과 두 사람의 조합에서 발생하는 보완·충돌 요소를 점수화해 궁합 결과를 제공합니다.' },
+    },
+    {
+      '@type': 'Question',
+      name: '혈액형 궁합이 실제 관계에 영향을 미치나요?',
+      acceptedAnswer: { '@type': 'Answer', text: '혈액형과 성격의 과학적 연관성은 검증된 바 없습니다. Fove의 혈액형 궁합은 재미와 자기 이해를 돕는 참고 정보로 활용하세요. 실제 관계는 대화·신뢰·노력으로 만들어집니다.' },
+    },
+    {
+      '@type': 'Question',
+      name: '별자리 궁합, 사주 궁합과 함께 활용할 수 있나요?',
+      acceptedAnswer: { '@type': 'Answer', text: '네, 여러 관점을 함께 참고하면 더 입체적인 궁합 분석이 가능합니다. 혈액형 궁합을 확인한 뒤 별자리 궁합이나 사주 궁합도 함께 확인해 보세요.' },
+    },
+  ],
+}
+
 export default function BloodCompatPage(): JSX.Element {
   const init = useMemo(() => getInitial(), [])
   const [typeA, setTypeA] = useState<BloodType | ''>(init.a)
@@ -82,7 +104,9 @@ export default function BloodCompatPage(): JSX.Element {
   }
 
   return (
-    <section className="py-6 sm:py-8">
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }} />
+      <section className="py-6 sm:py-8">
       <div className="mx-auto max-w-lg px-4 space-y-8">
         <header className="text-center space-y-2">
           <h1 className="text-3xl font-bold text-gray-900">혈액형 궁합</h1>
@@ -201,5 +225,6 @@ export default function BloodCompatPage(): JSX.Element {
         </p>
       </div>
     </section>
+    </>
   )
 }
