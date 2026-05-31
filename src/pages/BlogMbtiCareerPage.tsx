@@ -18,6 +18,8 @@ export default function BlogMbtiCareerPage(): JSX.Element {
     setMeta('meta[property="og:description"]', desc)
     setMeta('meta[name="twitter:title"]', 'MBTI 유형별 직업 궁합 완벽 정리 — Fove')
     setMeta('meta[name="twitter:description"]', desc)
+    setMeta('meta[property="og:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
+    setMeta('meta[name="twitter:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
   }, [])
 
   return (

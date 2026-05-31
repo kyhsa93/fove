@@ -150,6 +150,8 @@ export default function MbtiCompatibilityPage(): JSX.Element {
     setMeta('meta[property="og:description"]', desc)
     setMeta('meta[name="twitter:title"]', 'MBTI 16타입 궁합 매트릭스 — Fove')
     setMeta('meta[name="twitter:description"]', desc)
+    setMeta('meta[property="og:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
+    setMeta('meta[name="twitter:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
   }, [])
 
   const groups = ['분석가', '외교관', '관리자', '탐험가']

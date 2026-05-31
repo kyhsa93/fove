@@ -111,6 +111,8 @@ export default function CompatibilityPage(): JSX.Element {
     }
     setMeta('meta[property="og:title"]', title)
     setMeta('meta[property="og:description"]', desc)
+    setMeta('meta[property="og:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
+    setMeta('meta[name="twitter:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
   }, [checked, personA, personB, activeType, scores])
 
   const handleCheck = () => {

@@ -18,6 +18,8 @@ export default function BlogZodiacStandardPage(): JSX.Element {
     setMeta('meta[property="og:description"]', desc)
     setMeta('meta[name="twitter:title"]', '띠 기준은 입춘인가 음력 설인가? — Fove')
     setMeta('meta[name="twitter:description"]', desc)
+    setMeta('meta[property="og:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
+    setMeta('meta[name="twitter:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
   }, [])
 
   return (

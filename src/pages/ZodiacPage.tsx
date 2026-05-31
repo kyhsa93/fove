@@ -154,6 +154,8 @@ function ZodiacDetail({ branch, navigateToZodiac }: { branch: Branch; navigateTo
     setMeta('meta[property="og:description"]', desc)
     setMeta('meta[name="twitter:title"]', `${animal}띠 운세 — Fove`)
     setMeta('meta[name="twitter:description"]', desc)
+    setMeta('meta[property="og:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
+    setMeta('meta[name="twitter:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
   }, [branch, animal])
 
   const otherBranches = BRANCHES.filter((b) => b !== branch)

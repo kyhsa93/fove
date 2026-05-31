@@ -204,6 +204,8 @@ export default function ZodiacCompatPage(): JSX.Element {
     }
     setMeta('meta[name="description"]', '쥐띠·소띠·호랑이띠 등 12간지 띠별 궁합을 확인하세요. 삼합·육합·충 기반으로 연인·친구·직장 궁합을 분석합니다.')
     setMeta('meta[property="og:title"]', '띠 궁합 — 12간지 궁합 보기 | Fove')
+    setMeta('meta[property="og:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
+    setMeta('meta[name="twitter:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
   }, [])
 
   const branchA = useMemo(() => {
