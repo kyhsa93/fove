@@ -18,8 +18,8 @@ export default function BlogIljinGuidePage(): JSX.Element {
     setMeta('meta[property="og:description"]', desc)
     setMeta('meta[name="twitter:title"]', '오늘의 일진 보는 법 완벽 정리 — Fove')
     setMeta('meta[name="twitter:description"]', desc)
-    setMeta('meta[property="og:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
-    setMeta('meta[name="twitter:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
+    setMeta('meta[property="og:image"]', `${typeof window !== 'undefined' ? window.location.origin : ''}/social-card.png`)
+    setMeta('meta[name="twitter:image"]', `${typeof window !== 'undefined' ? window.location.origin : ''}/social-card.png`)
   }, [])
 
   return (

@@ -88,8 +88,8 @@ export default function CompatibilityPage(): JSX.Element {
     }
     setMeta('meta[property="og:title"]', title)
     setMeta('meta[property="og:description"]', desc)
-    setMeta('meta[property="og:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
-    setMeta('meta[name="twitter:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
+    setMeta('meta[property="og:image"]', `${typeof window !== 'undefined' ? window.location.origin : ''}/social-card.png`)
+    setMeta('meta[name="twitter:image"]', `${typeof window !== 'undefined' ? window.location.origin : ''}/social-card.png`)
   }, [checked, personA, personB, activeType, scores])
 
   useEffect(() => {
@@ -104,7 +104,7 @@ export default function CompatibilityPage(): JSX.Element {
   }
 
   const shareOptions = useMemo(() => {
-    const base = `${typeof window !== 'undefined' ? window.location.origin : 'https://kyhsa93.github.io'}${typeof window !== 'undefined' ? window.location.pathname : '/fove/compatibility'}`
+    const base = `${typeof window !== 'undefined' ? window.location.origin : ''}${typeof window !== 'undefined' ? window.location.pathname : '/compatibility'}`
     return {
       title: scores ? `${personA.label} × ${personB.label} ${COMPAT_LABELS[activeType]} ${scores.total}점 — Fove` : 'Fove 사주 궁합',
       description: scores ? `${COMPAT_LABELS[activeType]} 결과 ${scores.total}점. 내 사주 궁합도 확인해보세요!` : '두 사람의 사주 오행 궁합을 4차원으로 분석해보세요.',

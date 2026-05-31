@@ -72,7 +72,7 @@ export default function BloodCompatPage(): JSX.Element {
   const shareOptions = useMemo(() => ({
     title: typeA && typeB ? `${labelA}(${typeA}형) × ${labelB}(${typeB}형) 혈액형 궁합 ${result?.score ?? ''}점 — Fove` : 'Fove 혈액형 궁합',
     description: result ? `${result.grade} 궁합! ${result.summary}` : '내 혈액형 궁합을 확인해보세요.',
-    url: `${typeof window !== 'undefined' ? window.location.origin : 'https://kyhsa93.github.io'}${typeof window !== 'undefined' ? window.location.pathname : '/fove/blood-compatibility'}${typeA && typeB ? `?a=${typeA}&b=${typeB}` : ''}`,
+    url: `${typeof window !== 'undefined' ? window.location.origin : ''}${typeof window !== 'undefined' ? window.location.pathname : '/blood-compatibility'}${typeA && typeB ? `?a=${typeA}&b=${typeB}` : ''}`,
   }), [typeA, typeB, labelA, labelB, result])
 
   function TypeSelector({ value, onChange, label }: { value: BloodType | ''; onChange: (v: BloodType) => void; label: string }) {

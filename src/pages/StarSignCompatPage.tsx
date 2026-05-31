@@ -52,7 +52,7 @@ export default function StarSignCompatPage(): JSX.Element {
     return {
       title: nameA && nameB ? `${nameA} × ${nameB} 별자리 궁합 ${result?.score ?? ''}점 — Fove` : 'Fove 별자리 궁합',
       description: result ? `${result.grade} 궁합! ${result.elementRelation}` : '내 별자리 궁합을 확인해보세요.',
-      url: `${typeof window !== 'undefined' ? window.location.origin : 'https://kyhsa93.github.io'}${typeof window !== 'undefined' ? window.location.pathname : '/fove/starsign-compatibility'}${signA && signB ? `?a=${signA}&b=${signB}` : ''}`,
+      url: `${typeof window !== 'undefined' ? window.location.origin : ''}${typeof window !== 'undefined' ? window.location.pathname : '/starsign-compatibility'}${signA && signB ? `?a=${signA}&b=${signB}` : ''}`,
     }
   }, [signA, signB, result])
 

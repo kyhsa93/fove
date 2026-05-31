@@ -111,7 +111,7 @@ const LUCKY_ITEMS = [
 function LuckyCard({ lucky, dateLabel }: { lucky: DailyFortune['lucky']; dateLabel: string }): JSX.Element {
   const [copied, setCopied] = useState(false)
 
-  const shareText = `✨ ${dateLabel} 오늘의 행운 요소\n🎨 행운색: ${lucky.color}\n🔢 행운 숫자: ${lucky.number}\n🧭 행운 방위: ${lucky.direction}\n🍀 행운 음식: ${lucky.food}\n⚡ 오늘 피할 것: ${lucky.avoid}\n\nFove에서 오늘 운세 확인 → https://kyhsa93.github.io/fove`
+  const shareText = `✨ ${dateLabel} 오늘의 행운 요소\n🎨 행운색: ${lucky.color}\n🔢 행운 숫자: ${lucky.number}\n🧭 행운 방위: ${lucky.direction}\n🍀 행운 음식: ${lucky.food}\n⚡ 오늘 피할 것: ${lucky.avoid}\n\nFove에서 오늘 운세 확인 → ${typeof window !== 'undefined' ? window.location.origin : ''}`
 
   const handleCopy = useCallback(async () => {
     try {
@@ -329,7 +329,7 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
   const fortuneShareOptions = useMemo(() => ({
     title: `오늘의 운세 ${score}점 — Fove`,
     description: `${dateLabel} 일진 ${pillarName}. 나의 운세도 확인해보세요!`,
-    url: 'https://kyhsa93.github.io/fove/fortune',
+    url: `${typeof window !== 'undefined' ? window.location.origin : ''}/fortune`,
   }), [score, dateLabel, pillarName])
 
   const handleTabChange = useCallback((tabId: string) => {

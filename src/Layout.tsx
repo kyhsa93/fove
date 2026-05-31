@@ -64,8 +64,9 @@ function AppInit(): null {
   return null
 }
 
-const BASE_URL = 'https://kyhsa93.github.io/fove'
-const DEFAULT_OG_IMAGE = `${BASE_URL}/social-card.png`
+import { SITE_URL, OG_IMAGE_URL } from './lib/siteUrl'
+
+const DEFAULT_OG_IMAGE = OG_IMAGE_URL
 
 type RouteMeta = { title: string; description: string; ogTitle: string }
 
@@ -128,7 +129,7 @@ export default function Layout(): JSX.Element {
     setMeta('meta[name="description"]', meta.description)
     setMeta('meta[property="og:title"]', meta.ogTitle)
     setMeta('meta[property="og:description"]', meta.description)
-    setMeta('meta[property="og:url"]', `${BASE_URL}${location.pathname}`)
+    setMeta('meta[property="og:url"]', `${SITE_URL}${location.pathname}`)
     setMeta('meta[property="og:image"]', DEFAULT_OG_IMAGE)
     setMeta('meta[property="og:image:alt"]', meta.ogTitle)
     setMeta('meta[name="twitter:title"]', meta.ogTitle)

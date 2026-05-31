@@ -371,7 +371,7 @@ function buildPortraitCanvas(fortune: DailyFortune): HTMLCanvasElement {
   ctx.fillText('나의 오늘 운세 확인하기', PW / 2, ctaY)
   ctx.font = `28px system-ui, -apple-system, sans-serif`
   ctx.fillStyle = 'rgba(255,255,255,0.35)'
-  ctx.fillText('kyhsa93.github.io/fove', PW / 2, ctaY + 46)
+  ctx.fillText(typeof window !== 'undefined' ? window.location.host : '', PW / 2, ctaY + 46)
 
   return canvas
 }

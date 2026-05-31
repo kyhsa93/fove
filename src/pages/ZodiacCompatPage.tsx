@@ -197,8 +197,8 @@ export default function ZodiacCompatPage(): JSX.Element {
     }
     setMeta('meta[name="description"]', '쥐띠·소띠·호랑이띠 등 12간지 띠별 궁합을 확인하세요. 삼합·육합·충 기반으로 연인·친구·직장 궁합을 분석합니다.')
     setMeta('meta[property="og:title"]', '띠 궁합 — 12간지 궁합 보기 | Fove')
-    setMeta('meta[property="og:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
-    setMeta('meta[name="twitter:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
+    setMeta('meta[property="og:image"]', `${typeof window !== 'undefined' ? window.location.origin : ''}/social-card.png`)
+    setMeta('meta[name="twitter:image"]', `${typeof window !== 'undefined' ? window.location.origin : ''}/social-card.png`)
   }, [])
 
   const branchA = useMemo(() => {
@@ -233,7 +233,7 @@ export default function ZodiacCompatPage(): JSX.Element {
   }
 
   const zodiacShareOptions = useMemo(() => {
-    const base = `${typeof window !== 'undefined' ? window.location.origin : 'https://kyhsa93.github.io'}${typeof window !== 'undefined' ? window.location.pathname : '/fove/zodiac/compatibility'}`
+    const base = `${typeof window !== 'undefined' ? window.location.origin : ''}${typeof window !== 'undefined' ? window.location.pathname : '/zodiac/compatibility'}`
     return {
       title: branchA && branchB ? `${BRANCH_ANIMALS[branchA]}띠 × ${BRANCH_ANIMALS[branchB]}띠 궁합 — Fove` : 'Fove 띠 궁합',
       description: '12간지 띠 궁합을 삼합·육합·충 기반으로 분석해보세요!',

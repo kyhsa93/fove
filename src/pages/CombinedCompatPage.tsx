@@ -104,8 +104,8 @@ export default function CombinedCompatPage(): JSX.Element {
     }
     setMeta('meta[name="description"]', '사주 오행(40%)과 MBTI 인지기능(60%)을 결합한 통합 궁합을 확인하세요. 두 사람의 에너지 흐름과 소통 방식을 교차 분석합니다.')
     setMeta('meta[property="og:title"]', '사주+MBTI 통합 궁합 | Fove')
-    setMeta('meta[property="og:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
-    setMeta('meta[name="twitter:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
+    setMeta('meta[property="og:image"]', `${typeof window !== 'undefined' ? window.location.origin : ''}/social-card.png`)
+    setMeta('meta[name="twitter:image"]', `${typeof window !== 'undefined' ? window.location.origin : ''}/social-card.png`)
   }, [])
 
   const canCheck = personA.birthDate.length >= 10 && personB.birthDate.length >= 10
@@ -157,7 +157,7 @@ export default function CombinedCompatPage(): JSX.Element {
   const combinedShareOptions = useMemo(() => ({
     title: combinedScore > 0 ? `사주+MBTI 통합 궁합 ${combinedScore}점 — Fove` : 'Fove 사주+MBTI 통합 궁합',
     description: '사주 오행과 MBTI를 결합한 통합 궁합을 확인해보세요!',
-    url: `${typeof window !== 'undefined' ? window.location.origin : 'https://kyhsa93.github.io'}${typeof window !== 'undefined' ? window.location.pathname : '/fove/compatibility/combined'}?type=${activeType}`,
+    url: `${typeof window !== 'undefined' ? window.location.origin : ''}${typeof window !== 'undefined' ? window.location.pathname : '/compatibility/combined'}?type=${activeType}`,
   }), [activeType, combinedScore])
 
   return (

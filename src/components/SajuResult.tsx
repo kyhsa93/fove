@@ -380,12 +380,12 @@ export function SajuResult({ result, elementBars, interpretation, isLoading }: S
       TEMPERAMENT_BY_ELEMENT[strongest.element],
       `강한 오행: ${strongest.element}(${strongest.count}개) · 일주: ${result.pillars.day.name}`,
       '',
-      '나의 사주를 확인해보세요: https://kyhsa93.github.io/fove/saju'
+      `나의 사주를 확인해보세요: ${typeof window !== 'undefined' ? window.location.origin : ''}/saju`
     ].join('\n')
 
     if (navigator.share) {
       try {
-        await navigator.share({ title: 'Fove 사주 풀이', text, url: 'https://kyhsa93.github.io/fove/saju' })
+        await navigator.share({ title: 'Fove 사주 풀이', text, url: `${typeof window !== 'undefined' ? window.location.origin : ''}/saju` })
         return
       } catch (e) {
         if (e instanceof Error && e.name === 'AbortError') return

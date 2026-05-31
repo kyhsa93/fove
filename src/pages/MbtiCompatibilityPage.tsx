@@ -62,7 +62,7 @@ function MbtiCalculator() {
   const mbtiShareOptions = useMemo(() => ({
     title: typeA && typeB ? `${typeA} × ${typeB} MBTI 궁합 — Fove` : 'Fove MBTI 궁합',
     description: 'MBTI 16타입 궁합을 확인해보세요. 나와 잘 맞는 유형은?',
-    url: `${typeof window !== 'undefined' ? window.location.origin : 'https://kyhsa93.github.io'}${typeof window !== 'undefined' ? window.location.pathname : '/fove/mbti/compatibility'}?a=${typeA}&b=${typeB}`,
+    url: `${typeof window !== 'undefined' ? window.location.origin : ''}${typeof window !== 'undefined' ? window.location.pathname : '/mbti/compatibility'}?a=${typeA}&b=${typeB}`,
   }), [typeA, typeB])
 
   return (
@@ -150,8 +150,8 @@ export default function MbtiCompatibilityPage(): JSX.Element {
     setMeta('meta[property="og:description"]', desc)
     setMeta('meta[name="twitter:title"]', 'MBTI 16타입 궁합 매트릭스 — Fove')
     setMeta('meta[name="twitter:description"]', desc)
-    setMeta('meta[property="og:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
-    setMeta('meta[name="twitter:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
+    setMeta('meta[property="og:image"]', `${typeof window !== 'undefined' ? window.location.origin : ''}/social-card.png`)
+    setMeta('meta[name="twitter:image"]', `${typeof window !== 'undefined' ? window.location.origin : ''}/social-card.png`)
   }, [])
 
   const groups = ['분석가', '외교관', '관리자', '탐험가']

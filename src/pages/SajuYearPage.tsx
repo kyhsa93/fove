@@ -58,8 +58,8 @@ export default function SajuYearPage(): JSX.Element {
     setMeta('meta[name="description"]', desc)
     setMeta('meta[property="og:title"]', `${year}년생 사주 특성 — Fove`)
     setMeta('meta[property="og:description"]', desc)
-    setMeta('meta[property="og:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
-    setMeta('meta[name="twitter:image"]', 'https://kyhsa93.github.io/fove/social-card.png')
+    setMeta('meta[property="og:image"]', `${typeof window !== 'undefined' ? window.location.origin : ''}/social-card.png`)
+    setMeta('meta[name="twitter:image"]', `${typeof window !== 'undefined' ? window.location.origin : ''}/social-card.png`)
   }, [year, pillar])
 
   if (!year || !pillar) {
