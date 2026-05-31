@@ -21,6 +21,8 @@ export const ROUTE_PATHS = {
   blogSajuBasics: '/blog/saju-basics',
   blogZodiacStandard: '/blog/zodiac-standard',
   blogMbtiLoveStyle: '/blog/mbti-love-style',
+  blogIljinGuide: '/blog/iljin-guide',
+  blogMbtiCareer: '/blog/mbti-career',
   privacyPolicy: '/privacy-policy',
   termsOfService: '/terms-of-service',
   contact: '/contact'
@@ -46,5 +48,7 @@ export const navLinks: Array<{ path: RoutePath; label: string }> = [
 export const blogLinks: Array<{ path: RoutePath; label: string }> = [
   { path: ROUTE_PATHS.blogSajuBasics, label: '사주란 무엇인가?' },
   { path: ROUTE_PATHS.blogZodiacStandard, label: '띠 기준 완벽 정리' },
-  { path: ROUTE_PATHS.blogMbtiLoveStyle, label: 'MBTI별 연애 스타일' }
+  { path: ROUTE_PATHS.blogMbtiLoveStyle, label: 'MBTI별 연애 스타일' },
+  { path: ROUTE_PATHS.blogIljinGuide, label: '일진 보는 법 완벽 정리' },
+  { path: ROUTE_PATHS.blogMbtiCareer, label: 'MBTI 유형별 직업 궁합' }
 ]

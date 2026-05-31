@@ -18,6 +18,8 @@ import QuizPage from './pages/QuizPage'
 import BlogSajuBasicsPage from './pages/BlogSajuBasicsPage'
 import BlogZodiacStandardPage from './pages/BlogZodiacStandardPage'
 import BlogMbtiLoveStylePage from './pages/BlogMbtiLoveStylePage'
+import BlogIljinGuidePage from './pages/BlogIljinGuidePage'
+import BlogMbtiCareerPage from './pages/BlogMbtiCareerPage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfServicePage from './pages/TermsOfServicePage'
 import ContactPage from './pages/ContactPage'
@@ -54,6 +56,8 @@ export const routes: RouteObject[] = [
       { path: 'blog/saju-basics', element: <BlogSajuBasicsPage /> },
       { path: 'blog/zodiac-standard', element: <BlogZodiacStandardPage /> },
       { path: 'blog/mbti-love-style', element: <BlogMbtiLoveStylePage /> },
+      { path: 'blog/iljin-guide', element: <BlogIljinGuidePage /> },
+      { path: 'blog/mbti-career', element: <BlogMbtiCareerPage /> },
       { path: 'privacy-policy', element: <PrivacyPolicyPage /> },
       { path: 'terms-of-service', element: <TermsOfServicePage /> },
       { path: 'contact', element: <ContactPage /> },
