@@ -277,6 +277,13 @@ export default function InsightPage(): JSX.Element {
           </button>
           <button
             type="button"
+            onClick={() => navigateTo(ROUTE_PATHS.quiz)}
+            className="flex-1 rounded-full bg-violet-500 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-violet-600 transition"
+          >
+            퀴즈 풀기
+          </button>
+          <button
+            type="button"
             onClick={() => navigateTo(ROUTE_PATHS.saju)}
             className="flex-1 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition"
           >

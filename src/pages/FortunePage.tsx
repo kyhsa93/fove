@@ -482,6 +482,14 @@ export default function FortunePage(): JSX.Element {
               <p className="text-base font-semibold text-indigo-900">올해 연간 운세 보기</p>
               <p className="mt-1 text-sm text-indigo-700">12개월 월주 흐름으로 올해 시기별 에너지를 파악합니다.</p>
             </button>
+            <button
+              type="button"
+              onClick={() => navigateTo(ROUTE_PATHS.taekil)}
+              className="rounded-2xl border border-amber-200 bg-amber-50/60 px-4 py-5 text-left transition hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-2 focus-visible:outline-amber-400"
+            >
+              <p className="text-base font-semibold text-amber-900">택일 — 길한 날 찾기</p>
+              <p className="mt-1 text-sm text-amber-700">사주 기운을 바탕으로 중요한 일을 시작하기 좋은 날을 찾습니다.</p>
+            </button>
           </div>
         </section>
 

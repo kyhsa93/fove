@@ -105,13 +105,20 @@ function ZodiacOverview({ navigateToZodiac }: { navigateToZodiac: (slug?: string
             />
           ))}
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <button
             type="button"
             onClick={() => navigateTo(ROUTE_PATHS.fortune)}
             className="flex-1 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-amber-600"
           >
             오늘의 운세 보기
+          </button>
+          <button
+            type="button"
+            onClick={() => navigateTo(ROUTE_PATHS.zodiacCompatibility)}
+            className="flex-1 rounded-full bg-emerald-500 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-600"
+          >
+            띠 궁합 보기
           </button>
           <button
             type="button"
@@ -238,13 +245,20 @@ function ZodiacDetail({ branch, navigateToZodiac }: { branch: Branch; navigateTo
           </div>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           <button
             type="button"
             onClick={() => navigateTo(ROUTE_PATHS.fortune)}
             className="flex-1 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-amber-600"
           >
             오늘의 운세 보기
+          </button>
+          <button
+            type="button"
+            onClick={() => navigateTo(ROUTE_PATHS.zodiacCompatibility)}
+            className="flex-1 rounded-full bg-emerald-500 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-600"
+          >
+            띠 궁합 보기
           </button>
           <button
             type="button"

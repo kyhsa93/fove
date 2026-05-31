@@ -295,6 +295,32 @@ export default function CompatibilityPage(): JSX.Element {
           </div>
         ) : null}
 
+        {/* 다른 궁합 유형 */}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-2xl border border-rose-100 bg-rose-50/60 px-5 py-4 space-y-2">
+            <p className="text-sm font-semibold text-rose-800">혈액형 궁합</p>
+            <p className="text-xs text-rose-600 leading-relaxed">혈액형으로 두 사람의 성격 궁합을 간편하게 확인합니다.</p>
+            <button
+              type="button"
+              onClick={() => navigateTo(ROUTE_PATHS.bloodCompatibility)}
+              className="rounded-full bg-rose-500 px-5 py-2 text-sm font-medium text-white hover:bg-rose-600 transition shadow-sm"
+            >
+              혈액형 궁합 보러가기
+            </button>
+          </div>
+          <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-5 py-4 space-y-2">
+            <p className="text-sm font-semibold text-indigo-800">별자리 궁합</p>
+            <p className="text-xs text-indigo-600 leading-relaxed">별자리로 두 사람의 성향과 궁합을 확인합니다.</p>
+            <button
+              type="button"
+              onClick={() => navigateTo(ROUTE_PATHS.starSignCompatibility)}
+              className="rounded-full bg-indigo-500 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-600 transition shadow-sm"
+            >
+              별자리 궁합 보러가기
+            </button>
+          </div>
+        </div>
+
         {/* 통합 궁합 CTA */}
         <div className="rounded-2xl border border-violet-100 bg-violet-50/60 px-5 py-4 space-y-2">
           <p className="text-sm font-semibold text-violet-800">사주 + MBTI 통합 궁합</p>
