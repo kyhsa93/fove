@@ -34,6 +34,7 @@ function CardFace({ card, isReversed, position, revealed, onClick }: {
       <button
         type="button"
         onClick={onClick}
+        aria-label={`${position.label} 카드 확인`}
         className={`w-full rounded-2xl border-2 ${BACK_STYLE} px-4 py-8 space-y-3 text-center transition hover:scale-[1.02] hover:shadow-xl cursor-pointer`}
       >
         <p className="text-3xl">🔮</p>

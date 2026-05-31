@@ -189,10 +189,10 @@ export default function CompatibilityPage(): JSX.Element {
           <button
             type="button"
             onClick={handleCheck}
-            disabled={personA.birthDate.length < 10 || personB.birthDate.length < 10}
+            disabled={personA.birthDate.length < 10 || personB.birthDate.length < 10 || isCalculating}
             className="w-full rounded-2xl bg-indigo-500 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-600 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            궁합 확인하기
+            {isCalculating ? '계산 중...' : '궁합 확인하기'}
           </button>
         </div>
 

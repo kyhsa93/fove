@@ -324,10 +324,10 @@ export default function ZodiacCompatPage(): JSX.Element {
           <button
             type="button"
             onClick={handleCheck}
-            disabled={!branchA || !branchB}
+            disabled={!branchA || !branchB || isCalculating}
             className="w-full rounded-2xl bg-indigo-500 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-600 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            띠 궁합 확인하기
+            {isCalculating ? '계산 중...' : '띠 궁합 확인하기'}
           </button>
 
           <p className="text-xs text-slate-400 text-center">

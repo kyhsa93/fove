@@ -8,6 +8,7 @@ import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
 import { CompatShareCardButton } from '../components/ShareCard'
 import { ShareLinkButton } from '../components/ShareLinkButton'
+import { getCompatParams } from '../lib/compatParams'
 
 const COMPAT_LABELS: Record<CompatibilityType, string> = {
   love: '연인 궁합',
@@ -86,19 +87,14 @@ function scoreBarColor(score: number) {
   return 'bg-rose-400'
 }
 
-function getInitialState() {
-  if (typeof window === 'undefined') return { type: 'love' as CompatibilityType }
-  const params = new URLSearchParams(window.location.search)
-  return { type: (params.get('type') as CompatibilityType) ?? 'love' }
-}
-
 export default function CombinedCompatPage(): JSX.Element {
-  const initial = useMemo(() => getInitialState(), [])
+  const initial = useMemo(() => getCompatParams(), [])
 
   const [personA, setPersonA] = useState<PersonInput>({ birthDate: '', hour: -1, mbti: '', label: '나' })
   const [personB, setPersonB] = useState<PersonInput>({ birthDate: '', hour: -1, mbti: '', label: '상대방' })
-  const [activeType, setActiveType] = useState<CompatibilityType>(initial.type)
+  const [activeType, setActiveType] = useState<CompatibilityType>(initial.type as CompatibilityType)
   const [checked, setChecked] = useState(false)
+  const [isCalculating, setIsCalculating] = useState(false)
 
   useEffect(() => {
     document.title = '사주+MBTI 통합 궁합 | Fove'
@@ -147,8 +143,15 @@ export default function CombinedCompatPage(): JSX.Element {
     return CROSS_ANALYSIS[sajuLevel][mbtiLevel]
   }, [sajuScores, mbtiCompat, combinedScore])
 
+  useEffect(() => {
+    if (isCalculating && sajuScores) setIsCalculating(false)
+  }, [isCalculating, sajuScores])
+
   const handleCheck = () => {
-    if (canCheck) setChecked(true)
+    if (canCheck) {
+      setIsCalculating(true)
+      setChecked(true)
+    }
   }
 
   const combinedShareOptions = useMemo(() => ({
@@ -246,10 +249,10 @@ export default function CombinedCompatPage(): JSX.Element {
           <button
             type="button"
             onClick={handleCheck}
-            disabled={!canCheck}
+            disabled={!canCheck || isCalculating}
             className="w-full rounded-2xl bg-indigo-500 py-3 text-sm font-semibold text-white shadow-sm hover:bg-indigo-600 transition disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            통합 궁합 확인하기
+            {isCalculating ? '계산 중...' : '통합 궁합 확인하기'}
           </button>
 
           {!personA.mbti || !personB.mbti ? (
@@ -257,8 +260,15 @@ export default function CombinedCompatPage(): JSX.Element {
           ) : null}
         </div>
 
+        {/* 계산 중 */}
+        {isCalculating && (
+          <div className="rounded-2xl border border-indigo-100 bg-indigo-50/40 px-5 py-8 text-center text-sm text-indigo-500">
+            궁합을 계산하고 있어요...
+          </div>
+        )}
+
         {/* 결과 */}
-        {checked && combinedScore !== null && sajuScores ? (
+        {!isCalculating && checked && combinedScore !== null && sajuScores ? (
           <div className="space-y-4">
             {/* 통합 총점 */}
             <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-5 py-6 space-y-3 shadow-sm text-center">

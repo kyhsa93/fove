@@ -178,7 +178,10 @@ export default function HomePage(): JSX.Element {
               ].map(({ step, label }, idx) => (
                 <li key={step} className="flex items-center">
                   <div className="flex flex-col items-center gap-1">
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-indigo-400/60 text-xs font-bold text-white ring-1 ring-indigo-300/40">
+                    <span
+                      aria-label={`${step}단계: ${label}`}
+                      className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-indigo-400/60 text-xs font-bold text-white ring-1 ring-indigo-300/40"
+                    >
                       {step}
                     </span>
                     <span className="text-[10px] text-white/60 whitespace-nowrap">{label}</span>

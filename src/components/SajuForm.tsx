@@ -182,10 +182,10 @@ export function SajuForm({
         )}
 
         {/* 생년월일 — 년/월/일 분리 입력 */}
-        <div className="flex flex-col gap-2">
-          <span className="text-sm text-gray-700 font-medium">
+        <fieldset className="flex flex-col gap-2 border-0 p-0 m-0 min-w-0">
+          <legend className="text-sm text-gray-700 font-medium">
             생년월일 <span className="text-amber-600">*</span>
-          </span>
+          </legend>
           <div className="flex items-center gap-2">
             <input
               type="text"
@@ -224,11 +224,11 @@ export function SajuForm({
             <span className="text-sm text-gray-500 shrink-0">일</span>
           </div>
           {dateError ? (
-            <span className="text-xs text-rose-600">{dateError}</span>
+            <span className="text-xs text-rose-600" role="alert">{dateError}</span>
           ) : (
             <span className="text-xs text-gray-500">양력 기준. 연도 4자리 입력 후 자동으로 월 입력으로 이동합니다.</span>
           )}
-        </div>
+        </fieldset>
 
         {/* 태어난 시간 */}
         <div className="flex flex-col gap-2">

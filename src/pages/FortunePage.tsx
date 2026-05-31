@@ -116,10 +116,13 @@ export default function FortunePage(): JSX.Element {
 
   const [notifPermission, setNotifPermission] = useState<NotificationPermission | 'unsupported'>(() => getNotificationPermission())
   const [notifOptedIn, setNotifOptedIn] = useState(() => isOptedIn())
+  const [notifLoading, setNotifLoading] = useState(false)
 
   const handleNotifSubscribe = useCallback(async () => {
+    setNotifLoading(true)
     const permission = await requestNotificationPermission()
     setNotifPermission(permission)
+    setNotifLoading(false)
     if (permission === 'granted') {
       setNotifOptedIn(true)
       showToast('알림이 설정됐습니다. 매일 운세를 확인하세요!', 'success')
@@ -447,9 +450,10 @@ export default function FortunePage(): JSX.Element {
               <button
                 type="button"
                 onClick={handleNotifSubscribe}
-                className="rounded-full bg-indigo-500 px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-600 transition"
+                disabled={notifLoading}
+                className="rounded-full bg-indigo-500 px-5 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                알림 받기
+                {notifLoading ? '설정 중...' : '알림 받기'}
               </button>
             )}
           </section>

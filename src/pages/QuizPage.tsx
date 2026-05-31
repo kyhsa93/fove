@@ -352,11 +352,13 @@ export default function QuizPage(): JSX.Element {
         {currentQuestion ? (
           <div className="space-y-4">
             <p className="text-base font-semibold text-slate-900">{currentQuestion.prompt}</p>
-            <div className="space-y-2">
+            <div className="space-y-2" role="radiogroup" aria-label={currentQuestion.prompt}>
               {currentQuestion.options.map((opt) => (
                 <button
                   key={opt.value}
                   type="button"
+                  role="radio"
+                  aria-checked="false"
                   onClick={() => handleAnswer(currentQuestion.id, opt.value)}
                   className="w-full rounded-2xl border border-slate-100 bg-white/90 px-5 py-4 text-left text-sm text-slate-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50/40 hover:text-indigo-700"
                 >
