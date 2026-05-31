@@ -217,6 +217,166 @@ function buildCanvas(fortune: DailyFortune): HTMLCanvasElement {
 }
 
 // ════════════════════════════════════════════════════════
+// 세로형 스토리 카드 (1080×1920, 9:16)
+// ════════════════════════════════════════════════════════
+
+function buildPortraitCanvas(fortune: DailyFortune): HTMLCanvasElement {
+  const PW = 1080
+  const PH = 1920
+  const PP = 80
+  const canvas = document.createElement('canvas')
+  canvas.width = PW
+  canvas.height = PH
+  const ctx = canvas.getContext('2d')!
+
+  // 배경
+  const bg = ctx.createLinearGradient(0, 0, PW, PH)
+  bg.addColorStop(0, '#1e1b4b')
+  bg.addColorStop(0.5, '#312e81')
+  bg.addColorStop(1, '#0f172a')
+  ctx.fillStyle = bg
+  ctx.fillRect(0, 0, PW, PH)
+
+  // 미세 격자
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)'
+  ctx.lineWidth = 1
+  for (let x = 0; x < PW; x += 80) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, PH); ctx.stroke() }
+  for (let y = 0; y < PH; y += 80) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(PW, y); ctx.stroke() }
+
+  // ── 브랜드 (좌상단) ──
+  ctx.font = `bold 40px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = 'rgba(255,255,255,0.5)'
+  ctx.textAlign = 'left'
+  ctx.textBaseline = 'top'
+  ctx.fillText('Fove', PP, PP)
+
+  ctx.font = `30px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = 'rgba(255,255,255,0.35)'
+  ctx.textAlign = 'right'
+  ctx.fillText(fortune.dateLabel, PW - PP, PP + 6)
+  ctx.textAlign = 'left'
+
+  // ── 일진 + 오행 ──
+  ctx.font = `bold 120px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = '#ffffff'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'top'
+  ctx.fillText(fortune.pillarName, PW / 2, PP + 120)
+
+  ctx.font = `38px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = 'rgba(255,255,255,0.55)'
+  ctx.fillText(`${fortune.elementLabel} · ${fortune.yinYang}`, PW / 2, PP + 265)
+
+  // ── 점수 원 (가운데) ──
+  const cx = PW / 2
+  const cy = PP + 490
+  const radius = 160
+
+  ctx.beginPath()
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2)
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)'
+  ctx.lineWidth = 22
+  ctx.stroke()
+
+  if (fortune.score > 0) {
+    ctx.beginPath()
+    ctx.arc(cx, cy, radius, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (fortune.score / 100))
+    ctx.strokeStyle = scoreColor(fortune.score)
+    ctx.lineWidth = 22
+    ctx.lineCap = 'round'
+    ctx.stroke()
+  }
+
+  ctx.font = `bold 100px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = '#ffffff'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText(`${fortune.score}`, cx, cy - 14)
+
+  ctx.font = `30px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = 'rgba(255,255,255,0.45)'
+  ctx.fillText('총운 점수', cx, cy + 60)
+
+  // ── 구분선 ──
+  ctx.strokeStyle = 'rgba(255,255,255,0.12)'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(PP, cy + radius + 40)
+  ctx.lineTo(PW - PP, cy + radius + 40)
+  ctx.stroke()
+
+  // ── 에너지 텍스트 ──
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'top'
+  ctx.font = `36px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = 'rgba(255,255,255,0.85)'
+  const energyY = cy + radius + 70
+  const energyLines = wrapText(ctx, fortune.energyText, PW - PP * 2)
+  energyLines.slice(0, 4).forEach((line, i) => ctx.fillText(line, PW / 2, energyY + i * 56))
+
+  // ── 분야별 점수 바 (4개 가로) ──
+  const barTop = energyY + Math.min(energyLines.length, 4) * 56 + 60
+  const barItems = [
+    { label: '일·업무', score: fortune.categoryScores.work, color: '#38bdf8' },
+    { label: '사랑·관계', score: fortune.categoryScores.love, color: '#f472b6' },
+    { label: '재물', score: fortune.categoryScores.money, color: '#fbbf24' },
+    { label: '건강', score: fortune.categoryScores.health, color: '#34d399' },
+  ]
+  const barW = (PW - PP * 2 - 60) / 4
+  barItems.forEach(({ label, score, color }, i) => {
+    const bx = PP + i * (barW + 20)
+    drawRoundRect(ctx, bx, barTop, barW, 90, 16)
+    ctx.fillStyle = 'rgba(255,255,255,0.06)'
+    ctx.fill()
+    const fillW = Math.max(28, (barW - 28) * (score / 100))
+    drawRoundRect(ctx, bx + 14, barTop + 54, fillW, 14, 7)
+    ctx.fillStyle = color
+    ctx.fill()
+    ctx.font = `bold 26px system-ui, -apple-system, sans-serif`
+    ctx.fillStyle = color
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'top'
+    ctx.fillText(label, bx + 14, barTop + 12)
+    ctx.font = `bold 32px system-ui, -apple-system, sans-serif`
+    ctx.fillStyle = '#ffffff'
+    ctx.textAlign = 'right'
+    ctx.fillText(`${score}`, bx + barW - 14, barTop + 10)
+  })
+
+  // ── 행운 요소 ──
+  const luckyTop = barTop + 130
+  const luckyItems = [
+    { label: '🎨 행운색', value: fortune.lucky.color },
+    { label: '🔢 행운 숫자', value: String(fortune.lucky.number) },
+    { label: '🧭 행운 방위', value: fortune.lucky.direction },
+  ]
+  ctx.textAlign = 'center'
+  luckyItems.forEach(({ label, value }, i) => {
+    const lx = PP + (i * (PW - PP * 2)) / 3 + (PW - PP * 2) / 6
+    ctx.font = `28px system-ui, -apple-system, sans-serif`
+    ctx.fillStyle = 'rgba(255,255,255,0.35)'
+    ctx.textBaseline = 'top'
+    ctx.fillText(label, lx, luckyTop)
+    ctx.font = `bold 36px system-ui, -apple-system, sans-serif`
+    ctx.fillStyle = 'rgba(255,255,255,0.85)'
+    ctx.fillText(value, lx, luckyTop + 36)
+  })
+
+  // ── 하단 CTA ──
+  const ctaY = PH - PP - 80
+  ctx.font = `bold 36px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = 'rgba(255,255,255,0.7)'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'top'
+  ctx.fillText('나의 오늘 운세 확인하기', PW / 2, ctaY)
+  ctx.font = `28px system-ui, -apple-system, sans-serif`
+  ctx.fillStyle = 'rgba(255,255,255,0.35)'
+  ctx.fillText('kyhsa93.github.io/fove', PW / 2, ctaY + 46)
+
+  return canvas
+}
+
+// ════════════════════════════════════════════════════════
 // 궁합 공유 카드
 // ════════════════════════════════════════════════════════
 
@@ -443,6 +603,42 @@ export function CompatShareCardButton({ data }: { data: CompatShareData }): JSX.
   }, [data])
 
   return <DownloadButton onSave={handleSave} label="궁합 카드 저장" />
+}
+
+// ── 세로형 스토리 카드 버튼 ──────────────────────────────
+export function PortraitShareCardButton({ fortune }: { fortune: DailyFortune }): JSX.Element {
+  const [saving, setSaving] = useState(false)
+
+  const handleClick = () => {
+    setSaving(true)
+    setTimeout(() => {
+      const canvas = buildPortraitCanvas(fortune)
+      canvas.toBlob((blob) => {
+        if (!blob) return
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `fove-스토리-${fortune.dateLabel.replace(/\./g, '')}.png`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+      }, 'image/png')
+      trackEvent('shared', { pillar: fortune.pillarName, score: fortune.score })
+      setSaving(false)
+    }, 50)
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      disabled={saving}
+      className="inline-flex items-center gap-1.5 rounded-full border border-rose-200 bg-rose-50/60 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-100 disabled:opacity-50"
+    >
+      {saving ? '생성 중…' : '스토리 📱'}
+    </button>
+  )
 }
 
 // ── 훅 ──────────────────────────────────────────────────

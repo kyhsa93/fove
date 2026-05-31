@@ -6,6 +6,7 @@ import {
   ELEMENT_ACTION_DO,
   ELEMENT_KEYWORDS,
   ELEMENT_LABELS,
+  ELEMENT_CONTROLS,
   HEALTH_TIPS_BY_ELEMENT,
   LUCKY_COLOR,
   LUCKY_DIRECTION,
@@ -27,6 +28,148 @@ import { TooltipLabel } from './TooltipLabel'
 import { ActionCardDeck, type ActionCardData } from './ActionCards'
 import { useToast } from './ToastProvider'
 
+
+// ── 십신(十神) 계산 ─────────────────────────────────────────────────────────
+const TEN_GOD_LABEL: Record<string, string> = {
+  '비견': '비견', '겁재': '겁재',
+  '식신': '식신', '상관': '상관',
+  '편재': '편재', '정재': '정재',
+  '편관': '편관', '정관': '정관',
+  '편인': '편인', '정인': '정인',
+}
+
+const TEN_GOD_DESC: Record<string, string> = {
+  비견: '자아·독립·경쟁심',
+  겁재: '야망·도전·재물 기복',
+  식신: '표현력·창의·식복',
+  상관: '재능·반항·기획력',
+  편재: '사업·변동·재물 추구',
+  정재: '안정 수입·근면·현실감',
+  편관: '권위·극복·도전',
+  정관: '규범·명예·안정',
+  편인: '학문·직관·독립심',
+  정인: '지혜·학습·보호',
+}
+
+const TEN_GOD_COLOR: Record<string, string> = {
+  비견: 'bg-amber-50 border-amber-200 text-amber-800',
+  겁재: 'bg-orange-50 border-orange-200 text-orange-800',
+  식신: 'bg-emerald-50 border-emerald-200 text-emerald-800',
+  상관: 'bg-teal-50 border-teal-200 text-teal-800',
+  편재: 'bg-blue-50 border-blue-200 text-blue-800',
+  정재: 'bg-sky-50 border-sky-200 text-sky-800',
+  편관: 'bg-rose-50 border-rose-200 text-rose-800',
+  정관: 'bg-pink-50 border-pink-200 text-pink-800',
+  편인: 'bg-violet-50 border-violet-200 text-violet-800',
+  정인: 'bg-indigo-50 border-indigo-200 text-indigo-800',
+}
+
+import type { YinYang } from '../lib/saju'
+
+function getTenGod(
+  dayEl: Element, dayYY: YinYang,
+  targetEl: Element, targetYY: YinYang
+): string {
+  const same = dayYY === targetYY
+  if (dayEl === targetEl) return same ? '비견' : '겁재'
+  if (ELEMENT_PRODUCES[dayEl] === targetEl) return same ? '식신' : '상관'
+  if (ELEMENT_PRODUCES[targetEl] === dayEl) return same ? '편인' : '정인'
+  if (ELEMENT_CONTROLS[dayEl] === targetEl) return same ? '편재' : '정재'
+  if (ELEMENT_CONTROLS[targetEl] === dayEl) return same ? '편관' : '정관'
+  return '-'
+}
+
+function EightCharsGrid({ result }: { result: SajuResult }): JSX.Element {
+  const dayPillar = result.pillars.day
+  const dayEl = dayPillar.stemElement
+  const dayYY = STEM_YINYANG[dayPillar.stem]
+
+  const PILLAR_KEYS: Array<'year' | 'month' | 'day' | 'hour'> = ['year', 'month', 'day', 'hour']
+  const pillars = PILLAR_KEYS.map((k) => result.pillars[k])
+
+  // 십신 (일간 기준, 일주는 '-')
+  const stemTenGods = pillars.map((p, i) => {
+    if (!p) return null
+    if (i === 2) return null // 일간은 자기 자신
+    return getTenGod(dayEl, dayYY, p.stemElement, STEM_YINYANG[p.stem])
+  })
+  const branchTenGods = pillars.map((p) => {
+    if (!p) return null
+    return getTenGod(dayEl, dayYY, p.branchElement, BRANCH_YINYANG[p.branch])
+  })
+
+  return (
+    <div className="bg-white/90 border border-slate-100 rounded-2xl shadow-sm px-2 py-4 space-y-4 sm:px-6 sm:py-6">
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900">심화 사주 — 8글자 일람</h2>
+        <p className="text-xs text-gray-500 mt-0.5">일간(일주 천간)을 기준으로 각 글자의 십신(十神)을 표시해요.</p>
+      </div>
+
+      {/* 8글자 그리드 */}
+      <div className="grid grid-cols-4 gap-2">
+        {PILLAR_KEYS.map((key, i) => {
+          const p = pillars[i]
+          if (!p) {
+            return (
+              <div key={key} className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-2 text-center space-y-3 opacity-40">
+                <p className="text-[10px] text-slate-400">{key === 'hour' ? '시주' : '—'}</p>
+                <p className="text-xs text-slate-300">미입력</p>
+              </div>
+            )
+          }
+
+          const stemTG = stemTenGods[i]
+          const branchTG = branchTenGods[i]
+
+          return (
+            <div key={key} className="rounded-xl border border-slate-100 bg-white p-2 text-center space-y-1.5">
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">{PILLAR_LABELS[key]}</p>
+
+              {/* 천간 */}
+              <div className="space-y-0.5">
+                {stemTG && stemTG !== '-' ? (
+                  <span className={`inline-block text-[9px] font-bold rounded-full border px-1.5 py-0.5 ${TEN_GOD_COLOR[stemTG] ?? 'bg-slate-50 border-slate-200 text-slate-600'}`}>
+                    {stemTG}
+                  </span>
+                ) : i === 2 ? (
+                  <span className="inline-block text-[9px] font-bold rounded-full border px-1.5 py-0.5 bg-amber-100 border-amber-300 text-amber-800">일간</span>
+                ) : null}
+                <p className="text-xl font-bold text-slate-900">{p.stem}</p>
+                <p className="text-[10px] text-slate-400">{STEM_YINYANG[p.stem]}·{ELEMENT_LABELS[p.stemElement]}</p>
+              </div>
+
+              <div className="h-px bg-slate-100" />
+
+              {/* 지지 */}
+              <div className="space-y-0.5">
+                {branchTG && branchTG !== '-' ? (
+                  <span className={`inline-block text-[9px] font-bold rounded-full border px-1.5 py-0.5 ${TEN_GOD_COLOR[branchTG] ?? 'bg-slate-50 border-slate-200 text-slate-600'}`}>
+                    {branchTG}
+                  </span>
+                ) : null}
+                <p className="text-xl font-bold text-slate-900">{p.branch}</p>
+                <p className="text-[10px] text-slate-400">{BRANCH_YINYANG[p.branch]}·{ELEMENT_LABELS[p.branchElement]}</p>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* 십신 범례 */}
+      <div className="space-y-2">
+        <p className="text-xs font-semibold text-slate-500">십신(十神) 해설</p>
+        <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-5">
+          {Object.entries(TEN_GOD_DESC).map(([tg, desc]) => (
+            <div key={tg} className={`rounded-lg border px-2 py-1.5 text-center ${TEN_GOD_COLOR[tg]}`}>
+              <p className="text-xs font-bold">{TEN_GOD_LABEL[tg]}</p>
+              <p className="text-[10px] opacity-70 leading-tight">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function buildSajuActionCards(result: SajuResult): ActionCardData[] {
   const strongestElement = result.summary.strongest.element
@@ -333,6 +476,9 @@ export function SajuResult({ result, elementBars, interpretation, isLoading }: S
           return <PillarCard key={key} pillarKey={key} pillar={pillar} />
         })}
       </div>
+
+      {/* 심화 사주 — 8글자 십신 */}
+      <EightCharsGrid result={result} />
 
       {/* 오행·음양 분포 */}
       <ElementDistribution

@@ -2,7 +2,7 @@ import { JSX, useCallback, useMemo, useState } from 'react'
 import { ActionCardDeck, type ActionCardData } from './ActionCards'
 import { TooltipLabel } from './TooltipLabel'
 import { ResultCard } from './ResultCard'
-import { ShareCardButton } from './ShareCard'
+import { ShareCardButton, PortraitShareCardButton } from './ShareCard'
 import { ShareLinkButton } from './ShareLinkButton'
 import type { MbtiResult } from './MbtiTest'
 import type { DailyFortune, SajuResult } from '../lib/saju'
@@ -348,8 +348,9 @@ export function CombinedFortuneCard({ dailyFortune, sajuResult, mbtiResult }: Co
       tabs={tabs}
       belowGrid={<OverallScoreBar score={score} />}
       actions={
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <ShareCardButton fortune={dailyFortune} />
+          <PortraitShareCardButton fortune={dailyFortune} />
           <ShareLinkButton
             options={fortuneShareOptions}
             label="공유 🔗"
