@@ -21,6 +21,8 @@ import BlogMbtiLoveStylePage from './pages/BlogMbtiLoveStylePage'
 import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 import TermsOfServicePage from './pages/TermsOfServicePage'
 import ContactPage from './pages/ContactPage'
+import BloodCompatPage from './pages/BloodCompatPage'
+import StarSignCompatPage from './pages/StarSignCompatPage'
 
 export const routes: RouteObject[] = [
   {
@@ -38,6 +40,8 @@ export const routes: RouteObject[] = [
       { path: 'fortune/year', element: <FortuneYearPage /> },
       { path: 'zodiac', element: <ZodiacPage /> },
       { path: 'zodiac/compatibility', element: <ZodiacCompatPage /> },
+      { path: 'blood-compatibility', element: <BloodCompatPage /> },
+      { path: 'starsign-compatibility', element: <StarSignCompatPage /> },
       { path: 'zodiac/:type', element: <ZodiacPage /> },
       { path: 'insight', element: <InsightPage /> },
       { path: 'compatibility', element: <CompatibilityPage /> },

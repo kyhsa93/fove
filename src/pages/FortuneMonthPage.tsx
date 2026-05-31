@@ -4,6 +4,7 @@ import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
 import { getMonthHistory, getMonthStats, scoreGrade } from '../lib/fortuneHistory'
+import { getMonthCheckin, getCheckinStats, MOOD_META } from '../lib/checkin'
 import { getStreakCount } from '../lib/streak'
 import type { Element } from '../lib/saju/constants'
 import type { MonthDayFortune } from '../lib/saju/types'
@@ -52,6 +53,8 @@ export default function FortuneMonthPage(): JSX.Element {
 
   const dayHistory = useMemo(() => getMonthHistory(year, month), [year, month])
   const historyStats = useMemo(() => getMonthStats(year, month), [year, month])
+  const dayCheckin = useMemo(() => getMonthCheckin(year, month), [year, month])
+  const checkinStats = useMemo(() => getCheckinStats(year, month), [year, month])
   const streakCount = useMemo(() => getStreakCount(), [])
 
   const dayQualities = useMemo<Record<number, DayQuality>>(() => {
@@ -99,6 +102,24 @@ export default function FortuneMonthPage(): JSX.Element {
             이번 달 매일의 일진 기운을 한눈에 확인하세요.
           </p>
         </header>
+
+        {/* 체크인 통계 */}
+        {checkinStats.total > 0 && (
+          <div className="rounded-2xl border border-slate-100 bg-white/80 px-4 py-4 space-y-2">
+            <p className="text-sm font-semibold text-slate-700">이번 달 나의 하루 기록</p>
+            <div className="flex gap-3 flex-wrap text-sm">
+              {(['great', 'okay', 'bad'] as const).map((mood) => (
+                checkinStats[mood] > 0 ? (
+                  <span key={mood} className="flex items-center gap-1">
+                    <span>{MOOD_META[mood].emoji}</span>
+                    <span className="text-slate-600">{checkinStats[mood]}일</span>
+                  </span>
+                ) : null
+              ))}
+              <span className="text-slate-400 text-xs self-center">총 {checkinStats.total}일 기록</span>
+            </div>
+          </div>
+        )}
 
         {/* 나의 운세 기록 통계 */}
         {historyStats.count > 0 && (
@@ -201,6 +222,10 @@ export default function FortuneMonthPage(): JSX.Element {
                     <p className={`text-[10px] leading-tight ${d.isToday ? 'text-amber-700' : 'opacity-70'}`}>
                       {d.elementLabel.replace(/\(.*?\)/, '')}
                     </p>
+                  )}
+                  {/* 체크인 이모지 */}
+                  {dayCheckin[d.day] && (
+                    <p className="text-[10px] leading-none">{MOOD_META[dayCheckin[d.day]].emoji}</p>
                   )}
                 </div>
               )

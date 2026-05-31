@@ -6,6 +6,11 @@ import {
   ELEMENT_ACTION_DO,
   ELEMENT_KEYWORDS,
   ELEMENT_LABELS,
+  HEALTH_TIPS_BY_ELEMENT,
+  LUCKY_COLOR,
+  LUCKY_DIRECTION,
+  LUCKY_FOOD,
+  ELEMENT_PRODUCES,
   PILLAR_FOCUS,
   PILLAR_LABELS,
   RELATIONSHIP_BY_ANIMAL,
@@ -173,6 +178,47 @@ function InterpretationSection({ interpretation }: InterpretationSectionProps): 
   )
 }
 
+function SupplementGuide({ weakest, strongest }: { weakest: Element; strongest: Element }): JSX.Element {
+  const sourceElement = ELEMENT_PRODUCES[weakest] === strongest
+    ? null
+    : (Object.entries(ELEMENT_PRODUCES) as [Element, Element][]).find(([, v]) => v === weakest)?.[0] ?? null
+
+  const ITEMS = [
+    { icon: '🍽️', label: '챙길 음식', value: LUCKY_FOOD[weakest] },
+    { icon: '🎨', label: '보완 색상', value: LUCKY_COLOR[weakest] },
+    { icon: '🧭', label: '좋은 방위', value: `${LUCKY_DIRECTION[weakest]}쪽` },
+    { icon: '💪', label: '추천 활동', value: ELEMENT_ACTION_DO[weakest] },
+  ]
+
+  return (
+    <div className="bg-white/90 border border-teal-100 rounded-2xl shadow-sm px-2 py-4 space-y-4 sm:px-6 sm:py-6">
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900">오행 보완 가이드</h2>
+        <p className="text-sm text-gray-500 mt-0.5">
+          부족한 <span className="font-semibold text-teal-700">{weakest}({ELEMENT_LABELS[weakest]})</span> 기운을 채우면 균형이 잡혀요.
+        </p>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2">
+        {ITEMS.map(({ icon, label, value }) => (
+          <div key={label} className="rounded-xl border border-teal-100 bg-teal-50/60 px-3 py-3 space-y-0.5">
+            <p className="text-xs font-semibold text-teal-600">{icon} {label}</p>
+            <p className="text-sm text-teal-900 leading-relaxed">{value}</p>
+          </div>
+        ))}
+      </div>
+      <div className="rounded-xl border border-amber-100 bg-amber-50/60 px-3 py-3 space-y-1">
+        <p className="text-xs font-semibold text-amber-700">🌿 건강 관리 포인트</p>
+        <p className="text-sm text-amber-900 leading-relaxed">{HEALTH_TIPS_BY_ELEMENT[weakest]}</p>
+      </div>
+      {sourceElement && (
+        <p className="text-xs text-gray-500">
+          💡 {sourceElement}({ELEMENT_LABELS[sourceElement]}) 기운이 {weakest}을 생(生)해요 — {CAREER_BY_ELEMENT[sourceElement].slice(0, 30)}… 분야와 가까이하면 도움이 돼요.
+        </p>
+      )}
+    </div>
+  )
+}
+
 interface SajuResultProps {
   result: SajuResult | null
   elementBars: ElementBar[]
@@ -298,6 +344,12 @@ export function SajuResult({ result, elementBars, interpretation, isLoading }: S
 
       {/* 심층 해석 */}
       <InterpretationSection interpretation={interpretation} />
+
+      {/* 오행 보완 가이드 */}
+      <SupplementGuide
+        weakest={result.summary.weakest.element}
+        strongest={result.summary.strongest.element}
+      />
 
       {/* 실천 카드 */}
       <ActionCardDeck cards={actionCards} />

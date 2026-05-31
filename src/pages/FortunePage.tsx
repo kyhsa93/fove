@@ -1,6 +1,7 @@
 import { JSX, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getName, setName } from '../lib/profile'
 import { recordFortune } from '../lib/fortuneHistory'
+import { FortuneCheckin } from '../components/FortuneCheckin'
 import { SajuForm } from '../components/SajuForm'
 import { CombinedFortuneCard } from '../components/FortuneCard'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
@@ -236,6 +237,7 @@ export default function FortunePage(): JSX.Element {
             </a>
           </div>
         ) : null}
+        <FortuneCheckin />
       </div>
     )
   }

@@ -42,6 +42,8 @@ const routes = [
     priority: '0.6'
   })),
   { path: `${routePrefix}/mbti/compatibility`, changefreq: 'monthly', priority: '0.8' },
+  { path: `${routePrefix}/blood-compatibility`, changefreq: 'monthly', priority: '0.8' },
+  { path: `${routePrefix}/starsign-compatibility`, changefreq: 'monthly', priority: '0.8' },
   { path: `${routePrefix}/blog/saju-basics`, changefreq: 'monthly', priority: '0.7' },
   { path: `${routePrefix}/blog/zodiac-standard`, changefreq: 'monthly', priority: '0.7' },
   { path: `${routePrefix}/blog/mbti-love-style`, changefreq: 'monthly', priority: '0.7' },

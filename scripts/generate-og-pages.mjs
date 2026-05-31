@@ -107,6 +107,18 @@ const routes = [
     description: '가벼운 심리테스트로 나의 운 흐름과 성향을 확인하고 결과를 공유해 보세요.',
   },
   {
+    path: '/blood-compatibility',
+    title: '혈액형 궁합 — A·B·O·AB 16가지 조합 완벽 분석 | Fove',
+    ogTitle: '혈액형 궁합 — Fove',
+    description: 'A형·B형·O형·AB형 혈액형 16가지 조합의 궁합을 성향 분석으로 알아보세요. 나와 잘 맞는 혈액형은?',
+  },
+  {
+    path: '/starsign-compatibility',
+    title: '별자리 궁합 — 12별자리 144가지 조합 분석 | Fove',
+    ogTitle: '별자리 궁합 — Fove',
+    description: '양자리·황소자리·쌍둥이자리 등 12별자리 궁합을 원소 에너지 기반으로 분석해요. 내 별자리와 가장 잘 맞는 별자리는?',
+  },
+  {
     path: '/blog/saju-basics',
     title: '사주란 무엇인가? 사주팔자 기초 완벽 정리 | Fove',
     ogTitle: '사주란 무엇인가? — Fove',
