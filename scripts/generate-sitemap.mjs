@@ -42,6 +42,8 @@ const routes = [
     priority: '0.6'
   })),
   { path: `${routePrefix}/mbti/compatibility`, changefreq: 'monthly', priority: '0.8' },
+  { path: `${routePrefix}/tarot`, changefreq: 'daily', priority: '0.9' },
+  { path: `${routePrefix}/taekil`, changefreq: 'monthly', priority: '0.8' },
   { path: `${routePrefix}/blood-compatibility`, changefreq: 'monthly', priority: '0.8' },
   { path: `${routePrefix}/starsign-compatibility`, changefreq: 'monthly', priority: '0.8' },
   { path: `${routePrefix}/blog/saju-basics`, changefreq: 'monthly', priority: '0.7' },

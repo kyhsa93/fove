@@ -14,6 +14,8 @@ export const ROUTE_PATHS = {
   mbtiCompatibility: '/mbti/compatibility',
   zodiacCompatibility: '/zodiac/compatibility',
   combinedCompatibility: '/compatibility/combined',
+  tarot: '/tarot',
+  taekil: '/taekil',
   bloodCompatibility: '/blood-compatibility',
   starSignCompatibility: '/starsign-compatibility',
   blogSajuBasics: '/blog/saju-basics',

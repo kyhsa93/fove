@@ -107,6 +107,18 @@ const routes = [
     description: '가벼운 심리테스트로 나의 운 흐름과 성향을 확인하고 결과를 공유해 보세요.',
   },
   {
+    path: '/taekil',
+    title: '택일 — 결혼·이사·계약·개업 좋은 날 찾기 | Fove',
+    ogTitle: '택일 — 좋은 날 찾기 | Fove',
+    description: '결혼·이사·계약·개업·여행·시험에 좋은 날을 사주 오행 기반으로 추천해드려요. 이번 달 최적의 날짜를 확인하세요.',
+  },
+  {
+    path: '/tarot',
+    title: '오늘의 타로 카드 — 하루를 위한 세 장의 카드 | Fove',
+    ogTitle: '오늘의 타로 — Fove',
+    description: '매일 새롭게 뽑히는 세 장의 타로 카드로 오늘의 에너지·행동·주의 포인트를 확인하세요. 78장 완전판.',
+  },
+  {
     path: '/blood-compatibility',
     title: '혈액형 궁합 — A·B·O·AB 16가지 조합 완벽 분석 | Fove',
     ogTitle: '혈액형 궁합 — Fove',

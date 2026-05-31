@@ -15,7 +15,7 @@ export default defineConfig({
         '/zodiac', '/zodiac/compatibility',
         '/insight', '/compatibility', '/mbti/compatibility', '/compatibility/combined',
         '/quiz',
-        '/blood-compatibility', '/starsign-compatibility',
+        '/tarot', '/taekil', '/blood-compatibility', '/starsign-compatibility',
         '/blog/saju-basics', '/blog/zodiac-standard', '/blog/mbti-love-style',
         '/privacy-policy', '/terms-of-service', '/contact',
         ...sajuYears.map((y) => `/saju/${y}`),
