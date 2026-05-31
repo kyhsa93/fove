@@ -1,6 +1,6 @@
 # Fove 제품 로드맵
 
-Version: v32
+Version: v33
 Updated: 2026-05-31
 Status: 진행 중
 
@@ -80,6 +80,7 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 | 블로그 | P-B2 (1·2) | 05-31 | 일진 가이드·MBTI 직업 궁합 블로그 페이지 — 데이터·페이지·라우트·Footer 링크 |
 | UX | P-UX1 | 05-31 | CTA·공유 완성도 정비 — TarotPage 결과 후 CTA, TaekIlPage 공유 버튼, QuizPage 결과 후 4종 CTA, BloodCompatPage 이름 입력·관련 궁합 CTA |
 | UX | P-UX2 | 05-31 | 모바일 터치 영역 개선 — SajuForm 월/일 w-12→w-14·py-2→py-2.5, 궁합 유형 토글 py-1.5→py-2 |
+| SEO | P-SEO3 | 05-31 | og:image·twitter:image 전 페이지 추가 — Layout.tsx 라우트 이동 시 업데이트 + 개별 setMeta 11개 페이지 보강 |
 
 ---
 
@@ -101,7 +102,7 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 
 ---
 
-### 🔲 P-SEO3 — og:image 전 페이지 추가
+### ✅ P-SEO3 — og:image 전 페이지 추가 (완료)
 
 **목적:** 소셜 공유 시 이미지 없어 CTR 저하 — 카카오·인스타 링크 공유 미리보기 개선  
 **복잡도:** 낮음 | **SEO 임팩트:** 높음
