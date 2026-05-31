@@ -308,7 +308,7 @@ export default function ZodiacCompatPage(): JSX.Element {
                 key={t}
                 type="button"
                 onClick={() => { setActiveType(t); setChecked(false) }}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+                className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                   activeType === t
                     ? 'bg-indigo-500 text-white shadow-sm'
                     : 'border border-slate-200 text-slate-600 hover:border-indigo-200 hover:text-indigo-600'

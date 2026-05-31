@@ -122,7 +122,7 @@ export function SajuForm({
   }
 
   const inputClass = (hasError: boolean) =>
-    `rounded-lg border bg-white px-3 py-2 text-center text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-300 ${
+    `rounded-lg border bg-white px-3 py-2.5 text-center text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-300 ${
       hasError ? 'border-rose-300 bg-rose-50' : 'border-gray-200'
     }`
 
@@ -207,7 +207,7 @@ export function SajuForm({
               placeholder="1"
               maxLength={2}
               aria-label="출생 월"
-              className={`w-12 ${inputClass(Boolean(dateError))}`}
+              className={`w-14 ${inputClass(Boolean(dateError))}`}
             />
             <span className="text-sm text-gray-500 shrink-0">월</span>
             <input
@@ -219,7 +219,7 @@ export function SajuForm({
               placeholder="1"
               maxLength={2}
               aria-label="출생 일"
-              className={`w-12 ${inputClass(Boolean(dateError))}`}
+              className={`w-14 ${inputClass(Boolean(dateError))}`}
             />
             <span className="text-sm text-gray-500 shrink-0">일</span>
           </div>
