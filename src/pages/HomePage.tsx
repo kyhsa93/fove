@@ -9,7 +9,7 @@ import { getName } from '../lib/profile'
 import { ELEMENT_LABELS, ELEMENT_KEYWORDS, TEMPERAMENT_BY_ELEMENT } from '../lib/saju'
 import type { DailyFortune, SajuResult } from '../lib/saju'
 
-const PRIMARY_ACTIONS: Array<{ path: RoutePath; label: string; description: string }> = [
+const PRIMARY_ACTIONS: Array<{ path: RoutePath; label: string; description: string; wide?: boolean }> = [
   {
     path: ROUTE_PATHS.saju,
     label: '사주 풀이 시작하기',
@@ -29,6 +29,12 @@ const PRIMARY_ACTIONS: Array<{ path: RoutePath; label: string; description: stri
     path: ROUTE_PATHS.zodiac,
     label: '띠별 운세 보기',
     description: '내 띠가 가진 기질·인간관계·직업 성향을 오행 분석으로 확인하세요.'
+  },
+  {
+    path: ROUTE_PATHS.tarot,
+    label: '타로 카드 뽑기',
+    description: '오늘의 질문에 답하는 카드 한 장을 뽑아 흐름과 방향을 확인하세요.',
+    wide: true
   }
 ]
 
@@ -215,7 +221,7 @@ export default function HomePage(): JSX.Element {
               key={action.path}
               type="button"
               onClick={() => navigateTo(action.path)}
-              className="group flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-white/10 px-4 py-5 text-left text-white shadow-lg backdrop-blur transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/15 hover:shadow-xl"
+              className={`group flex h-full flex-col justify-between rounded-2xl border border-white/10 bg-white/10 px-4 py-5 text-left text-white shadow-lg backdrop-blur transition hover:-translate-y-1 hover:border-white/20 hover:bg-white/15 hover:shadow-xl${action.wide ? ' sm:col-span-2' : ''}`}
             >
               <div className="space-y-3">
                 <p className="text-lg font-semibold">{action.label}</p>
