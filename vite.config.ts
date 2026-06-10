@@ -43,6 +43,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        navigateFallbackDenylist: [/\/ads\.txt$/, /\/robots\.txt$/, /\/sitemap.*\.xml$/, /\/manifest.*\.webmanifest$/],
         importScripts: ['/sw-push.js'],
         runtimeCaching: [
           {
