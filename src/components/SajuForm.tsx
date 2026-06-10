@@ -182,7 +182,7 @@ export function SajuForm({
         )}
 
         {/* 생년월일 — 년/월/일 분리 입력 */}
-        <fieldset className="flex flex-col gap-2 border-0 p-0 m-0 min-w-0">
+        <fieldset className="flex flex-col gap-2 border-0 p-0 m-0 min-w-0 md:col-span-2">
           <legend className="text-sm text-gray-700 font-medium">
             생년월일 <span className="text-amber-600">*</span>
           </legend>
