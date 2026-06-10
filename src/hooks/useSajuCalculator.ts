@@ -27,10 +27,9 @@ const pad = (value: number): string => String(value).padStart(2, '0')
 const buildDefaultSajuInputs = (): PersistedSajuInputs => {
   const now = new Date()
   const birthDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`
-  const birthTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`
   return {
     birthDate,
-    birthTime,
+    birthTime: '',
     gender: 'male'
   }
 }
@@ -48,7 +47,7 @@ const loadPersistedSajuInputs = (): PersistedSajuInputs => {
     const defaults = buildDefaultSajuInputs()
     return {
       birthDate: typeof parsed.birthDate === 'string' && parsed.birthDate ? parsed.birthDate : defaults.birthDate,
-      birthTime: typeof parsed.birthTime === 'string' && parsed.birthTime ? parsed.birthTime : defaults.birthTime,
+      birthTime: typeof parsed.birthTime === 'string' ? parsed.birthTime : defaults.birthTime,
       gender: parsed.gender === 'female' ? 'female' : 'male'
     }
   } catch (error) {
