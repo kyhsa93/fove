@@ -43,7 +43,21 @@ const DIMENSION_SHORT_LABEL: Record<MbtiLetter, string> = {
 
 export const MBTI_STORAGE_KEY = 'fove:mbti-answers'
 export const MBTI_COMPLETED_KEY = 'fove:mbti-completed'
+export const MBTI_DIRECT_KEY = 'fove:mbti-direct'
 const RESPONSE_VALUES: ResponseValue[] = [-2, -1, 0, 1, 2]
+
+export const loadDirectType = (): MbtiType | null => {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = window.localStorage.getItem(MBTI_DIRECT_KEY)
+    if (!raw) return null
+    const valid: string[] = [
+      'ENFJ','ENFP','ENTJ','ENTP','ESFJ','ESFP','ESTJ','ESTP',
+      'INFJ','INFP','INTJ','INTP','ISFJ','ISFP','ISTJ','ISTP'
+    ]
+    return valid.includes(raw) ? (raw as MbtiType) : null
+  } catch { return null }
+}
 
 export const loadPersistedAnswers = (): Record<string, ResponseValue> => {
   if (typeof window === 'undefined') {
@@ -432,6 +446,26 @@ export interface MbtiResult {
   summary: MbtiSummary
 }
 
+const ALL_TYPES: MbtiType[] = [
+  'ENFJ', 'ENFP', 'ENTJ', 'ENTP',
+  'ESFJ', 'ESFP', 'ESTJ', 'ESTP',
+  'INFJ', 'INFP', 'INTJ', 'INTP',
+  'ISFJ', 'ISFP', 'ISTJ', 'ISTP',
+]
+
+function buildDirectResult(type: MbtiType): MbtiResult {
+  const score = 4
+  const totals: Record<Dimension, number> = { EI: 0, SN: 0, TF: 0, JP: 0 }
+  const positives: Record<Dimension, number> = { EI: 0, SN: 0, TF: 0, JP: 0 }
+  const negatives: Record<Dimension, number> = { EI: 0, SN: 0, TF: 0, JP: 0 }
+  ;(['EI', 'SN', 'TF', 'JP'] as Dimension[]).forEach((dim, i) => {
+    const [first] = DIMENSION_PAIRS[dim]
+    if (type[i] === first) { totals[dim] = score; positives[dim] = score }
+    else { totals[dim] = -score; negatives[dim] = score }
+  })
+  return { type, totals, positives, negatives, summary: SUMMARIES[type] }
+}
+
 const MBTI_RELATION_TIPS: Record<string, string> = {
   EJ: '회의 전 5분을 투자해 목적과 기대치를 공유하면 팀의 흐름이 빨라집니다.',
   EP: '즉흥 아이디어를 나눌 짧은 체크인 시간을 만들면 사람들과 호흡이 맞습니다.',
@@ -506,10 +540,22 @@ export function computeMbtiResultFromAnswers(answers: Record<string, ResponseVal
   }
 }
 
+export const loadMbtiResult = (): MbtiResult | null => {
+  if (typeof window === 'undefined') return null
+  const directType = loadDirectType()
+  if (directType) return buildDirectResult(directType)
+  if (!window.localStorage.getItem(MBTI_COMPLETED_KEY)) return null
+  return computeMbtiResultFromAnswers(loadPersistedAnswers())
+}
+
 export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
   const { showToast } = useToast()
   const persistedAnswers = useMemo(loadPersistedAnswers, [])
 
+  const [inputMode, setInputMode] = useState<'test' | 'direct'>(() =>
+    loadDirectType() ? 'direct' : 'test'
+  )
+  const [directType, setDirectType] = useState<MbtiType | null>(() => loadDirectType())
   const [answers, setAnswers] = useState<Record<string, ResponseValue>>(() => {
     return Object.keys(persistedAnswers).length ? persistedAnswers : buildRandomAnswers()
   })
@@ -525,6 +571,38 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
   }, 0)
 
   const unansweredCount = QUESTIONS.length - answeredCount
+
+  const handleDirectSelect = (type: MbtiType) => {
+    setDirectType(type)
+    const r = buildDirectResult(type)
+    setResult(r)
+    onResultChange?.(r)
+    try {
+      window.localStorage.setItem(MBTI_DIRECT_KEY, type)
+      window.localStorage.setItem(MBTI_COMPLETED_KEY, 'true')
+    } catch { /* ignore */ }
+  }
+
+  const handleSwitchToDirect = () => {
+    setInputMode('direct')
+    if (directType) {
+      const r = buildDirectResult(directType)
+      setResult(r)
+      onResultChange?.(r)
+    } else {
+      setResult(null)
+      onResultChange?.(null)
+    }
+  }
+
+  const handleSwitchToTest = () => {
+    setInputMode('test')
+    setDirectType(null)
+    try { window.localStorage.removeItem(MBTI_DIRECT_KEY) } catch { /* ignore */ }
+    const testResult = computeMbtiResultFromAnswers(answers)
+    setResult(testResult)
+    onResultChange?.(testResult)
+  }
 
   const handleSelect = (questionId: string, value: ResponseValue) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }))
@@ -609,12 +687,19 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
     if (!hydrationGuardRef.current) return
     hydrationGuardRef.current = false
 
+    if (inputMode === 'direct' && directType) {
+      const r = buildDirectResult(directType)
+      setResult(r)
+      onResultChange?.(r)
+      return
+    }
+
     const initialResult = computeMbtiResultFromAnswers(answers)
     if (initialResult) {
       setResult(initialResult)
       onResultChange?.(initialResult)
     }
-  }, [answers, onResultChange])
+  }, [answers, onResultChange]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const dimensionBreakdown = useMemo(() => {
     if (!result) return []
@@ -799,7 +884,11 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
     return next
   }, [analysisTab, adviceTab])
 
-  const summaryText = summary ? summary.description : '20개의 질문에 응답하면 성향 요약과 행동 가이드를 확인할 수 있습니다.'
+  const summaryText = summary
+    ? summary.description
+    : inputMode === 'direct'
+      ? '유형을 선택하면 성향 요약과 행동 가이드를 확인할 수 있습니다.'
+      : '20개의 질문에 응답하면 성향 요약과 행동 가이드를 확인할 수 있습니다.'
   const subtitle = result && summary ? `${result.type} · ${summary.title}` : undefined
 
   return (
@@ -808,76 +897,128 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
         <header className="space-y-2">
           <h2 className="text-lg font-semibold text-gray-900">MBTI 성향 진단</h2>
           <p className="text-sm text-gray-600">
-            총 20개의 질문을 통해 현재의 성향을 세밀하게 살펴보세요. 각 문항은 강도에 따라 선택할 수 있으며, 모든 문항에 응답하면 결과를 확인할 수 있습니다.
+            {inputMode === 'direct'
+              ? '아래에서 MBTI 유형을 선택하면 바로 결과를 확인할 수 있습니다.'
+              : '총 20개의 질문을 통해 현재의 성향을 세밀하게 살펴보세요. 각 문항은 강도에 따라 선택할 수 있으며, 모든 문항에 응답하면 결과를 확인할 수 있습니다.'}
           </p>
         </header>
 
-        <div className="space-y-5">
-          {QUESTIONS.map((question, index) => {
-            const answer = answers[question.id]
-            return (
-              <fieldset key={question.id} className="space-y-3 rounded-xl border border-indigo-100 bg-white/80 px-2 py-4 shadow-sm sm:px-4">
-                <legend className="text-sm font-medium text-gray-900">
-                  {index + 1}. {question.prompt}
-                </legend>
-                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-                  {question.options.map((option, optionIndex) => {
-                    const inputId = `${question.id}-${optionIndex}`
-                    const checked = answer === option.value
-                    return (
-                      <label
-                        key={optionIndex}
-                        htmlFor={inputId}
-                        className={`flex h-full gap-3 rounded-lg border px-3 py-2 text-sm transition ${
-                          checked
-                            ? 'border-indigo-400 bg-indigo-50 text-indigo-700'
-                            : 'border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50'
-                        }`}
-                      >
-                        <input
-                          id={inputId}
-                          type="radio"
-                          name={question.id}
-                          value={option.value}
-                          checked={checked}
-                          onChange={() => handleSelect(question.id, option.value)}
-                          className="mt-1 h-4 w-4 text-indigo-500 focus:ring-indigo-400"
-                        />
-                        <div className="space-y-1">
-                          <span className="font-medium">{option.label}</span>
-                          <p className="text-xs text-gray-500">{option.detail}</p>
-                        </div>
-                      </label>
-                    )
-                  })}
-                </div>
-                <p className="text-xs text-gray-500">{DIMENSION_LABEL[question.dimension]}</p>
-              </fieldset>
-            )
-          })}
-        </div>
-
-        <span className="sr-only" aria-live="assertive">
-          {error}
-        </span>
-
-        <div className="flex flex-wrap items-center gap-3">
+        {/* 입력 모드 토글 */}
+        <div className="flex gap-2">
           <button
             type="button"
-            onClick={handleSubmit}
-            className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-5 py-2 text-sm font-medium text-white transition hover:bg-indigo-600"
+            onClick={handleSwitchToTest}
+            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+              inputMode === 'test'
+                ? 'bg-indigo-500 text-white'
+                : 'border border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-indigo-600'
+            }`}
           >
-            결과 보기
+            20문항 검사
           </button>
           <button
             type="button"
-            onClick={handleReset}
-            className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-5 py-2 text-sm font-medium text-gray-600 transition hover:border-indigo-300 hover:text-indigo-600"
+            onClick={handleSwitchToDirect}
+            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+              inputMode === 'direct'
+                ? 'bg-indigo-500 text-white'
+                : 'border border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-indigo-600'
+            }`}
           >
-            다시 시작
+            직접 입력
           </button>
-          <span className="text-xs text-gray-500">남은 문항 {unansweredCount}개</span>
         </div>
+
+        {inputMode === 'direct' ? (
+          <div className="space-y-3">
+            <p className="text-sm text-gray-500">이미 알고 있는 MBTI 유형을 선택해 주세요.</p>
+            <div className="grid grid-cols-4 gap-2">
+              {ALL_TYPES.map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => handleDirectSelect(type)}
+                  className={`rounded-lg py-2.5 text-sm font-semibold tracking-wide transition ${
+                    directType === type
+                      ? 'bg-indigo-500 text-white shadow-sm'
+                      : 'border border-gray-200 text-gray-700 hover:border-indigo-300 hover:text-indigo-600'
+                  }`}
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="space-y-5">
+              {QUESTIONS.map((question, index) => {
+                const answer = answers[question.id]
+                return (
+                  <fieldset key={question.id} className="space-y-3 rounded-xl border border-indigo-100 bg-white/80 px-2 py-4 shadow-sm sm:px-4">
+                    <legend className="text-sm font-medium text-gray-900">
+                      {index + 1}. {question.prompt}
+                    </legend>
+                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+                      {question.options.map((option, optionIndex) => {
+                        const inputId = `${question.id}-${optionIndex}`
+                        const checked = answer === option.value
+                        return (
+                          <label
+                            key={optionIndex}
+                            htmlFor={inputId}
+                            className={`flex h-full gap-3 rounded-lg border px-3 py-2 text-sm transition ${
+                              checked
+                                ? 'border-indigo-400 bg-indigo-50 text-indigo-700'
+                                : 'border-gray-200 hover:border-indigo-300 hover:bg-indigo-50/50'
+                            }`}
+                          >
+                            <input
+                              id={inputId}
+                              type="radio"
+                              name={question.id}
+                              value={option.value}
+                              checked={checked}
+                              onChange={() => handleSelect(question.id, option.value)}
+                              className="mt-1 h-4 w-4 text-indigo-500 focus:ring-indigo-400"
+                            />
+                            <div className="space-y-1">
+                              <span className="font-medium">{option.label}</span>
+                              <p className="text-xs text-gray-500">{option.detail}</p>
+                            </div>
+                          </label>
+                        )
+                      })}
+                    </div>
+                    <p className="text-xs text-gray-500">{DIMENSION_LABEL[question.dimension]}</p>
+                  </fieldset>
+                )
+              })}
+            </div>
+
+            <span className="sr-only" aria-live="assertive">
+              {error}
+            </span>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={handleSubmit}
+                className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-5 py-2 text-sm font-medium text-white transition hover:bg-indigo-600"
+              >
+                결과 보기
+              </button>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-5 py-2 text-sm font-medium text-gray-600 transition hover:border-indigo-300 hover:text-indigo-600"
+              >
+                다시 시작
+              </button>
+              <span className="text-xs text-gray-500">남은 문항 {unansweredCount}개</span>
+            </div>
+          </>
+        )}
       </div>
 
       <ResultCard badge="MBTI INSIGHT" title="MBTI 성향" subtitle={subtitle} metrics={metrics} summary={summaryText} tabs={tabs} />

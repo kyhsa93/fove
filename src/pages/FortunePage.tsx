@@ -9,7 +9,7 @@ import { useToast } from '../components/ToastProvider'
 import { navigateTo } from '../lib/router'
 import type { RoutePath } from '../routes'
 import { ROUTE_PATHS } from '../routes'
-import { computeMbtiResultFromAnswers, loadPersistedAnswers, MBTI_COMPLETED_KEY } from '../components/MbtiTest'
+import { loadMbtiResult } from '../components/MbtiTest'
 import { getTodaySolarTerm } from '../lib/solarTermUtils'
 import { SeasonalBanner } from '../components/SeasonalBanner'
 import { AdUnit } from '../components/AdUnit'
@@ -141,11 +141,7 @@ export default function FortunePage(): JSX.Element {
     showToast('알림 구독이 해제됐습니다.', 'success')
   }, [showToast])
 
-  const mbtiResult = useMemo(() => {
-    if (typeof window === 'undefined') return null
-    if (!window.localStorage.getItem(MBTI_COMPLETED_KEY)) return null
-    return computeMbtiResultFromAnswers(loadPersistedAnswers())
-  }, [])
+  const mbtiResult = useMemo(() => loadMbtiResult(), [])
 
   const todaySolarTerm = useMemo(() => getTodaySolarTerm(), [])
   const weeklyFortune = useMemo(() => buildWeeklyFortune(), [])

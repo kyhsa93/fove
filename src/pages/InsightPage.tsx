@@ -1,6 +1,6 @@
 import { JSX, useMemo } from 'react'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
-import { computeMbtiResultFromAnswers, loadPersistedAnswers, MBTI_COMPLETED_KEY } from '../components/MbtiTest'
+import { loadMbtiResult } from '../components/MbtiTest'
 import {
   TEMPERAMENT_BY_ELEMENT,
   CAREER_BY_ELEMENT,
@@ -86,11 +86,7 @@ function buildCombinedMessage(element: string, mbtiType: string, todayActionText
 export default function InsightPage(): JSX.Element {
   const { result } = useSajuCalculator()
 
-  const mbtiResult = useMemo(() => {
-    if (typeof window === 'undefined') return null
-    if (!window.localStorage.getItem(MBTI_COMPLETED_KEY)) return null
-    return computeMbtiResultFromAnswers(loadPersistedAnswers())
-  }, [])
+  const mbtiResult = useMemo(() => loadMbtiResult(), [])
 
   const dailyFortune = useMemo(() => {
     if (!result) return null
