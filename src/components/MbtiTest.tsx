@@ -589,10 +589,8 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
       const r = buildDirectResult(directType)
       setResult(r)
       onResultChange?.(r)
-    } else {
-      setResult(null)
-      onResultChange?.(null)
     }
+    // directType이 없으면 기존 결과를 유지 — 탭 전환만으로 초기화되지 않음
   }
 
   const handleSwitchToTest = () => {
