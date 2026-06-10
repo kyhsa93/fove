@@ -598,8 +598,11 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
     setDirectType(null)
     try { window.localStorage.removeItem(MBTI_DIRECT_KEY) } catch { /* ignore */ }
     const testResult = computeMbtiResultFromAnswers(answers)
-    setResult(testResult)
-    onResultChange?.(testResult)
+    if (testResult) {
+      setResult(testResult)
+      onResultChange?.(testResult)
+    }
+    // 검사 미완료 시 기존 결과 유지 — 탭 전환만으로 초기화되지 않음
   }
 
   const handleSelect = (questionId: string, value: ResponseValue) => {
