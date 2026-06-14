@@ -79,6 +79,7 @@ const PILLAR_ONELINER: Record<PillarKey, Record<Element, string>> = {
 
 // ── 십신(十神) 계산 ─────────────────────────────────────────────────────────
 const TEN_GOD_LABEL: Record<string, string> = {
+  '일간': '일간',
   '비견': '비견', '겁재': '겁재',
   '식신': '식신', '상관': '상관',
   '편재': '편재', '정재': '정재',
@@ -87,6 +88,7 @@ const TEN_GOD_LABEL: Record<string, string> = {
 }
 
 const TEN_GOD_DESC: Record<string, string> = {
+  일간: '나 자신·주체·사주의 기준점',
   비견: '자아·독립·경쟁심',
   겁재: '야망·도전·재물 기복',
   식신: '표현력·창의·식복',
@@ -100,6 +102,7 @@ const TEN_GOD_DESC: Record<string, string> = {
 }
 
 const TEN_GOD_COLOR: Record<string, string> = {
+  일간: 'bg-amber-100 border-amber-300 text-amber-800',
   비견: 'bg-amber-50 border-amber-200 text-amber-800',
   겁재: 'bg-orange-50 border-orange-200 text-orange-800',
   식신: 'bg-emerald-50 border-emerald-200 text-emerald-800',
@@ -321,11 +324,21 @@ function EightCharsGrid({ result }: { result: SajuResult }): JSX.Element {
         })}
       </div>
 
+      {/* 일간 설명 */}
+      <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 space-y-1">
+        <p className="text-xs font-bold text-amber-800">일간(日干)이란?</p>
+        <p className="text-[11px] text-amber-700 leading-relaxed">
+          일간은 태어난 날의 천간(天干)으로, 사주에서 <strong>나 자신</strong>을 뜻합니다.
+          십신(十神)은 모두 일간을 기준으로 나머지 7글자가 나와 어떤 관계인지를 나타내는 분류입니다.
+          일주(日柱) 천간 칸에 십신 대신 <span className="font-semibold">일간</span>이 표시되는 이유가 바로 이 때문입니다.
+        </p>
+      </div>
+
       {/* 십신 범례 */}
       <div className="space-y-2">
         <p className="text-xs font-semibold text-slate-500">십신(十神) 해설</p>
         <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-5">
-          {Object.entries(TEN_GOD_DESC).map(([tg, desc]) => (
+          {Object.entries(TEN_GOD_DESC).filter(([tg]) => tg !== '일간').map(([tg, desc]) => (
             <div key={tg} className={`rounded-lg border px-2 py-1.5 text-center ${TEN_GOD_COLOR[tg]}`}>
               <p className="text-xs font-bold">{TEN_GOD_LABEL[tg]}</p>
               <p className="text-[10px] opacity-70 leading-tight">{desc}</p>
