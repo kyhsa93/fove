@@ -2,8 +2,10 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const base = process.env.NODE_ENV === 'production' ? '/fove/' : '/'
+
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/fove/' : '/',
+  base,
   ssgOptions: {
     script: 'async',
     formatting: 'none',
@@ -34,17 +36,17 @@ export default defineConfig({
         theme_color: '#4f46e5',
         background_color: '#0f172a',
         display: 'standalone',
-        start_url: '/fove/fortune',
+        start_url: `${base}fortune`,
         lang: 'ko',
         icons: [
-          { src: '/icons/icon-192.svg', sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
-          { src: '/icons/icon-512.svg', sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
+          { src: `${base}icons/icon-192.svg`, sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
+          { src: `${base}icons/icon-512.svg`, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }
         ]
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         navigateFallbackDenylist: [/\/ads\.txt$/, /\/robots\.txt$/, /\/sitemap.*\.xml$/, /\/manifest.*\.webmanifest$/],
-        importScripts: ['/sw-push.js'],
+        importScripts: ['sw-push.js'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,

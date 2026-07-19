@@ -231,7 +231,7 @@ export default function FortunePage(): JSX.Element {
         {!mbtiResult ? (
           <div className="rounded-2xl border border-indigo-100 bg-indigo-50/50 px-2 py-4 text-sm text-indigo-900/80 sm:px-4 flex items-center justify-between gap-3 flex-wrap">
             <p>MBTI 검사를 완료하면 오늘 운세에 성향 기반 맞춤 조언이 추가돼요.</p>
-            <a href="/mbti" className="shrink-0 rounded-full bg-indigo-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-600 transition">
+            <a href={`${import.meta.env.BASE_URL}mbti`} className="shrink-0 rounded-full bg-indigo-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-indigo-600 transition">
               MBTI 진단 →
             </a>
           </div>

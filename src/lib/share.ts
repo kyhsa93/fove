@@ -47,7 +47,9 @@ async function kakaoShare(options: ShareOptions): Promise<boolean> {
   const loaded = await loadKakaoSdk()
   if (!loaded || !window.Kakao) return false
   try {
-    const siteBase = typeof window !== 'undefined' ? window.location.origin : ''
+    const siteBase = typeof window !== 'undefined'
+      ? `${window.location.origin}${import.meta.env.BASE_URL.replace(/\/$/, '')}`
+      : ''
     window.Kakao.Share.sendDefault({
       objectType: 'feed',
       content: {

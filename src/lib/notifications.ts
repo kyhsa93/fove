@@ -126,12 +126,13 @@ export async function requestNotificationPermission(): Promise<NotificationPermi
 
 export async function sendTestNotification(title: string, body: string, url = '/fortune'): Promise<void> {
   if (getNotificationPermission() !== 'granted') return
+  const appUrl = `${import.meta.env.BASE_URL}${url.replace(/^\//, '')}`
   const options: NotificationOptions = {
     body,
-    icon: '/icons/icon-192.svg',
-    badge: '/icons/icon-192.svg',
+    icon: `${import.meta.env.BASE_URL}icons/icon-192.svg`,
+    badge: `${import.meta.env.BASE_URL}icons/icon-192.svg`,
     tag: 'fove-daily',
-    data: { url },
+    data: { url: appUrl },
   }
   if ('serviceWorker' in navigator) {
     try {

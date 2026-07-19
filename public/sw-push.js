@@ -1,9 +1,13 @@
+function appUrl(path) {
+  return new URL(path.replace(/^\//, ''), self.registration.scope).href
+}
+
 // ── 알림 클릭: data.url 또는 /fortune 으로 이동 ──────────────────────────
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
   const url = (event.notification.data && event.notification.data.url)
     ? event.notification.data.url
-    : '/fortune'
+    : appUrl('/fortune')
 
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
@@ -91,11 +95,11 @@ self.addEventListener('periodicsync', (event) => {
     event.waitUntil(
       self.registration.showNotification(content.title, {
         body: content.body,
-        icon: '/icons/icon-192.svg',
-        badge: '/icons/icon-192.svg',
+        icon: appUrl('/icons/icon-192.svg'),
+        badge: appUrl('/icons/icon-192.svg'),
         tag: 'fove-daily',
         renotify: true,
-        data: { url: content.url },
+        data: { url: appUrl(content.url) },
       })
     )
   }
