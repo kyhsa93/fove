@@ -17,7 +17,7 @@ export function ConsentBanner(): JSX.Element | null {
           Fove는 관련성 높은 광고 제공을 위해 쿠키를 사용합니다.
           자세한 내용은{' '}
           <a
-            href="/privacy-policy"
+            href={`${import.meta.env.BASE_URL}privacy-policy`}
             className="underline underline-offset-2 hover:text-slate-900"
           >
             개인정보 처리방침

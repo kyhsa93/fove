@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/',
+  base: process.env.NODE_ENV === 'production' ? '/fove/' : '/',
   ssgOptions: {
     script: 'async',
     formatting: 'none',
@@ -34,7 +34,7 @@ export default defineConfig({
         theme_color: '#4f46e5',
         background_color: '#0f172a',
         display: 'standalone',
-        start_url: '/fortune',
+        start_url: '/fove/fortune',
         lang: 'ko',
         icons: [
           { src: '/icons/icon-192.svg', sizes: '192x192', type: 'image/svg+xml', purpose: 'any maskable' },
