@@ -29,7 +29,6 @@ import { ActionCardDeck, type ActionCardData } from './ActionCards'
 import { useToast } from './ToastProvider'
 
 
-// ── 원국표 스타일 상수 ────────────────────────────────────────────────────────
 const ELEMENT_CELL_BG: Record<Element, string> = {
   목: 'bg-emerald-50 border-emerald-200',
   화: 'bg-rose-50 border-rose-200',
@@ -77,7 +76,6 @@ const PILLAR_ONELINER: Record<PillarKey, Record<Element, string>> = {
   },
 }
 
-// ── 십신(十神) 계산 ─────────────────────────────────────────────────────────
 const TEN_GOD_LABEL: Record<string, string> = {
   '일간': '일간',
   '비견': '비견', '겁재': '겁재',
@@ -130,7 +128,6 @@ function getTenGod(
   return '-'
 }
 
-// ── 사주 원국표 ───────────────────────────────────────────────────────────────
 function OriginChart({ result }: { result: SajuResult }): JSX.Element {
   const KEYS: PillarKey[] = ['year', 'month', 'day', 'hour']
   const dayPillar = result.pillars.day
@@ -144,7 +141,6 @@ function OriginChart({ result }: { result: SajuResult }): JSX.Element {
         <p className="text-xs text-gray-500 mt-0.5">태어난 연·월·일·시의 기운을 팔자(八字)로 나타낸 원국입니다. 위 칸은 천간(天干·겉 성향), 아래 칸은 지지(地支·내면)입니다.</p>
       </div>
 
-      {/* 원국 그리드 */}
       <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
         {KEYS.map((key) => {
           const pillar = result.pillars[key]
@@ -170,7 +166,6 @@ function OriginChart({ result }: { result: SajuResult }): JSX.Element {
               <p className="text-[10px] font-bold text-slate-600">{PILLAR_LABELS[key]}</p>
               <p className="text-[9px] text-slate-400 leading-tight">{PILLAR_FOCUS[key]}</p>
 
-              {/* 천간 */}
               <div className={`w-full mt-1.5 rounded-t-xl border px-1 py-3 ${ELEMENT_CELL_BG[pillar.stemElement]}`}>
                 <p className="text-[9px] font-semibold text-slate-500 min-h-[13px]">
                   {isDay ? '일간(日干)' : (stemTG && stemTG !== '-' ? stemTG : '')}
@@ -179,10 +174,8 @@ function OriginChart({ result }: { result: SajuResult }): JSX.Element {
                 <p className="text-[9px] text-slate-400 mt-1">{STEM_YINYANG[pillar.stem]}·{ELEMENT_LABELS[pillar.stemElement]}</p>
               </div>
 
-              {/* 구분 */}
               <div className="w-full h-[3px] bg-white" />
 
-              {/* 지지 */}
               <div className={`w-full rounded-b-xl border-x border-b px-1 py-3 ${ELEMENT_CELL_BG[pillar.branchElement]}`}>
                 <p className={`text-3xl font-bold leading-tight ${ELEMENT_CHAR_COLOR[pillar.branchElement]}`}>{pillar.branch}</p>
                 <p className="text-[9px] text-slate-400 mt-1">{BRANCH_YINYANG[pillar.branch]}·{ELEMENT_LABELS[pillar.branchElement]}</p>
@@ -195,7 +188,6 @@ function OriginChart({ result }: { result: SajuResult }): JSX.Element {
         })}
       </div>
 
-      {/* 오행 색상 범례 */}
       <div className="flex flex-wrap gap-1.5">
         {(['목', '화', '토', '금', '수'] as Element[]).map((el) => (
           <span key={el} className={`text-[10px] font-semibold rounded-full border px-2 py-0.5 ${ELEMENT_CELL_BG[el]} ${ELEMENT_CHAR_COLOR[el]}`}>
@@ -205,7 +197,6 @@ function OriginChart({ result }: { result: SajuResult }): JSX.Element {
         <span className="text-[10px] text-slate-400 self-center ml-1">— 칸 색상은 오행을 나타내요</span>
       </div>
 
-      {/* 기둥별 한 줄 해설 */}
       <div className="space-y-2">
         <p className="text-xs font-semibold text-slate-600">기둥별 한 줄 해설</p>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -234,7 +225,6 @@ function OriginChart({ result }: { result: SajuResult }): JSX.Element {
         </div>
       </div>
 
-      {/* 읽는 법 안내 */}
       <details>
         <summary className="cursor-pointer text-xs font-semibold text-amber-700 hover:text-amber-800 select-none">원국표·십신 읽는 법 ▾</summary>
         <div className="mt-2 rounded-xl bg-amber-50 border border-amber-100 px-3 py-3 text-xs text-amber-800 space-y-1.5">
@@ -256,10 +246,9 @@ function EightCharsGrid({ result }: { result: SajuResult }): JSX.Element {
   const PILLAR_KEYS: Array<'year' | 'month' | 'day' | 'hour'> = ['year', 'month', 'day', 'hour']
   const pillars = PILLAR_KEYS.map((k) => result.pillars[k])
 
-  // 십신 (일간 기준, 일주는 '-')
   const stemTenGods = pillars.map((p, i) => {
     if (!p) return null
-    if (i === 2) return null // 일간은 자기 자신
+    if (i === 2) return null
     return getTenGod(dayEl, dayYY, p.stemElement, STEM_YINYANG[p.stem])
   })
   const branchTenGods = pillars.map((p) => {
@@ -274,7 +263,6 @@ function EightCharsGrid({ result }: { result: SajuResult }): JSX.Element {
         <p className="text-xs text-gray-500 mt-0.5">일간(일주 천간)을 기준으로 각 글자의 십신(十神)을 표시해요.</p>
       </div>
 
-      {/* 8글자 그리드 */}
       <div className="grid grid-cols-4 gap-2">
         {PILLAR_KEYS.map((key, i) => {
           const p = pillars[i]
@@ -294,7 +282,6 @@ function EightCharsGrid({ result }: { result: SajuResult }): JSX.Element {
             <div key={key} className="rounded-xl border border-slate-100 bg-white p-2 text-center space-y-1.5">
               <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">{PILLAR_LABELS[key]}</p>
 
-              {/* 천간 */}
               <div className="space-y-0.5">
                 {stemTG && stemTG !== '-' ? (
                   <span className={`inline-block text-[9px] font-bold rounded-full border px-1.5 py-0.5 ${TEN_GOD_COLOR[stemTG] ?? 'bg-slate-50 border-slate-200 text-slate-600'}`}>
@@ -309,7 +296,6 @@ function EightCharsGrid({ result }: { result: SajuResult }): JSX.Element {
 
               <div className="h-px bg-slate-100" />
 
-              {/* 지지 */}
               <div className="space-y-0.5">
                 {branchTG && branchTG !== '-' ? (
                   <span className={`inline-block text-[9px] font-bold rounded-full border px-1.5 py-0.5 ${TEN_GOD_COLOR[branchTG] ?? 'bg-slate-50 border-slate-200 text-slate-600'}`}>
@@ -324,7 +310,6 @@ function EightCharsGrid({ result }: { result: SajuResult }): JSX.Element {
         })}
       </div>
 
-      {/* 일간 설명 */}
       <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 space-y-1">
         <p className="text-xs font-bold text-amber-800">일간(日干)이란?</p>
         <p className="text-[11px] text-amber-700 leading-relaxed">
@@ -334,7 +319,6 @@ function EightCharsGrid({ result }: { result: SajuResult }): JSX.Element {
         </p>
       </div>
 
-      {/* 십신 범례 */}
       <div className="space-y-2">
         <p className="text-xs font-semibold text-slate-500">십신(十神) 해설</p>
         <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-5">
@@ -595,7 +579,6 @@ export function SajuResult({ result, elementBars, interpretation, isLoading }: S
 
   return (
     <div className="space-y-6">
-      {/* 기본 정보 */}
       <div className="rounded-3xl border border-slate-100 bg-white/95 px-2 py-5 shadow-sm space-y-4 sm:px-6 sm:py-6">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
@@ -648,10 +631,8 @@ export function SajuResult({ result, elementBars, interpretation, isLoading }: S
         ) : null}
       </div>
 
-      {/* 사주 원국표 + 기둥별 한 줄 해설 */}
       <OriginChart result={result} />
 
-      {/* 사주 카드 */}
       <div className="grid gap-4 md:grid-cols-2">
         {(Object.entries(result.pillars) as Array<[PillarKey, Pillar | null]>).map(([key, pillar]) => {
           if (!pillar) return null
@@ -659,10 +640,8 @@ export function SajuResult({ result, elementBars, interpretation, isLoading }: S
         })}
       </div>
 
-      {/* 심화 사주 — 8글자 십신 */}
       <EightCharsGrid result={result} />
 
-      {/* 오행·음양 분포 */}
       <ElementDistribution
         elementBars={elementBars}
         strongestLabel={strongestLabel}
@@ -670,19 +649,15 @@ export function SajuResult({ result, elementBars, interpretation, isLoading }: S
         yinYangMessage={result.summary.yinYangMessage}
       />
 
-      {/* 심층 해석 */}
       <InterpretationSection interpretation={interpretation} />
 
-      {/* 오행 보완 가이드 */}
       <SupplementGuide
         weakest={result.summary.weakest.element}
         strongest={result.summary.strongest.element}
       />
 
-      {/* 실천 카드 */}
       <ActionCardDeck cards={actionCards} />
 
-      {/* 활용 가이드 */}
       <div className="rounded-2xl border border-gray-100 bg-white/70 px-2 py-4 text-sm text-gray-600 leading-relaxed space-y-2 sm:px-5 sm:py-5">
         <p className="font-medium text-gray-800">
           <TooltipLabel text="활용 가이드" description="실제 상담 대신 참고용으로 본인의 흐름을 점검할 때 활용하세요." />

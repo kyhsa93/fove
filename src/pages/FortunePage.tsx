@@ -247,7 +247,6 @@ export default function FortunePage(): JSX.Element {
       <div className="mx-auto max-w-5xl px-4">
         <div className="lg:grid lg:grid-cols-[360px_1fr] lg:gap-10 lg:items-start">
 
-          {/* 왼쪽: 입력 폼 (sticky) */}
           <div className="space-y-5 lg:sticky lg:top-[72px]">
         <header className="space-y-2">
           <h1 className="text-3xl font-bold text-gray-900">오늘의 운세</h1>
@@ -285,7 +284,6 @@ export default function FortunePage(): JSX.Element {
         </span>
           </div>
 
-          {/* 오른쪽: 결과 및 콘텐츠 */}
           <div className="mt-8 lg:mt-0 space-y-8">
         <section ref={fortuneSectionRef} className="space-y-4">
           <h2 className="text-xl font-semibold text-gray-900">오늘의 운세 카드</h2>

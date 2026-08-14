@@ -4,7 +4,6 @@ export const MBTI_CAREER_META = {
   category: 'MBTI 직업',
 }
 
-/** @type {Array<{ title: string, content: string[] }>} */
 export const MBTI_CAREER_SECTIONS = [
   {
     title: '왜 MBTI와 직업이 연관되는가?',

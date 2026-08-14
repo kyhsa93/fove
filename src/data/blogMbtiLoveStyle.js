@@ -4,11 +4,7 @@ export const MBTI_LOVE_STYLE_META = {
   category: 'MBTI 연애 분석',
 }
 
-/**
- * @typedef {{ type: string, nickname: string, group: string, summary: string, strengths: string[], cautions: string[], idealDate: string }} LoveStyleData
- */
 
-/** @type {LoveStyleData[]} */
 export const LOVE_STYLES = [
   {
     type: 'INTJ', nickname: '전략가', group: '분석가',

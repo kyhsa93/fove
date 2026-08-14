@@ -4,7 +4,6 @@ import { SAJU_BASICS_META, SAJU_BASICS_SECTIONS } from '../src/data/blogSajuBasi
 import { ZODIAC_STANDARD_META, ZODIAC_STANDARD_SUMMARY, ZODIAC_STANDARD_SECTIONS } from '../src/data/blogZodiacStandard.js'
 import { MBTI_LOVE_STYLE_META, LOVE_STYLES } from '../src/data/blogMbtiLoveStyle.js'
 
-// 사주 연도 계산 (vite.config.ts 와 동일 로직)
 const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸']
 const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥']
 const BRANCH_ANIMALS = { 子:'쥐',丑:'소',寅:'호랑이',卯:'토끼',辰:'용',巳:'뱀',午:'말',未:'양',申:'원숭이',酉:'닭',戌:'개',亥:'돼지' }
@@ -262,7 +261,6 @@ for (const route of routes) {
   const outDir = path.join(distDir, route.path)
   const outFile = path.join(outDir, 'index.html')
 
-  // SSG 가 이미 파일을 생성한 경우 그 파일을 베이스로 사용, 없으면 템플릿 사용
   const baseHtml = fs.existsSync(outFile)
     ? fs.readFileSync(outFile, 'utf8')
     : template
@@ -277,11 +275,9 @@ for (const route of routes) {
   generated++
 }
 
-// 사주 연도 페이지 처리 (SSG는 flat .html 파일로 생성)
 for (const year of sajuYears) {
   const outFile = path.join(distDir, 'saju', `${year}.html`)
 
-  // SSG가 생성한 파일이 없으면 건너뜀
   if (!fs.existsSync(outFile)) continue
 
   const { stem, branch, animal, element } = getYearPillar(year)
@@ -302,7 +298,6 @@ for (const year of sajuYears) {
     .replace(/(<link rel="canonical" href=")[^"]*(")/,  `$1${canonicalUrl}$2`)
 
   fs.writeFileSync(outFile, html, 'utf8')
-  // directory-based 접근용 index.html도 동일하게 생성
   const dirFile = path.join(distDir, 'saju', String(year), 'index.html')
   if (fs.existsSync(dirFile)) {
     fs.writeFileSync(dirFile, html, 'utf8')

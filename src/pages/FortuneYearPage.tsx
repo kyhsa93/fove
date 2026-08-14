@@ -25,7 +25,6 @@ export default function FortuneYearPage(): JSX.Element {
   const currentYear = new Date().getFullYear()
   const currentMonth = yearlyFortune.find((m) => m.isCurrentMonth)
 
-  // 오행 분포 집계
   const elementCounts = useMemo(() => {
     const counts: Record<Element, number> = { 목: 0, 화: 0, 토: 0, 금: 0, 수: 0 }
     yearlyFortune.forEach((m) => { counts[m.element] += 1 })

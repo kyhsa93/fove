@@ -40,7 +40,6 @@ function AppInit(): null {
       }
     }
 
-    // 저녁 스트릭 리마인더 (20시 이후, 스트릭 2일+, 오늘 첫 방문인 경우)
     if (streak.isFirstToday && shouldShowEveningStreakReminder()) {
       const count = getStreakCount()
       showToast(`🔥 ${count}일 스트릭 진행 중이에요. 내일도 방문하면 계속 유지돼요!`, 'info', 6000)
@@ -52,7 +51,6 @@ function AppInit(): null {
       registerPeriodicSync()
     }
 
-    // PWA 설치 직후 알림 구독 유도 (standalone 모드로 진입 + 알림 미설정)
     if (isStandalone() && isInstalled() && !isOptedIn()) {
       setTimeout(() => {
         showToast('알림을 켜면 매일 운세를 자동으로 받을 수 있어요!', 'info', 6000)
@@ -113,7 +111,6 @@ export default function Layout(): JSX.Element {
 
   useEffect(() => {
     if (typeof document === 'undefined') return
-    // 동적 메타(SajuYearPage, ZodiacPage 등)는 해당 컴포넌트에서 직접 처리
     if (/^\/saju\/\d{4}$/.test(location.pathname)) return
     if (location.pathname.startsWith('/zodiac/') && location.pathname !== '/zodiac/compatibility') return
     if (location.pathname.startsWith('/blog/')) return

@@ -3,7 +3,7 @@ const MAX_DAYS = 90
 
 export type CheckinMood = 'great' | 'okay' | 'bad'
 
-type CheckinHistory = Record<string, CheckinMood> // "2026-05-31" → mood
+type CheckinHistory = Record<string, CheckinMood>
 
 function todayStr(): string {
   const d = new Date()

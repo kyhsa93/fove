@@ -100,7 +100,6 @@ export default function TarotPage(): JSX.Element {
           <p className="text-xs text-gray-400">오늘 하루를 위한 세 장의 카드가 준비됐어요</p>
         </header>
 
-        {/* 카드 3장 */}
         <div className="space-y-4">
           {draw.cards.map((card, i) => (
             <CardFace
@@ -124,7 +123,6 @@ export default function TarotPage(): JSX.Element {
           </button>
         )}
 
-        {/* 전체 해석 요약 */}
         {allRevealed && (
           <div className="rounded-2xl border border-violet-100 bg-white/80 px-5 py-5 space-y-3 shadow-sm">
             <p className="text-sm font-semibold text-violet-900">오늘의 타로 요약</p>

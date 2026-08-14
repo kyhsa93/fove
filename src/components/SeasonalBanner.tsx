@@ -126,13 +126,11 @@ export function SeasonalBanner(): JSX.Element | null {
   const now = new Date()
   const month = now.getMonth() + 1
 
-  // 특별 이벤트 (명절·절기·기념일) 우선
   const specialEvent = getTodaySpecialEvent()
   if (specialEvent) {
     return <SpecialEventBanner event={specialEvent} />
   }
 
-  // 월별 기본 배너
   const content = getMonthlyContent(month)
   if (!content) return null
 

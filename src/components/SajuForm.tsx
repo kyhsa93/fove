@@ -58,7 +58,6 @@ export function SajuForm({
   const monthRef = useRef<HTMLInputElement>(null)
   const dayRef = useRef<HTMLInputElement>(null)
 
-  // 외부에서 birthDate가 변경될 때 내부 상태 동기화 (로컬스토리지 초기 로드)
   useEffect(() => {
     if (!birthDate) return
     const { year: y, month: m, day: d } = parseDateParts(birthDate)
@@ -75,7 +74,6 @@ export function SajuForm({
       onBirthDateChange(result)
     } else {
       onBirthDateChange('')
-      // 세 필드 모두 입력됐는데 유효하지 않으면 오류 표시
       if (y.length === 4 && m && d) {
         setDateError('유효하지 않은 날짜입니다.')
       } else {
@@ -135,7 +133,6 @@ export function SajuForm({
         </p>
       </header>
 
-      {/* 입력 요약 */}
       <div className="rounded-xl border border-amber-100/60 bg-amber-50/50 px-2 py-4 text-sm text-gray-700 sm:px-4">
         <h3 className="font-medium text-gray-900 mb-2">입력 요약</h3>
         <dl className="grid gap-3 md:grid-cols-3">
@@ -163,7 +160,6 @@ export function SajuForm({
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* 이름 */}
         {onNameChange !== undefined && (
           <label className="flex flex-col gap-2 md:col-span-2">
             <span className="text-sm text-gray-700 font-medium">
@@ -181,7 +177,6 @@ export function SajuForm({
           </label>
         )}
 
-        {/* 생년월일 — 년/월/일 분리 입력 */}
         <fieldset className="flex flex-col gap-2 border-0 p-0 m-0 min-w-0 md:col-span-2">
           <legend className="text-sm text-gray-700 font-medium">
             생년월일 <span className="text-amber-600">*</span>
@@ -230,7 +225,6 @@ export function SajuForm({
           )}
         </fieldset>
 
-        {/* 태어난 시간 */}
         <div className="flex flex-col gap-2">
           <label className="flex flex-col gap-2">
             <span className="text-sm text-gray-700 font-medium">태어난 시간 (선택)</span>
@@ -268,7 +262,6 @@ export function SajuForm({
           <span className="text-xs text-gray-500">태어난 시간은 말년 운과 자녀 인연에 영향을 줘요. 밤 11시 이후 출생이라면 다음 날 일주가 적용될 수 있어요.</span>
         </div>
 
-        {/* 성별 */}
         <fieldset className="flex flex-col gap-3">
           <span className="text-sm text-gray-700 font-medium">성별</span>
           <div className="flex overflow-hidden rounded-full border border-gray-200 bg-white text-sm">

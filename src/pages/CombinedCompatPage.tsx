@@ -169,7 +169,6 @@ export default function CombinedCompatPage(): JSX.Element {
           <p className="text-sm text-gray-600">사주 오행(40%)과 MBTI 인지기능(60%)을 결합해 두 사람의 궁합을 입체적으로 분석합니다.</p>
         </header>
 
-        {/* 입력 폼 */}
         <div className="rounded-2xl border border-slate-100 bg-white/90 px-5 py-6 space-y-4 shadow-sm">
           {([
             { state: personA, setter: setPersonA, defaultLabel: '나' },
@@ -260,17 +259,14 @@ export default function CombinedCompatPage(): JSX.Element {
           ) : null}
         </div>
 
-        {/* 계산 중 */}
         {isCalculating && (
           <div className="rounded-2xl border border-indigo-100 bg-indigo-50/40 px-5 py-8 text-center text-sm text-indigo-500">
             궁합을 계산하고 있어요...
           </div>
         )}
 
-        {/* 결과 */}
         {!isCalculating && checked && combinedScore !== null && sajuScores ? (
           <div className="space-y-4">
-            {/* 통합 총점 */}
             <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-5 py-6 space-y-3 shadow-sm text-center">
               <p className="text-xs font-semibold uppercase tracking-wide text-indigo-500">
                 {COMPAT_LABELS[activeType]} — 통합 점수
@@ -289,11 +285,9 @@ export default function CombinedCompatPage(): JSX.Element {
               )}
             </div>
 
-            {/* 두 지표 점수 비교 */}
             <div className="rounded-2xl border border-slate-100 bg-white/90 px-5 py-5 space-y-4 shadow-sm">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">지표별 점수</p>
 
-              {/* 사주 오행 */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -308,7 +302,6 @@ export default function CombinedCompatPage(): JSX.Element {
                     style={{ width: `${sajuScores.total}%` }}
                   />
                 </div>
-                {/* 사주 4개 카테고리 미니 표시 */}
                 <div className="grid grid-cols-4 gap-1 pt-1">
                   {([
                     { label: '총운', score: sajuScores.overall },
@@ -324,7 +317,6 @@ export default function CombinedCompatPage(): JSX.Element {
                 </div>
               </div>
 
-              {/* MBTI */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -359,7 +351,6 @@ export default function CombinedCompatPage(): JSX.Element {
               </div>
             </div>
 
-            {/* 두 사람 오행 정보 */}
             {resultA && resultB && (
               <div className="grid grid-cols-2 gap-3">
                 {([
@@ -402,7 +393,6 @@ export default function CombinedCompatPage(): JSX.Element {
           </div>
         ) : null}
 
-        {/* 하단 네비게이션 */}
         <div className="flex gap-3">
           <button
             type="button"

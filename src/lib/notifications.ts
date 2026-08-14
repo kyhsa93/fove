@@ -7,7 +7,6 @@ const NOTIF_OPT_IN_KEY = 'fove_notif_optin'
 const LAST_NOTIFIED_KEY = 'fove_last_notified_date'
 const LAST_STREAK_TOAST_KEY = 'fove_last_streak_toast'
 
-// ── 일진 천간 계산 (calculations.ts와 동일 로직) ─────────────────────────
 function mod(n: number, m: number): number {
   return ((n % m) + m) % m
 }
@@ -37,7 +36,6 @@ function getTodayStemContext(): string {
   return STEM_DAILY_CONTEXT[stem] ?? ''
 }
 
-// ── 스마트 알림 내용 생성 ─────────────────────────────────────────────────
 interface NotificationContent {
   title: string
   body: string
@@ -51,7 +49,6 @@ function buildSmartNotificationContent(): NotificationContent {
   const isMonday = new Date().getDay() === 1
   const stemContext = getTodayStemContext()
 
-  // 1순위: 오늘 특별 이벤트 (명절·절기·기념일)
   const todayEvent = getTodaySpecialEvent()
   if (todayEvent) {
     return {
@@ -61,7 +58,6 @@ function buildSmartNotificationContent(): NotificationContent {
     }
   }
 
-  // 1.5순위: 내일 특별 이벤트 예고
   const tomorrowEvent = getTomorrowSpecialEvent()
   if (tomorrowEvent) {
     return {
@@ -71,7 +67,6 @@ function buildSmartNotificationContent(): NotificationContent {
     }
   }
 
-  // 2순위: 월요일 — 주간 운세 유도
   if (isMonday) {
     return {
       title: 'Fove · 이번 주 흐름',
@@ -80,7 +75,6 @@ function buildSmartNotificationContent(): NotificationContent {
     }
   }
 
-  // 3순위: 스트릭 3일 이상 — 연속 방문 강조
   if (streakCount >= 3) {
     return {
       title: 'Fove · 오늘의 운세',
@@ -89,7 +83,6 @@ function buildSmartNotificationContent(): NotificationContent {
     }
   }
 
-  // 기본: 일진 키워드 포함
   return {
     title: 'Fove · 오늘의 운세',
     body: `${namePrefix}${stemContext} 오늘의 운세를 확인해보세요!`,
@@ -97,7 +90,6 @@ function buildSmartNotificationContent(): NotificationContent {
   }
 }
 
-// ── Public API ────────────────────────────────────────────────────────────
 export function isNotificationSupported(): boolean {
   return typeof window !== 'undefined' && 'Notification' in window
 }
@@ -140,7 +132,6 @@ export async function sendTestNotification(title: string, body: string, url = '/
       await registration.showNotification(title, options)
       return
     } catch {
-      // fall through to main-thread notification
     }
   }
   new Notification(title, options)
@@ -152,7 +143,6 @@ export function optOut(): void {
   window.localStorage.removeItem(LAST_NOTIFIED_KEY)
 }
 
-// ── Periodic Background Sync 등록 ────────────────────────────────────────
 export async function registerPeriodicSync(): Promise<void> {
   if (typeof window === 'undefined') return
   if (!('serviceWorker' in navigator) || !('permissions' in navigator)) return
@@ -171,11 +161,9 @@ export async function registerPeriodicSync(): Promise<void> {
         minInterval: 24 * 60 * 60 * 1000,
       })
   } catch {
-    // Periodic sync 미지원 환경 — 무시
   }
 }
 
-// ── 페이지 로드 시 스마트 알림 (모든 브라우저 폴백) ──────────────────────
 export function checkAndNotifyOnLoad(): void {
   if (typeof window === 'undefined') return
   if (!isOptedIn() || getNotificationPermission() !== 'granted') return
@@ -193,7 +181,6 @@ export function checkAndNotifyOnLoad(): void {
   sendTestNotification(content.title, content.body, content.url)
 }
 
-// ── 저녁 스트릭 리마인더 (토스트용, push 아님) ───────────────────────────
 export function shouldShowEveningStreakReminder(): boolean {
   if (typeof window === 'undefined') return false
 

@@ -109,7 +109,6 @@ export default function BloodCompatPage(): JSX.Element {
           <p className="text-sm text-gray-600">두 사람의 혈액형으로 성향 기반 궁합을 알아봐요.</p>
         </header>
 
-        {/* 혈액형 선택 */}
         <div className="rounded-2xl border border-slate-100 bg-white/90 px-5 py-6 shadow-sm space-y-5">
           <div className="grid gap-6 sm:grid-cols-2">
             <div className="space-y-3">
@@ -146,7 +145,6 @@ export default function BloodCompatPage(): JSX.Element {
           )}
         </div>
 
-        {/* 결과 */}
         {result && typeA && typeB && (
           <div className="space-y-4">
             <div className="rounded-2xl border border-rose-100 bg-rose-50/40 px-5 py-6 space-y-4 shadow-sm text-center">
@@ -173,7 +171,6 @@ export default function BloodCompatPage(): JSX.Element {
               </div>
             </div>
 
-            {/* 두 혈액형 특성 */}
             <div className="grid grid-cols-2 gap-3">
               {([{ type: typeA, label: labelA }, { type: typeB, label: labelB }] as Array<{ type: BloodType; label: string }>).map(({ type: t, label }) => (
                 <div key={t} className="rounded-xl border border-slate-100 bg-white/80 px-3 py-3 space-y-1.5">
@@ -208,7 +205,6 @@ export default function BloodCompatPage(): JSX.Element {
           </div>
         )}
 
-        {/* 안내 */}
         {!result && (
           <div className="rounded-2xl border border-slate-100 bg-white/60 px-5 py-6 text-center text-sm text-slate-500">
             두 사람의 혈액형을 선택하면 궁합 결과가 나타나요.

@@ -4,7 +4,6 @@ export const SAJU_BASICS_META = {
   category: '사주 입문',
 }
 
-/** @type {Array<{ title: string, content: string[] }>} */
 export const SAJU_BASICS_SECTIONS = [
   {
     title: '사주(四柱)란 무엇인가?',

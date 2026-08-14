@@ -37,9 +37,6 @@ export function AdConsentProvider({ children }: { children: ReactNode }): JSX.El
     setConsent('denied')
   }
 
-  // 이미 동의한 상태로 들어온 방문(localStorage에 남아 있는 경우)과 방금 배너에서
-  // 동의를 누른 경우를 한 곳에서 처리한다. loadAdSense가 중복 주입을 막으므로
-  // consent가 바뀔 때마다 다시 호출돼도 스크립트는 한 번만 붙는다.
   useEffect(() => {
     if (consent === 'granted') loadAdSense()
   }, [consent])

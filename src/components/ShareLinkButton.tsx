@@ -23,7 +23,6 @@ export function ShareLinkButton({ options, label = '공유하기 🔗', classNam
       } else if (result === 'error') {
         showToast('공유에 실패했어요. 다시 시도해주세요.', 'error')
       }
-      // 'native', 'kakao' — OS 시트 또는 카카오 팝업이 뜨므로 toast 불필요
     } finally {
       setLoading(false)
     }

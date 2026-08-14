@@ -42,7 +42,6 @@ const server = http.createServer((req, res) => {
   const url = decodeURIComponent(req.url.split('?')[0]);
   let filePath = path.join(ROOT, url);
 
-  // If directory, serve index.html
   try {
     const stat = fs.existsSync(filePath) && fs.statSync(filePath);
     if (stat && stat.isDirectory()) {
@@ -50,7 +49,6 @@ const server = http.createServer((req, res) => {
     }
   } catch {}
 
-  // Path traversal guard
   const resolved = path.resolve(filePath);
   if (!isPathInside(ROOT, resolved) && resolved !== ROOT + '/index.html') {
     return send(res, 403, { 'Content-Type': 'text/plain; charset=utf-8' }, 'Forbidden');
@@ -59,7 +57,6 @@ const server = http.createServer((req, res) => {
   fs.readFile(resolved, (err, data) => {
     if (err) {
       if (url !== '/' && !path.extname(url)) {
-        // SPA fallback to index.html for non-file routes without extension
         const indexPath = path.join(ROOT, 'index.html');
         return fs.readFile(indexPath, (e2, html) => {
           if (e2) return send(res, 404, { 'Content-Type': 'text/plain; charset=utf-8' }, 'Not Found');

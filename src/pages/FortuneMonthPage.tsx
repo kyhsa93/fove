@@ -77,7 +77,6 @@ export default function FortuneMonthPage(): JSX.Element {
   }, [monthlyFortune, result])
 
   const firstWeekday = useMemo(() => {
-    // 0=일, 1=월 ... 6=토
     return new Date(year, month - 1, 1).getDay()
   }, [year, month])
 
@@ -103,7 +102,6 @@ export default function FortuneMonthPage(): JSX.Element {
           </p>
         </header>
 
-        {/* 체크인 통계 */}
         {checkinStats.total > 0 && (
           <div className="rounded-2xl border border-slate-100 bg-white/80 px-4 py-4 space-y-2">
             <p className="text-sm font-semibold text-slate-700">이번 달 나의 하루 기록</p>
@@ -121,7 +119,6 @@ export default function FortuneMonthPage(): JSX.Element {
           </div>
         )}
 
-        {/* 나의 운세 기록 통계 */}
         {historyStats.count > 0 && (
           <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-4 py-4 space-y-3">
             <div className="flex items-center justify-between">
@@ -171,7 +168,6 @@ export default function FortuneMonthPage(): JSX.Element {
           </div>
         ) : null}
 
-        {/* 달력 그리드 */}
         <div className="rounded-2xl border border-slate-100 bg-white/90 px-3 py-4 sm:px-5">
           <div className="grid grid-cols-7 mb-2">
             {WEEKDAY_LABELS.map((label) => (
@@ -189,7 +185,6 @@ export default function FortuneMonthPage(): JSX.Element {
               const histScore = dayHistory[d.day]
               const histGrade = histScore !== undefined ? scoreGrade(histScore) : null
 
-              // 과거 날 + 히스토리 있으면 점수 기반 색상, 없으면 기존 흐릿한 스타일
               const cellClass = d.isToday
                 ? 'border-amber-300 bg-amber-50 shadow-sm ring-1 ring-amber-300'
                 : d.isPast
@@ -203,7 +198,6 @@ export default function FortuneMonthPage(): JSX.Element {
                   key={d.day}
                   className={`relative rounded-lg border py-2 text-center space-y-0.5 transition ${cellClass}`}
                 >
-                  {/* 미래 날 품질 도트 */}
                   {!d.isPast && !d.isToday && quality !== 'neutral' ? (
                     <span className={`absolute -top-1 -right-1 h-2 w-2 rounded-full ring-1 ring-white ${quality === 'good' ? 'bg-emerald-400' : 'bg-rose-400'}`} aria-label={quality === 'good' ? '좋은 날' : '조심할 날'} />
                   ) : null}
@@ -213,7 +207,6 @@ export default function FortuneMonthPage(): JSX.Element {
                   <p className={`text-xs font-bold leading-none ${d.isToday ? 'text-amber-900' : ''}`}>
                     {d.pillarName}
                   </p>
-                  {/* 히스토리 점수 (과거 날) */}
                   {histScore !== undefined ? (
                     <p className="text-[10px] font-semibold leading-tight tabular-nums">
                       {histScore}점
@@ -223,7 +216,6 @@ export default function FortuneMonthPage(): JSX.Element {
                       {d.elementLabel.replace(/\(.*?\)/, '')}
                     </p>
                   )}
-                  {/* 체크인 이모지 */}
                   {dayCheckin[d.day] && (
                     <p className="text-[10px] leading-none">{MOOD_META[dayCheckin[d.day]].emoji}</p>
                   )}
@@ -233,7 +225,6 @@ export default function FortuneMonthPage(): JSX.Element {
           </div>
         </div>
 
-        {/* 좋은날/조심할날 범례 및 요약 */}
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
             <span className="flex items-center gap-1.5">
@@ -285,7 +276,6 @@ export default function FortuneMonthPage(): JSX.Element {
           })()}
         </div>
 
-        {/* 오행 분포 */}
         <div className="space-y-2">
           <h2 className="text-base font-semibold text-gray-800">이번 달 오행 분포</h2>
           <div className="grid grid-cols-5 gap-2">
@@ -298,7 +288,6 @@ export default function FortuneMonthPage(): JSX.Element {
           </div>
         </div>
 
-        {/* 일별 상세 흐름 */}
         <div className="space-y-3">
           <h2 className="text-base font-semibold text-gray-800">일별 상세 흐름</h2>
           <div className="space-y-1.5">

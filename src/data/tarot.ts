@@ -12,7 +12,6 @@ export interface TarotCard {
   advice: string
 }
 
-// ── 메이저 아르카나 (22장) ────────────────────────────────────────────────
 const MAJOR: TarotCard[] = [
   { id: 0,  name: '바보',            emoji: '🃏', arcana: 'major', element: '목', upright: '새로운 시작과 자유로운 도전의 기운이 흘러요. 두려움 없이 첫 발을 내딛을 때예요.', reversed: '무모한 행동이나 준비 없는 도전에 주의하세요.', advice: '오늘은 계산보다 용기가 더 중요한 날이에요.' },
   { id: 1,  name: '마법사',          emoji: '✨', arcana: 'major', element: '화', upright: '내 안의 능력과 의지가 최고조에 달해 있어요. 원하는 것을 현실로 만들 힘이 있어요.', reversed: '재능을 낭비하거나 집중력이 흐트러지기 쉬운 날이에요.', advice: '가진 것을 총동원해 하나의 목표에 집중해보세요.' },
@@ -38,7 +37,6 @@ const MAJOR: TarotCard[] = [
   { id: 21, name: '세계',            emoji: '🌍', arcana: 'major', element: '토', upright: '완성과 성취, 통합의 에너지가 넘쳐요. 하나의 사이클이 마무리되는 날이에요.', reversed: '미완성이나 마무리 지연에 주의가 필요해요.', advice: '지금까지의 노력을 인정하고 다음 목표를 바라보세요.' },
 ]
 
-// ── 마이너 아르카나 생성 헬퍼 ─────────────────────────────────────────────
 type MinorRank = 'ace' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | 'page' | 'knight' | 'queen' | 'king'
 
 interface MinorData {

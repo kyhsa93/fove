@@ -4,7 +4,6 @@ export const ILJIN_GUIDE_META = {
   category: '일진 입문',
 }
 
-/** @type {Array<{ title: string, content: string[] }>} */
 export const ILJIN_GUIDE_SECTIONS = [
   {
     title: '일진(日辰)이란 무엇인가?',

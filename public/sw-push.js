@@ -2,7 +2,6 @@ function appUrl(path) {
   return new URL(path.replace(/^\//, ''), self.registration.scope).href
 }
 
-// ── 알림 클릭: data.url 또는 /fortune 으로 이동 ──────────────────────────
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
   const url = (event.notification.data && event.notification.data.url)
@@ -22,7 +21,6 @@ self.addEventListener('notificationclick', (event) => {
   )
 })
 
-// ── 일진 천간 계산 (JDN 기반) ────────────────────────────────────────────
 const STEMS = ['갑', '을', '병', '정', '무', '기', '경', '신', '임', '계']
 
 const STEM_CONTEXT = {
@@ -65,13 +63,11 @@ function getTodayStemContext() {
   return STEM_CONTEXT[stem] ?? '오늘의 운세를 확인해보세요!'
 }
 
-// ── 스마트 알림 내용 결정 ─────────────────────────────────────────────────
 function buildSwNotificationContent() {
   const now = new Date()
-  const dayOfWeek = now.getDay() // 0=일, 1=월
+  const dayOfWeek = now.getDay()
   const stemContext = getTodayStemContext()
 
-  // 월요일 — 주간 운세 유도
   if (dayOfWeek === 1) {
     return {
       title: 'Fove · 이번 주 흐름',
@@ -80,7 +76,6 @@ function buildSwNotificationContent() {
     }
   }
 
-  // 기본: 일진 키워드 포함
   return {
     title: 'Fove · 오늘의 운세',
     body: `${stemContext} 오늘의 운세를 확인해보세요!`,
@@ -88,7 +83,6 @@ function buildSwNotificationContent() {
   }
 }
 
-// ── Periodic Background Sync: 스마트 일일 운세 알림 ──────────────────────
 self.addEventListener('periodicsync', (event) => {
   if (event.tag === 'fove-daily-fortune') {
     const content = buildSwNotificationContent()

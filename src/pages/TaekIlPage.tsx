@@ -17,7 +17,6 @@ const PURPOSES: Array<{ key: Purpose; label: string; emoji: string; desc: string
   { key: 'exam',     label: '시험·면접',   emoji: '📚', desc: '시험·중요 발표·면접에 좋은 날' },
 ]
 
-// 목적별 선호 오행 (상생 기운)
 const PURPOSE_ELEMENTS: Record<Purpose, Element[]> = {
   wedding:  ['목', '화', '수'],
   moving:   ['토', '금', '목'],
@@ -27,7 +26,6 @@ const PURPOSE_ELEMENTS: Record<Purpose, Element[]> = {
   exam:     ['금', '수', '토'],
 }
 
-// 목적별 설명
 const PURPOSE_REASON: Record<Purpose, string> = {
   wedding:  '목·화·수 기운이 강한 날은 새로운 인연과 교감, 감성이 풍부해 결혼에 좋아요.',
   moving:   '토·금·목 기운의 날은 안정적인 터전을 마련하고 새 출발하기 적합해요.',
@@ -97,7 +95,6 @@ export default function TaekIlPage(): JSX.Element {
         const isPreferred = preferred.includes(d.element)
         let score = isPreferred ? 78 : 58
 
-        // 사주 있으면 실제 점수 사용
         if (result) {
           try {
             const [y, mo, dy] = d.date.split('.').map(Number)
@@ -107,7 +104,6 @@ export default function TaekIlPage(): JSX.Element {
           } catch {}
         }
 
-        // 주말 소폭 보정 (결혼·이사는 주말 선호)
         const dayOfWeek = new Date(year, month - 1, d.day).getDay()
         const isWeekend = dayOfWeek === 0 || dayOfWeek === 6
         if (['wedding', 'moving'].includes(purpose) && isWeekend) score = Math.min(99, score + 5)
@@ -138,7 +134,6 @@ export default function TaekIlPage(): JSX.Element {
           <p className="text-sm text-gray-600">{monthLabel} 중에서 목적에 맞는 좋은 날을 찾아드려요.</p>
         </header>
 
-        {/* 목적 선택 */}
         <div className="space-y-3">
           <p className="text-sm font-semibold text-slate-700">어떤 일을 계획하고 계신가요?</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -161,7 +156,6 @@ export default function TaekIlPage(): JSX.Element {
           </div>
         </div>
 
-        {/* 결과 */}
         {purpose && (
           <div className="space-y-4">
             <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-4 py-3 space-y-1">

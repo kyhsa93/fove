@@ -7,7 +7,6 @@ export const ZODIAC_STANDARD_META = {
 export const ZODIAC_STANDARD_SUMMARY =
   '명리학(사주) 기준 → 입춘(양력 2월 4~5일) / 민간 관습 기준 → 음력 설날. Fove는 전통 명리학 기준인 입춘을 사용합니다.'
 
-/** @type {Array<{ title: string, content: string[] }>} */
 export const ZODIAC_STANDARD_SECTIONS = [
   {
     title: '왜 혼란이 생기는가?',

@@ -122,7 +122,6 @@ export default function CompatibilityPage(): JSX.Element {
           <p className="text-sm text-gray-600">두 사람의 생년월일로 사주 오행 궁합을 4개 차원으로 분석합니다.</p>
         </header>
 
-        {/* 입력 폼 */}
         <div className="rounded-2xl border border-slate-100 bg-white/90 px-5 py-6 space-y-4 shadow-sm">
           <div className="grid gap-4 sm:grid-cols-2">
           {([
@@ -196,17 +195,14 @@ export default function CompatibilityPage(): JSX.Element {
           </button>
         </div>
 
-        {/* 계산 중 */}
         {isCalculating && (
           <div className="rounded-2xl border border-indigo-100 bg-indigo-50/40 px-5 py-8 text-center text-sm text-indigo-500">
             궁합을 계산하고 있어요...
           </div>
         )}
 
-        {/* 결과 */}
         {!isCalculating && checked && scores && detail && resultA && resultB ? (
           <div className="space-y-4">
-            {/* 총점 카드 */}
             <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-5 py-6 space-y-3 shadow-sm text-center">
               <p className="text-xs font-semibold uppercase tracking-wide text-indigo-500">{COMPAT_LABELS[activeType]} 결과</p>
               <p className="text-6xl font-bold text-indigo-900 tabular-nums">
@@ -221,7 +217,6 @@ export default function CompatibilityPage(): JSX.Element {
               <p className="text-sm text-slate-700 leading-relaxed pt-1">{detail.summary}</p>
             </div>
 
-            {/* 4차원 점수 */}
             <div className="rounded-2xl border border-slate-100 bg-white/90 px-5 py-5 space-y-4 shadow-sm">
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">4차원 분석</p>
               {CATEGORY_META.map(({ key, label, subLabel, icon }) => {
@@ -244,7 +239,6 @@ export default function CompatibilityPage(): JSX.Element {
               })}
             </div>
 
-            {/* 두 사람 오행 카드 */}
             <div className="grid grid-cols-2 gap-3">
               {([
                 { label: personA.label, result: resultA },
@@ -286,7 +280,6 @@ export default function CompatibilityPage(): JSX.Element {
           </div>
         ) : null}
 
-        {/* 다른 궁합 유형 */}
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-2xl border border-rose-100 bg-rose-50/60 px-5 py-4 space-y-2">
             <p className="text-sm font-semibold text-rose-800">혈액형 궁합</p>
@@ -312,7 +305,6 @@ export default function CompatibilityPage(): JSX.Element {
           </div>
         </div>
 
-        {/* 통합 궁합 CTA */}
         <div className="rounded-2xl border border-violet-100 bg-violet-50/60 px-5 py-4 space-y-2">
           <p className="text-sm font-semibold text-violet-800">사주 + MBTI 통합 궁합</p>
           <p className="text-xs text-violet-600 leading-relaxed">사주 오행(40%)과 MBTI 인지기능(60%)을 함께 분석해 더 입체적인 궁합을 확인할 수 있습니다.</p>

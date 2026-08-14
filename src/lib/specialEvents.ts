@@ -20,7 +20,6 @@ export interface SpecialEvent {
   theme: EventTheme
 }
 
-// ── 설날·추석 양력 날짜 (음력 1/1, 8/15) ─────────────────────────────────
 const SEOLLAL_DATES: Record<number, [number, number]> = {
   2024: [2, 10], 2025: [1, 29], 2026: [2, 17],
   2027: [2, 6],  2028: [1, 26], 2029: [2, 13], 2030: [2, 3],
@@ -31,7 +30,6 @@ const CHUSEOK_DATES: Record<number, [number, number]> = {
   2027: [9, 15], 2028: [10, 3], 2029: [9, 22], 2030: [9, 12],
 }
 
-// ── 고정 날짜 이벤트 (월, 일) ────────────────────────────────────────────
 const FIXED_EVENTS: Array<{
   month: number
   day: number
@@ -94,7 +92,6 @@ function kstDate(offset: number): { year: number; month: number; day: number } {
 }
 
 function getEventForDate(year: number, month: number, day: number): SpecialEvent | null {
-  // 설날
   const seollal = SEOLLAL_DATES[year]
   if (seollal && seollal[0] === month && seollal[1] === day) {
     return {
@@ -107,7 +104,6 @@ function getEventForDate(year: number, month: number, day: number): SpecialEvent
     }
   }
 
-  // 추석
   const chuseok = CHUSEOK_DATES[year]
   if (chuseok && chuseok[0] === month && chuseok[1] === day) {
     return {
@@ -120,7 +116,6 @@ function getEventForDate(year: number, month: number, day: number): SpecialEvent
     }
   }
 
-  // 고정 날짜 이벤트
   const fixed = FIXED_EVENTS.find((e) => e.month === month && e.day === day)
   if (fixed) return fixed.event
 
@@ -139,19 +134,16 @@ function solarTermToEvent(term: ReturnType<typeof getTodaySolarTerm>): SpecialEv
   }
 }
 
-// 오늘 특별 이벤트 (명절 > 절기 순)
 export function getTodaySpecialEvent(): SpecialEvent | null {
   const { year, month, day } = kstToday()
   return getEventForDate(year, month, day) ?? solarTermToEvent(getTodaySolarTerm())
 }
 
-// 내일 특별 이벤트 (알림 예고용)
 export function getTomorrowSpecialEvent(): SpecialEvent | null {
   const { year, month, day } = kstDate(1)
   const event = getEventForDate(year, month, day)
   if (event) return event
 
-  // 내일 절기 여부 — solarTermUtils는 today±1까지 커버하므로 내일 날짜로 직접 조회
   const tomorrowDate = new Date(Date.now() + 9 * 60 * 60 * 1000 + 86400000)
   const solarTerm = getTodaySolarTerm(new Date(tomorrowDate.getTime() - 9 * 60 * 60 * 1000))
   return solarTermToEvent(solarTerm)

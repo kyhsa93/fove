@@ -1,7 +1,7 @@
 const HISTORY_KEY = 'fove:fortune_history'
 const MAX_DAYS = 90
 
-type FortuneHistory = Record<string, number> // "2026-05-30" → score
+type FortuneHistory = Record<string, number>
 
 function dateStr(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -23,7 +23,6 @@ function load(): FortuneHistory {
 
 function save(history: FortuneHistory): void {
   if (typeof window === 'undefined') return
-  // 최신 MAX_DAYS개만 유지
   const trimmed = Object.fromEntries(
     Object.entries(history)
       .sort(([a], [b]) => b.localeCompare(a))
@@ -32,18 +31,15 @@ function save(history: FortuneHistory): void {
   try {
     window.localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed))
   } catch {
-    // 저장 실패 무시
   }
 }
 
-// 오늘 운세 점수 기록 (하루 1회 — 이미 기록된 날은 덮어쓰기)
 export function recordFortune(score: number): void {
   const history = load()
   history[todayStr()] = score
   save(history)
 }
 
-// 특정 달의 히스토리 반환: day(1~31) → score
 export function getMonthHistory(year: number, month: number): Record<number, number> {
   const history = load()
   const prefix = `${year}-${String(month).padStart(2, '0')}-`

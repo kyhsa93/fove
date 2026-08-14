@@ -5,7 +5,6 @@ export interface ShareOptions {
   imageUrl?: string
 }
 
-// ── 카카오 SDK 타입 선언 ──────────────────────────────────────────────────
 declare global {
   interface Window {
     Kakao?: {
@@ -29,7 +28,6 @@ async function loadKakaoSdk(): Promise<boolean> {
 
   return new Promise((resolve) => {
     if (document.querySelector(`script[src="${KAKAO_SDK_URL}"]`)) {
-      // 이미 로드 중 — 잠시 후 재확인
       setTimeout(() => resolve(Boolean(window.Kakao?.isInitialized?.())), 1000)
       return
     }
@@ -69,27 +67,22 @@ async function kakaoShare(options: ShareOptions): Promise<boolean> {
 export type ShareResult = 'native' | 'kakao' | 'clipboard' | 'error'
 
 export async function shareLink(options: ShareOptions): Promise<ShareResult> {
-  // 1. Web Share API — 모바일 OS 공유 시트 (카카오톡 포함)
   if (typeof navigator !== 'undefined' && navigator.share) {
     try {
       await navigator.share({ title: options.title, text: options.description, url: options.url })
       return 'native'
     } catch (e) {
-      if ((e as Error).name === 'AbortError') return 'native' // 사용자 취소
-      // 그 외 오류 → 다음 방법 시도
+      if ((e as Error).name === 'AbortError') return 'native'
     }
   }
 
-  // 2. 카카오 SDK (VITE_KAKAO_APP_KEY 설정 시)
   const kakaoOk = await kakaoShare(options)
   if (kakaoOk) return 'kakao'
 
-  // 3. 클립보드 복사 폴백
   try {
     await navigator.clipboard.writeText(options.url)
     return 'clipboard'
   } catch {
-    // execCommand 폴백
     try {
       const el = document.createElement('textarea')
       el.value = options.url

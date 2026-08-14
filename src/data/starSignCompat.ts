@@ -95,7 +95,7 @@ function elementRelationKey(a: StarElement, b: StarElement): string {
   const reverse = `${b}-${a}`
   if (pairs.includes(direct)) return direct
   if (pairs.includes(reverse)) return reverse
-  return `${a}-${b}` // same element
+  return `${a}-${b}`
 }
 
 const SIGN_TIPS: Partial<Record<string, string>> = {

@@ -26,7 +26,6 @@ const BRANCH_TO_SLUG: Record<Branch, string> = Object.fromEntries(
   Object.entries(SLUG_TO_BRANCH).map(([slug, branch]) => [branch, slug])
 ) as Record<Branch, string>
 
-// 띠별 년도 나머지 (2020은 쥐띠, 2020 % 12 = 4)
 const BRANCH_YEAR_MOD: Record<Branch, number> = {
   자: 4, 축: 5, 인: 6, 묘: 7, 진: 8, 사: 9,
   오: 10, 미: 11, 신: 0, 유: 1, 술: 2, 해: 3

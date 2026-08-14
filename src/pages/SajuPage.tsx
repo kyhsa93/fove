@@ -86,7 +86,6 @@ export default function SajuPage(): JSX.Element {
       <div className="mx-auto max-w-5xl px-4">
         <div className="lg:grid lg:grid-cols-[360px_1fr] lg:gap-10 lg:items-start">
 
-          {/* 왼쪽: 입력 폼 (sticky) */}
           <div className="space-y-6 lg:sticky lg:top-[72px]">
             <header className="space-y-2">
               <h1 className="text-3xl font-bold text-gray-900">사주팔자 간편 조회</h1>
@@ -111,7 +110,6 @@ export default function SajuPage(): JSX.Element {
             </span>
           </div>
 
-          {/* 오른쪽: 결과 */}
           <div className="mt-8 lg:mt-0 space-y-8">
             <SajuResult result={result} elementBars={elementBars} interpretation={interpretation} isLoading={isLoading} />
 

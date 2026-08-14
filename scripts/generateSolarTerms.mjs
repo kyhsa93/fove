@@ -146,7 +146,6 @@ function deltaTSeconds(yearDecimal) {
     return -20 + 32 * t ** 2 - 0.5628 * (2150 - y)
   }
 
-  // Beyond 2150 fallback
   const u = (y - 1820) / 100
   return -20 + 32 * u ** 2
 }
@@ -174,12 +173,9 @@ function solarLongitude(jd) {
 }
 
 function findSolarTermUt(year, termDef) {
-  // Initial guess in UTC, using approximate month/day
   let guessDate = new Date(Date.UTC(year, termDef.approxMonth, termDef.approxDay, 0, 0, 0))
 
-  // Adjust for terms that may belong to next year (rare but keep safe)
   if (termDef.term === '小寒' && termDef.approxMonth === 0) {
-    // Ensure we're always looking at January of the target year
     guessDate = new Date(Date.UTC(year, 0, termDef.approxDay, 0, 0, 0))
   }
 

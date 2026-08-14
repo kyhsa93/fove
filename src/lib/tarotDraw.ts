@@ -15,7 +15,6 @@ function todayStr(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
-// 날짜 기반 결정론적 LCG 난수 생성기
 function makeLcg(seed: number) {
   let state = seed >>> 0
   return () => {
@@ -29,7 +28,6 @@ function drawForDate(dateStr: string): TarotDrawResult {
   const seed = y * 10000 + m * 100 + d
   const rng = makeLcg(seed)
 
-  // Fisher-Yates shuffle으로 78장 중 3장 선택
   const pool = ALL_CARDS.map((c) => c.id)
   for (let i = pool.length - 1; i > 0; i--) {
     const j = rng() % (i + 1)

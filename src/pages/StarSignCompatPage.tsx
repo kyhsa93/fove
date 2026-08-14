@@ -91,13 +91,11 @@ export default function StarSignCompatPage(): JSX.Element {
           <p className="text-sm text-gray-600">12별자리의 원소 에너지로 두 사람의 궁합을 알아봐요.</p>
         </header>
 
-        {/* 별자리 선택 */}
         <div className="rounded-2xl border border-slate-100 bg-white/90 px-5 py-6 shadow-sm space-y-5">
           <SignGrid value={signA} onChange={setSignA} label="나의 별자리" />
           <SignGrid value={signB} onChange={setSignB} label="상대방 별자리" />
         </div>
 
-        {/* 결과 */}
         {result && signA && signB && (
           <div className="space-y-4">
             <div className="rounded-2xl border border-violet-100 bg-violet-50/40 px-5 py-6 space-y-3 shadow-sm text-center">
@@ -130,7 +128,6 @@ export default function StarSignCompatPage(): JSX.Element {
               </div>
             </div>
 
-            {/* 두 별자리 정보 */}
             <div className="grid sm:grid-cols-2 gap-3">
               {([signA, signB] as StarSign[]).map((s) => {
                 const info = STAR_SIGN_INFO[s]

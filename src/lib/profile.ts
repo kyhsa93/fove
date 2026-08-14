@@ -30,6 +30,5 @@ export function setName(name: string): void {
     }
     window.localStorage.setItem(PROFILE_KEY, JSON.stringify({ name: trimmed }))
   } catch {
-    // 저장 실패 시 무시
   }
 }

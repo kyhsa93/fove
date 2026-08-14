@@ -15,7 +15,6 @@ const COMPAT_LABELS: Record<CompatType, string> = {
   work: '직장 궁합'
 }
 
-// 삼합 그룹 (최고 궁합)
 const TRIAD_GROUPS: Branch[][] = [
   ['자', '진', '신'],
   ['축', '사', '유'],
@@ -171,8 +170,6 @@ function getComment(rel: ZodiacRelation, type: CompatType, score: number): strin
   return score >= 70 ? COMMENTS[rel][type].high : COMMENTS[rel][type].low
 }
 
-// 출생 연도 → 지지 (Branch)
-// 2020년 = 庚子 (자, 쥐)
 function yearToBranch(year: number): Branch {
   const idx = ((year - 2020) % 12 + 12 * 100) % 12
   return BRANCHES[idx]
@@ -254,7 +251,6 @@ export default function ZodiacCompatPage(): JSX.Element {
           <p className="text-sm text-gray-600">12간지 삼합·육합·충 원리로 두 사람의 띠 궁합을 분석합니다.</p>
         </header>
 
-        {/* 입력 폼 */}
         <div className="rounded-2xl border border-slate-100 bg-white/90 px-5 py-6 space-y-4 shadow-sm">
           {([
             { year: yearA, setYear: setYearA, name: nameA, setName: setNameA, defaultName: '나' },
@@ -335,14 +331,12 @@ export default function ZodiacCompatPage(): JSX.Element {
           </p>
         </div>
 
-        {/* 계산 중 */}
         {isCalculating && (
           <div className="rounded-2xl border border-indigo-100 bg-indigo-50/40 px-5 py-8 text-center text-sm text-indigo-500">
             궁합을 계산하고 있어요...
           </div>
         )}
 
-        {/* 결과 */}
         {!isCalculating && checked && relation && score !== null && branchA && branchB ? (
           <div className="space-y-4">
             <div className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-5 py-6 space-y-4 shadow-sm">
@@ -371,7 +365,6 @@ export default function ZodiacCompatPage(): JSX.Element {
                 </p>
               </div>
 
-              {/* 삼합/육합 설명 */}
               {(relation === 'triad' || relation === 'harmony') && (
                 <div className="rounded-xl border border-indigo-50 bg-white/50 px-4 py-3 space-y-1">
                   <p className="text-xs font-semibold text-indigo-400">
@@ -398,7 +391,6 @@ export default function ZodiacCompatPage(): JSX.Element {
           </div>
         ) : null}
 
-        {/* 12간지 간략 안내 */}
         <div className="rounded-2xl border border-slate-100 bg-white/90 px-5 py-5 space-y-3 shadow-sm">
           <p className="text-sm font-semibold text-slate-700">삼합 그룹 — 최고 궁합 조합</p>
           <div className="grid grid-cols-2 gap-2">

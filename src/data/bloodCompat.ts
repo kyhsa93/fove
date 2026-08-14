@@ -31,7 +31,6 @@ const COMPAT: Record<string, BloodCompatResult> = {
 }
 
 function key(a: BloodType, b: BloodType): string {
-  // 항상 알파벳 순으로 키 정규화
   const order: BloodType[] = ['A', 'AB', 'B', 'O']
   return order.indexOf(a) <= order.indexOf(b) ? `${a}-${b}` : `${b}-${a}`
 }

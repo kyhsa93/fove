@@ -82,23 +82,19 @@ export function calcCompatScores(
   const dayYinYangB = resultB.pillars.day.stemYinYang
   const yinYangComplement = dayYinYangA !== dayYinYangB ? 5 : 0
 
-  // 총운 (30%): 일주 천간 오행 상생·상극
   const overallRel = getElemRel(dayElemA, dayElemB)
   const overallMod: Record<CompatibilityType, number> = { love: 5, friend: 0, work: -3 }
   const overall = clamp(ELEM_BASE[overallRel] + overallMod[type])
 
-  // 연애운 (30%): 일주 지지 육합·충 + 음양 보정
   const branchRel = getBranchRel(dayBranchA, dayBranchB)
   const loveMod: Record<CompatibilityType, number> = { love: 8, friend: 0, work: -5 }
   const love = clamp(BRANCH_BASE[branchRel] + yinYangComplement + loveMod[type])
 
-  // 소통운 (25%): 월주 천간 오행 + 연주 오행 같으면 보너스
   const commRel = getElemRel(monthElemA, monthElemB)
   const sameYearElem = yearElemA === yearElemB ? 5 : 0
   const commMod: Record<CompatibilityType, number> = { love: 3, friend: 3, work: 2 }
   const communication = clamp(ELEM_BASE[commRel] + sameYearElem + commMod[type])
 
-  // 미래운 (15%): 연주 천간 오행 + 오행 다양성 보너스
   const futureRel = getElemRel(yearElemA, yearElemB)
   const combinedElems = new Set([
     ...Object.entries(resultA.summary.elementCounts)
@@ -112,7 +108,6 @@ export function calcCompatScores(
   const futureMod: Record<CompatibilityType, number> = { love: 3, friend: 2, work: 3 }
   const future = clamp(ELEM_BASE[futureRel] + diversityBonus + futureMod[type])
 
-  // 가중 합산: 총운 30% + 연애 30% + 소통 25% + 미래 15%
   const total = clamp(overall * 0.30 + love * 0.30 + communication * 0.25 + future * 0.15)
 
   return { overall, love, communication, future, total }

@@ -177,7 +177,6 @@ const normalizePath = (rawPath: string): RoutePath => {
 }
 
 const normalizePathWithQuery = (rawPath: string): RoutePath => {
-  // strip query string before matching
   return normalizePath(rawPath.split('?')[0])
 }
 
@@ -202,7 +201,6 @@ export default function App(): JSX.Element {
 
   useEffect(() => {
     if (typeof document === 'undefined') return
-    // zodiac·saju-year 세부 페이지는 해당 컴포넌트 내부에서 메타 처리
     const actualPath = typeof window !== 'undefined' ? window.location.pathname : currentPath
     if (actualPath.startsWith('/zodiac/')) return
     if (/^\/saju\/\d{4}$/.test(actualPath)) return
@@ -223,7 +221,6 @@ export default function App(): JSX.Element {
   useEffect(() => {
     if (typeof window === 'undefined') return
     const actual = window.location.pathname
-    // zodiac·saju-year 세부 경로는 pushState로 이미 정확히 설정됨 — replaceState 불필요
     if (actual.startsWith('/zodiac/')) return
     if (/^\/saju\/\d{4}$/.test(actual)) return
     if (actual !== currentPath) {

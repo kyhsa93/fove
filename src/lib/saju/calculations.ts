@@ -526,7 +526,6 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
 
   const weakestElement = result.summary.weakest.element
 
-  // 천간합 감지: 오늘 천간 ↔ 출생 일주 천간
   const birthDayStem = result.pillars.day.stem
   const stemHarmonyPartner = STEM_HARMONY_PAIRS[stem]
   const hasStemHarmony = stemHarmonyPartner === birthDayStem
@@ -535,7 +534,6 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
     ? STEM_HARMONY_MESSAGE(stem, birthDayStem, stemHarmonyElement)
     : ''
 
-  // 지지충 감지: 오늘 지지 ↔ 출생 일주 지지 (기존 clash에 확장 메시지 추가)
   const branchClashText = branchRelation === 'clash'
     ? BRANCH_CLASH_EXTENDED_MESSAGE(branch, personalBranch)
     : ''
@@ -549,12 +547,10 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
   const actionParts = [ELEMENT_INTERACTION_DO[element][personalElement], branchPositive, stemHarmonyText].filter(Boolean)
   const cautionParts = [balanceText, ELEMENT_INTERACTION_AVOID[element][weakestElement], branchClashText].filter(Boolean)
 
-  // 점수 계산
   const score = Math.min(99, Math.max(30,
     SCORE_BASE[alignment] + SCORE_BRANCH_BONUS[branchRelation] + (hasStemHarmony ? 5 : 0)
   ))
 
-  // 분야별 점수 계산
   const WORK_BRANCH_MOD: Record<BranchRelationKey, number> = { harmony: 8, same: 4, neutral: 0, clash: -12 }
   const workScore = Math.min(99, Math.max(30,
     SCORE_BASE[alignment] + WORK_BRANCH_MOD[branchRelation] + (hasStemHarmony ? 3 : 0)
@@ -580,7 +576,6 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
 
   const categoryScores = { work: workScore, love: loveScore, money: moneyScore, health: healthScore }
 
-  // 분야별 운세
   const categories = {
     work: CATEGORY_WORK[element][personalElement],
     love: CATEGORY_LOVE_BY_ELEMENT[element] + CATEGORY_LOVE_BRANCH_BONUS[branchRelation],
@@ -588,7 +583,6 @@ export function buildDailyFortune(result: SajuResult, referenceDate: Date = new 
     health: CATEGORY_HEALTH_BY_ELEMENT[element]
   }
 
-  // 행운 요소
   const lucky = {
     color: LUCKY_COLOR[element],
     number: LUCKY_NUMBER[stem],
@@ -732,7 +726,6 @@ export function buildYearlyFortune(referenceDate: Date = new Date()): import('./
   const result: import('./types').MonthFortune[] = []
 
   for (let m = 1; m <= 12; m++) {
-    // 해당 월 중순(15일)을 기준으로 월주 계산
     const midMonthDate = createKstDate(year, m, 15, 12)
     let monthPillarName = ''
     let element: import('./constants').Element = '목'
@@ -751,7 +744,6 @@ export function buildYearlyFortune(referenceDate: Date = new Date()): import('./
       element = STEM_ELEMENTS[monthStem]
       yinYang = STEM_YINYANG[monthStem]
     } catch {
-      // 절기 데이터 없는 경우 스킵
     }
 
     const monthLabel = new Intl.DateTimeFormat('ko', { month: 'long' }).format(new Date(year, m - 1, 1))

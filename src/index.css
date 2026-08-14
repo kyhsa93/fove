@@ -3,7 +3,6 @@
 @source "../index.html";
 @source "./**/*.{ts,tsx,js,jsx,html}";
 
-/* App-specific tweaks */
 :root {
   color-scheme: light;
 }

@@ -580,7 +580,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
     try {
       window.localStorage.setItem(MBTI_DIRECT_KEY, type)
       window.localStorage.setItem(MBTI_COMPLETED_KEY, 'true')
-    } catch { /* ignore */ }
+    } catch { }
   }
 
   const handleSwitchToDirect = () => {
@@ -590,19 +590,17 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
       setResult(r)
       onResultChange?.(r)
     }
-    // directType이 없으면 기존 결과를 유지 — 탭 전환만으로 초기화되지 않음
   }
 
   const handleSwitchToTest = () => {
     setInputMode('test')
     setDirectType(null)
-    try { window.localStorage.removeItem(MBTI_DIRECT_KEY) } catch { /* ignore */ }
+    try { window.localStorage.removeItem(MBTI_DIRECT_KEY) } catch { }
     const testResult = computeMbtiResultFromAnswers(answers)
     if (testResult) {
       setResult(testResult)
       onResultChange?.(testResult)
     }
-    // 검사 미완료 시 기존 결과 유지 — 탭 전환만으로 초기화되지 않음
   }
 
   const handleSelect = (questionId: string, value: ResponseValue) => {
@@ -642,7 +640,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
       setError('')
       setResult(nextResult)
       onResultChange?.(nextResult)
-      try { window.localStorage.setItem(MBTI_COMPLETED_KEY, 'true') } catch { /* ignore */ }
+      try { window.localStorage.setItem(MBTI_COMPLETED_KEY, 'true') } catch { }
       setIsProcessing(false)
       submitTimerRef.current = null
     }, 220)
@@ -658,7 +656,7 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
     setError('')
     setIsProcessing(false)
     onResultChange?.(null)
-    try { window.localStorage.removeItem(MBTI_COMPLETED_KEY) } catch { /* ignore */ }
+    try { window.localStorage.removeItem(MBTI_COMPLETED_KEY) } catch { }
   }
 
   useEffect(() => {
@@ -904,7 +902,6 @@ export function MbtiTest({ onResultChange }: MbtiTestProps): JSX.Element {
           </p>
         </header>
 
-        {/* 입력 모드 토글 */}
         <div className="flex gap-2">
           <button
             type="button"

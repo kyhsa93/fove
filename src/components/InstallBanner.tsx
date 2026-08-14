@@ -20,11 +20,9 @@ export function InstallBanner(): JSX.Element | null {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null)
 
   useEffect(() => {
-    // 동의 배너가 아직 표시 중이면 설치 배너도 표시하지 않음
     if (consent === null) return
     if (!shouldShowBanner()) return
 
-    // Android/Chrome: beforeinstallprompt 이벤트 대기
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e as BeforeInstallPromptEvent)
@@ -32,12 +30,10 @@ export function InstallBanner(): JSX.Element | null {
     }
     window.addEventListener('beforeinstallprompt', handleBeforeInstall)
 
-    // iOS Safari: 이미 이벤트가 없으므로 즉시 판단
     if (isIosSafari()) {
       setState('ios')
     }
 
-    // appinstalled 이벤트: 설치 완료 감지
     const handleInstalled = () => {
       markInstalled()
       setState('hidden')
@@ -75,7 +71,6 @@ export function InstallBanner(): JSX.Element | null {
 
   if (state === 'hidden') return null
 
-  // ── Android/Chrome 배너 ──────────────────────────────────────────────────
   if (state === 'android') {
     return (
       <div
@@ -112,7 +107,6 @@ export function InstallBanner(): JSX.Element | null {
     )
   }
 
-  // ── iOS Safari 가이드 모달 ───────────────────────────────────────────────
   return (
     <div
       role="dialog"
