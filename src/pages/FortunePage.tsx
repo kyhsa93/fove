@@ -12,7 +12,6 @@ import { ROUTE_PATHS } from '../routes'
 import { loadMbtiResult } from '../components/MbtiTest'
 import { getTodaySolarTerm } from '../lib/solarTermUtils'
 import { SeasonalBanner } from '../components/SeasonalBanner'
-import { AdUnit } from '../components/AdUnit'
 import { buildWeeklyFortune, buildMonthlyFortune, buildDailyFortune } from '../lib/saju'
 import type { Element } from '../lib/saju/constants'
 import { trackEvent } from '../lib/analytics'
@@ -298,8 +297,6 @@ export default function FortunePage(): JSX.Element {
             renderFortuneSection()
           )}
         </section>
-
-        <AdUnit slot="FORTUNE_PAGE_BANNER" format="horizontal" />
 
         <section className="space-y-4">
           <div className="flex items-center justify-between">

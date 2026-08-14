@@ -49,8 +49,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+    <!--
+      adsbygoogle.js는 여기서 정적으로 불러오지 않는다. 자동광고를 쓰기 때문에 이 스크립트
+      하나가 곧 광고 노출이라, 정적으로 두면 동의 배너에 답하기 전에도 설치된 PWA 안에서도
+      광고가 붙는다. src/lib/adsense.ts가 동의 시점에 주입한다.
+    -->
     <meta name="google-adsense-account" content="ca-pub-1195159445218373">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1195159445218373" crossorigin="anonymous"></script>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z1LH7S1ZE5"></script>
     <script>

@@ -1,6 +1,5 @@
 import { JSX, useEffect } from 'react'
 import { ROUTE_PATHS } from '../routes'
-import { AdUnit } from '../components/AdUnit'
 import { ZODIAC_STANDARD_SECTIONS } from '../data/blogZodiacStandard.js'
 
 const SECTIONS = ZODIAC_STANDARD_SECTIONS
@@ -65,8 +64,6 @@ export default function BlogZodiacStandardPage(): JSX.Element {
             </article>
           ))}
         </div>
-
-        <AdUnit slot="BLOG_ZODIAC_STANDARD_BANNER" format="horizontal" />
 
         <aside className="rounded-2xl border border-amber-100 bg-amber-50/60 px-5 py-5 space-y-3">
           <h2 className="text-base font-semibold text-amber-900">내 생년월일로 직접 확인하기</h2>

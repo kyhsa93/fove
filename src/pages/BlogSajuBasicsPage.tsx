@@ -1,6 +1,5 @@
 import { JSX, useEffect } from 'react'
 import { ROUTE_PATHS } from '../routes'
-import { AdUnit } from '../components/AdUnit'
 import { SAJU_BASICS_SECTIONS } from '../data/blogSajuBasics.js'
 
 const SECTIONS = SAJU_BASICS_SECTIONS
@@ -43,8 +42,6 @@ export default function BlogSajuBasicsPage(): JSX.Element {
             </article>
           ))}
         </div>
-
-        <AdUnit slot="BLOG_SAJU_BASICS_BANNER" format="horizontal" />
 
         <aside className="rounded-2xl border border-amber-100 bg-amber-50/60 px-5 py-5 space-y-3">
           <h2 className="text-base font-semibold text-amber-900">내 사주 직접 계산해보기</h2>

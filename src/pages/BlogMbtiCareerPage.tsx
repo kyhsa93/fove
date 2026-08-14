@@ -1,6 +1,5 @@
 import { JSX, useEffect } from 'react'
 import { ROUTE_PATHS } from '../routes'
-import { AdUnit } from '../components/AdUnit'
 import { MBTI_CAREER_SECTIONS, MBTI_CAREER_META } from '../data/blogMbtiCareer.js'
 
 const SECTIONS = MBTI_CAREER_SECTIONS
@@ -43,8 +42,6 @@ export default function BlogMbtiCareerPage(): JSX.Element {
             </article>
           ))}
         </div>
-
-        <AdUnit slot="BLOG_MBTI_CAREER_BANNER" format="horizontal" />
 
         <aside className="rounded-2xl border border-indigo-100 bg-indigo-50/60 px-5 py-5 space-y-3">
           <h2 className="text-base font-semibold text-indigo-900">내 MBTI와 사주 통합 분석하기</h2>

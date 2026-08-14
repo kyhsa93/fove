@@ -33,7 +33,22 @@ export default function PrivacyPolicyPage(): JSX.Element {
           <section className="space-y-2">
             <h2 className="text-lg font-semibold text-slate-900">3. Third-Party Services</h2>
             <p>
-              Fove currently integrates with no analytics tools, ad networks, or third-party APIs. If this changes, we will post a notice and request consent again before collecting anything new.
+              Fove uses Google AdSense to show ads and Google Analytics to measure traffic. Ads run in AdSense’s automatic placement mode, so Google decides where they appear on each page.
+            </p>
+            <p>
+              Google and its partners may use cookies or similar identifiers to serve ads based on your visits to this and other sites. The AdSense script is only loaded after you accept the consent banner — if you decline, it is never requested, and no ads are shown. You can also opt out of personalized advertising in{' '}
+              <a
+                href="https://adssettings.google.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 hover:text-slate-900"
+              >
+                Google Ads Settings
+              </a>
+              .
+            </p>
+            <p>
+              None of the information you enter into Fove — birth date, birth time, gender, or questionnaire answers — is passed to these services. It never leaves your browser.
             </p>
           </section>
 
