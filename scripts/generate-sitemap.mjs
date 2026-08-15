@@ -1,5 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
+import { ZODIAC_SLUGS } from './zodiac.mjs'
 
 const distDir = path.resolve('dist')
 const sitemapPath = path.join(distDir, 'sitemap.xml')
@@ -14,13 +15,11 @@ const now = new Date().toISOString()
 
 const routePrefix = '/fove'
 
-const zodiacSlugs = ['rat', 'ox', 'tiger', 'rabbit', 'dragon', 'snake', 'horse', 'goat', 'monkey', 'rooster', 'dog', 'pig']
-
 const currentYear = new Date().getFullYear()
 const sajuYears = Array.from({ length: 80 }, (_, i) => currentYear - 70 + i)
 
 const routes = [
-  { path: `${routePrefix}`, changefreq: 'daily', priority: '1.0' },
+  { path: `${routePrefix}/`, changefreq: 'daily', priority: '1.0' },
   { path: `${routePrefix}/saju`, changefreq: 'daily', priority: '0.9' },
   { path: `${routePrefix}/mbti`, changefreq: 'daily', priority: '0.9' },
   { path: `${routePrefix}/fortune`, changefreq: 'daily', priority: '0.9' },
@@ -28,13 +27,15 @@ const routes = [
   { path: `${routePrefix}/fortune/month`, changefreq: 'daily', priority: '0.7' },
   { path: `${routePrefix}/fortune/year`, changefreq: 'monthly', priority: '0.7' },
   { path: `${routePrefix}/zodiac`, changefreq: 'monthly', priority: '0.8' },
-  ...zodiacSlugs.map((slug) => ({
+  { path: `${routePrefix}/zodiac/compatibility`, changefreq: 'monthly', priority: '0.8' },
+  ...ZODIAC_SLUGS.map((slug) => ({
     path: `${routePrefix}/zodiac/${slug}`,
     changefreq: 'monthly',
     priority: '0.7'
   })),
   { path: `${routePrefix}/insight`, changefreq: 'monthly', priority: '0.8' },
   { path: `${routePrefix}/compatibility`, changefreq: 'monthly', priority: '0.8' },
+  { path: `${routePrefix}/compatibility/combined`, changefreq: 'monthly', priority: '0.8' },
   { path: `${routePrefix}/quiz`, changefreq: 'monthly', priority: '0.7' },
   ...sajuYears.map((year) => ({
     path: `${routePrefix}/saju/${year}`,

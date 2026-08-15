@@ -3,6 +3,7 @@ import path from 'node:path'
 import { SAJU_BASICS_META, SAJU_BASICS_SECTIONS } from '../src/data/blogSajuBasics.js'
 import { ZODIAC_STANDARD_META, ZODIAC_STANDARD_SUMMARY, ZODIAC_STANDARD_SECTIONS } from '../src/data/blogZodiacStandard.js'
 import { MBTI_LOVE_STYLE_META, LOVE_STYLES } from '../src/data/blogMbtiLoveStyle.js'
+import { ZODIAC_SIGNS } from './zodiac.mjs'
 
 const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸']
 const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥']
@@ -68,6 +69,30 @@ const routes = [
     title: 'Fove · 띠별 운세',
     ogTitle: '띠별 운세 — Fove',
     description: '12간지 띠별 기질·관계·직업·건강 특성과 사주 오행 분석을 확인하세요.',
+  },
+  ...ZODIAC_SIGNS.map(({ slug, animal, branch, element }) => ({
+    path: `/zodiac/${slug}`,
+    title: `${animal}띠 운세 — 성격·궁합·직업 특성 | Fove`,
+    ogTitle: `${animal}띠 운세 — Fove`,
+    description: `${animal}띠(${branch}, ${element} 기운)의 타고난 기질과 관계·직업·재물·건강 특성을 확인하세요. 삼합·육합 기반 띠 궁합도 함께 분석합니다.`,
+  })),
+  {
+    path: '/privacy-policy',
+    title: 'Fove · 개인정보처리방침',
+    ogTitle: '개인정보처리방침 — Fove',
+    description: 'Fove가 수집하는 정보와 이용 목적, 보관 기간, 이용자의 권리를 안내합니다.',
+  },
+  {
+    path: '/terms-of-service',
+    title: 'Fove · 이용약관',
+    ogTitle: '이용약관 — Fove',
+    description: 'Fove 서비스 이용 조건과 이용자·운영자의 권리와 의무를 안내합니다.',
+  },
+  {
+    path: '/contact',
+    title: 'Fove · 문의하기',
+    ogTitle: '문의하기 — Fove',
+    description: 'Fove 서비스에 대한 문의와 피드백을 보내주세요.',
   },
   {
     path: '/insight',
@@ -204,105 +229,139 @@ function buildNoscript(routePath) {
 const BLOG_DATE_PUBLISHED = '2026-05-25'
 const BLOG_DATE_MODIFIED = '2026-05-30'
 
-function buildBlogPostingSchema(route) {
-  if (!route.path.startsWith('/blog/')) return ''
+function canonicalFor(routePath) {
+  return routePath === '/' ? `${siteBase}/` : `${siteBase}${routePath}`
+}
+
+function buildBlogPostingSchema(routePath, meta) {
+  if (!meta || !routePath.startsWith('/blog/')) return ''
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
-    headline: route.ogTitle.replace(/ — Fove$/, '').trim(),
-    description: route.description,
-    url: `${siteBase}${route.path}`,
+    headline: meta.ogTitle.replace(/ — Fove$/, '').trim(),
+    description: meta.description,
+    url: canonicalFor(routePath),
     datePublished: BLOG_DATE_PUBLISHED,
     dateModified: BLOG_DATE_MODIFIED,
     author: { '@type': 'Organization', name: 'Fove', url: siteBase },
     publisher: { '@type': 'Organization', name: 'Fove', url: siteBase },
     inLanguage: 'ko-KR',
-    mainEntityOfPage: { '@type': 'WebPage', '@id': `${siteBase}${route.path}` },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalFor(routePath) },
   }
   return `<script type="application/ld+json">${JSON.stringify(schema)}</script>`
 }
 
-function injectOg(template, route) {
-  const canonicalUrl = `${siteBase}${route.path}`
-  const title = escapeAttr(route.title)
-  const ogTitle = escapeAttr(route.ogTitle)
-  const description = escapeAttr(route.description)
+function injectOg(html, routePath, meta) {
+  const canonicalUrl = canonicalFor(routePath)
 
-  let html = template
-    .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
-    .replace(/(<meta name="description" content=")[^"]*(")/,  `$1${description}$2`)
-    .replace(/(<meta property="og:title" content=")[^"]*(")/,  `$1${ogTitle}$2`)
-    .replace(/(<meta property="og:description" content=")[^"]*(")/,  `$1${description}$2`)
+  let result = html
     .replace(/(<meta property="og:url" content=")[^"]*(")/,  `$1${canonicalUrl}$2`)
-    .replace(/(<meta property="og:image" content=")[^"]*(")/,  `$1${socialCard}$2`)
-    .replace(/(<meta name="twitter:title" content=")[^"]*(")/,  `$1${ogTitle}$2`)
-    .replace(/(<meta name="twitter:description" content=")[^"]*(")/,  `$1${description}$2`)
-    .replace(/(<meta name="twitter:image" content=")[^"]*(")/,  `$1${socialCard}$2`)
     .replace(/(<link rel="canonical" href=")[^"]*(")/,  `$1${canonicalUrl}$2`)
 
-  const blogSchema = buildBlogPostingSchema(route)
-  if (blogSchema && !html.includes('"BlogPosting"')) {
-    html = html.replace('</head>', `${blogSchema}</head>`)
+  if (meta) {
+    const title = escapeAttr(meta.title)
+    const ogTitle = escapeAttr(meta.ogTitle)
+    const description = escapeAttr(meta.description)
+
+    result = result
+      .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
+      .replace(/(<meta name="description" content=")[^"]*(")/,  `$1${description}$2`)
+      .replace(/(<meta property="og:title" content=")[^"]*(")/,  `$1${ogTitle}$2`)
+      .replace(/(<meta property="og:description" content=")[^"]*(")/,  `$1${description}$2`)
+      .replace(/(<meta property="og:image" content=")[^"]*(")/,  `$1${socialCard}$2`)
+      .replace(/(<meta name="twitter:title" content=")[^"]*(")/,  `$1${ogTitle}$2`)
+      .replace(/(<meta name="twitter:description" content=")[^"]*(")/,  `$1${description}$2`)
+      .replace(/(<meta name="twitter:image" content=")[^"]*(")/,  `$1${socialCard}$2`)
   }
 
-  return html
+  const blogSchema = buildBlogPostingSchema(routePath, meta)
+  if (blogSchema && !result.includes('"BlogPosting"')) {
+    result = result.replace('</head>', `${blogSchema}</head>`)
+  }
+
+  return result
 }
 
-const templatePath = path.join(distDir, 'index.html')
-if (!fs.existsSync(templatePath)) {
+function routePathForFile(relPath) {
+  if (relPath === 'index.html') return '/'
+  if (relPath.endsWith('/index.html')) return `/${relPath.slice(0, -'/index.html'.length)}`
+  return `/${relPath.slice(0, -'.html'.length)}`
+}
+
+function listHtmlFiles(dir) {
+  const found = []
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name)
+    if (entry.isDirectory()) found.push(...listHtmlFiles(full))
+    else if (entry.name.endsWith('.html')) found.push(full)
+  }
+  return found
+}
+
+if (!fs.existsSync(path.join(distDir, 'index.html'))) {
   console.error('dist/index.html not found — run `npm run build` first')
   process.exit(1)
 }
 
-const template = fs.readFileSync(templatePath, 'utf8')
+const metaByPath = new Map(routes.map((route) => [route.path, route]))
+
+for (const year of sajuYears) {
+  const { stem, branch, animal, element } = getYearPillar(year)
+  metaByPath.set(`/saju/${year}`, {
+    path: `/saju/${year}`,
+    title: `${year}년생 사주 특성 · ${animal}띠 ${element} 기운 — Fove`,
+    ogTitle: `${year}년생(${animal}띠) 사주 특성 — Fove`,
+    description: `${year}년생(${animal}띠)의 사주 특성을 확인하세요. ${stem}${branch}년, ${element} 기운의 성향·직업·재물·건강 분석을 제공합니다.`,
+  })
+}
+
+const pageByRoute = new Map()
+
+for (const file of listHtmlFiles(distDir)) {
+  const relPath = path.relative(distDir, file).split(path.sep).join('/')
+  const routePath = routePathForFile(relPath)
+  const isDirectoryCopy = relPath !== 'index.html' && relPath.endsWith('/index.html')
+  const existing = pageByRoute.get(routePath)
+
+  if (!existing) {
+    pageByRoute.set(routePath, { file, isDirectoryCopy })
+  } else if (existing.isDirectoryCopy && !isDirectoryCopy) {
+    fs.rmSync(existing.file)
+    pageByRoute.set(routePath, { file, isDirectoryCopy })
+  } else if (!existing.isDirectoryCopy && isDirectoryCopy) {
+    fs.rmSync(file)
+  }
+}
+
 let generated = 0
 
-for (const route of routes) {
-  const outDir = path.join(distDir, route.path)
-  const outFile = path.join(outDir, 'index.html')
-
-  const baseHtml = fs.existsSync(outFile)
-    ? fs.readFileSync(outFile, 'utf8')
-    : template
-
-  let html = injectOg(baseHtml, route)
-  const noscript = buildNoscript(route.path)
+for (const [routePath, { file }] of pageByRoute) {
+  let html = injectOg(fs.readFileSync(file, 'utf8'), routePath, metaByPath.get(routePath))
+  const noscript = buildNoscript(routePath)
   if (noscript && !html.includes('<noscript>')) {
     html = html.replace('</body>', `${noscript}</body>`)
   }
-  fs.mkdirSync(outDir, { recursive: true })
-  fs.writeFileSync(outFile, html, 'utf8')
+  fs.writeFileSync(file, html, 'utf8')
   generated++
 }
 
-for (const year of sajuYears) {
-  const outFile = path.join(distDir, 'saju', `${year}.html`)
+const sitemapPath = path.join(distDir, 'sitemap.xml')
 
-  if (!fs.existsSync(outFile)) continue
+if (fs.existsSync(sitemapPath)) {
+  const sitemap = fs.readFileSync(sitemapPath, 'utf8')
+  const locs = [...sitemap.matchAll(/<loc>([^<]*)<\/loc>/g)].map((match) => match[1])
+  const missing = locs.filter((loc) => {
+    if (!loc.startsWith(siteBase)) return true
+    const routePath = loc.slice(siteBase.length)
+    if (routePath === '' || routePath === '/') return !pageByRoute.has('/')
+    return !pageByRoute.has(routePath)
+  })
 
-  const { stem, branch, animal, element } = getYearPillar(year)
-  const canonicalUrl = `${siteBase}/saju/${year}`
-  const title = `${year}년생 사주 특성 · ${animal}띠 ${element} 기운 — Fove`
-  const ogTitle = `${year}년생(${animal}띠) 사주 특성 — Fove`
-  const description = `${year}년생(${animal}띠)의 사주 특성을 확인하세요. ${stem}${branch}년, ${element} 기운의 성향·직업·재물·건강 분석을 제공합니다.`
-
-  const baseHtml = fs.readFileSync(outFile, 'utf8')
-  const html = baseHtml
-    .replace(/<title>[^<]*<\/title>/, `<title>${escapeAttr(title)}</title>`)
-    .replace(/(<meta name="description" content=")[^"]*(")/,  `$1${escapeAttr(description)}$2`)
-    .replace(/(<meta property="og:title" content=")[^"]*(")/,  `$1${escapeAttr(ogTitle)}$2`)
-    .replace(/(<meta property="og:description" content=")[^"]*(")/,  `$1${escapeAttr(description)}$2`)
-    .replace(/(<meta property="og:url" content=")[^"]*(")/,  `$1${canonicalUrl}$2`)
-    .replace(/(<meta name="twitter:title" content=")[^"]*(")/,  `$1${escapeAttr(ogTitle)}$2`)
-    .replace(/(<meta name="twitter:description" content=")[^"]*(")/,  `$1${escapeAttr(description)}$2`)
-    .replace(/(<link rel="canonical" href=")[^"]*(")/,  `$1${canonicalUrl}$2`)
-
-  fs.writeFileSync(outFile, html, 'utf8')
-  const dirFile = path.join(distDir, 'saju', String(year), 'index.html')
-  if (fs.existsSync(dirFile)) {
-    fs.writeFileSync(dirFile, html, 'utf8')
+  if (missing.length > 0) {
+    console.error(`sitemap lists ${missing.length} URL(s) with no page in dist:`)
+    for (const loc of missing) console.error(`  ${loc}`)
+    process.exit(1)
   }
-  generated++
 }
 
 console.log(`Generated ${generated} OG pages in dist/`)

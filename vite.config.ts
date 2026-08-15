@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { ZODIAC_SLUGS } from './scripts/zodiac.mjs'
 
 const base = process.env.NODE_ENV === 'production' ? '/fove/' : '/'
 
@@ -15,6 +16,7 @@ export default defineConfig({
       return [
         '/', '/saju', '/mbti', '/fortune', '/fortune/week', '/fortune/month', '/fortune/year',
         '/zodiac', '/zodiac/compatibility',
+        ...ZODIAC_SLUGS.map((slug) => `/zodiac/${slug}`),
         '/insight', '/compatibility', '/mbti/compatibility', '/compatibility/combined',
         '/quiz',
         '/tarot', '/taekil', '/blood-compatibility', '/starsign-compatibility',
