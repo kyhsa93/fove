@@ -15,9 +15,9 @@ const now = new Date().toISOString()
 
 const routePrefix = '/fove'
 
-const currentYear = new Date().getFullYear()
-const sajuYears = Array.from({ length: 80 }, (_, i) => currentYear - 70 + i)
-
+// /saju/{연도} 80장은 여기 없다. 본문이 오행 하나로만 갈려 80장이 실제로는 5종이라
+// noindex 처리했고(generate-og-pages.mjs의 NOINDEX_ROUTES), 색인에서 뺀 페이지를
+// 사이트맵에 남겨두면 크롤러에 상반된 신호를 준다.
 const routes = [
   { path: `${routePrefix}/`, changefreq: 'daily', priority: '1.0' },
   { path: `${routePrefix}/saju`, changefreq: 'daily', priority: '0.9' },
@@ -37,11 +37,6 @@ const routes = [
   { path: `${routePrefix}/compatibility`, changefreq: 'monthly', priority: '0.8' },
   { path: `${routePrefix}/compatibility/combined`, changefreq: 'monthly', priority: '0.8' },
   { path: `${routePrefix}/quiz`, changefreq: 'monthly', priority: '0.7' },
-  ...sajuYears.map((year) => ({
-    path: `${routePrefix}/saju/${year}`,
-    changefreq: 'yearly',
-    priority: '0.6'
-  })),
   { path: `${routePrefix}/mbti/compatibility`, changefreq: 'monthly', priority: '0.8' },
   { path: `${routePrefix}/tarot`, changefreq: 'daily', priority: '0.9' },
   { path: `${routePrefix}/taekil`, changefreq: 'monthly', priority: '0.8' },
