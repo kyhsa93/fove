@@ -259,7 +259,6 @@ function injectOg(html, routePath, meta) {
     .replace(/(<link rel="canonical" href=")[^"]*(")/,  `$1${canonicalUrl}$2`)
 
   if (meta?.noindex) {
-    // follow는 남긴다 — 색인은 막되 이 페이지가 넘겨주는 내부 링크는 계속 따라가게.
     result = result.replace(
       /(<meta name="robots" content=")[^"]*(")/,
       '$1noindex,follow$2'
@@ -317,8 +316,6 @@ for (const year of sajuYears) {
   const { stem, branch, animal, element } = getYearPillar(year)
   metaByPath.set(`/saju/${year}`, {
     path: `/saju/${year}`,
-    // 본문 네 절이 모두 오행(5종) 하나만 키로 쓴다 — 80장이 실제로는 5종이라
-    // 검색에 내놓을 것이 없다. 앱 안에서는 그대로 쓰되 색인에서만 뺀다.
     noindex: true,
     title: `${year}년생 사주 특성 · ${animal}띠 ${element} 기운 — Fove`,
     ogTitle: `${year}년생(${animal}띠) 사주 특성 — Fove`,
@@ -374,8 +371,6 @@ if (fs.existsSync(sitemapPath)) {
     process.exit(1)
   }
 
-  // noindex와 사이트맵 등재는 크롤러에 상반된 신호다. 두 목록이 서로 다른 파일에
-  // 손으로 적혀 있어 한쪽만 고치면 조용히 어긋나므로 여기서 막는다.
   const contradictory = locs.filter((loc) => {
     if (!loc.startsWith(siteBase)) return false
     const routePath = loc.slice(siteBase.length) || '/'
