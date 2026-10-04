@@ -58,7 +58,7 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 | 인프라 | P-LAYOUT | 05-30 | 사주·운세 2단 레이아웃, ResultCard 분할, 궁합 폼 나란히 |
 | 인프라 | P-SEO1·2 | 05-30 | vite-react-ssg SSG, 사주 연도 80페이지, FAQPage·BlogPosting JSON-LD, 블로그 a태그 |
 | 인프라 | P-NTF1 | 05-30 | Periodic Background Sync + 페이지 로드 체크 이중 알림 |
-| 인프라 | P-ADS1 | 05-30 | AdSense AdUnit, GDPR ConsentBanner (slot ID 교체 필요) |
+| 인프라 | P-ADS1 | 05-30 | AdSense 자동 광고(동의 뒤 스크립트 삽입, 08-14 수동 광고 단위 제거), GDPR ConsentBanner |
 | 공유 | P1·P-G5 | 05-30 | Canvas 1200×630 운세·궁합 공유 카드 |
 | 리텐션 | R1 | 05-30 | 스트릭 시스템 — 홈 배지, 마일스톤 토스트 |
 | 리텐션 | R2 | 05-30 | 이름 저장 + 홈·알림 개인화 |
@@ -191,7 +191,6 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 ### 🔲 P3 — 기타 장기 과제
 
 - [ ] PDF 리포트 다운로드
-- [ ] 광고 배치 A/B 테스트 (P-ADS1 slot ID 교체 후)
 - [ ] 상담/제휴 연결 페이지
 
 ---
@@ -200,7 +199,6 @@ Fove는 사주·MBTI·오늘의 운세를 결합한 개인 맞춤 운세·성향
 
 | 항목 | 설명 | 우선도 |
 |------|------|--------|
-| AdSense slot ID 미교체 | `AdUnit` placeholder slot ID → AdSense 대시보드에서 실제 ID 발급 후 교체 | **높음** |
-| analytics 이벤트 빈약 | `trackEvent` 5종 → 페이지뷰·버튼클릭 등 세분화 필요 | 낮음 |
+| analytics 이벤트 빈약 | `trackEvent` 5종 → 페이지뷰·버튼클릭 등 세분화 필요(#11, #26 먼저) | 낮음 |
 | 궁합 페이지 중복 로직 | `getInitialState()`, `ScoreBar` 컴포넌트가 `CompatibilityPage` · `ZodiacCompatPage` · `BloodCompatPage`에 각각 구현됨 → 공통 훅/컴포넌트로 추출 | 낮음 |
 | 궁합 페이지 로딩 상태 누락 | `CompatibilityPage`, `BloodCompatPage`, `ZodiacCompatPage` — useMemo 계산 중 로딩 표시 없음 (SajuPage는 있음) | 낮음 |
