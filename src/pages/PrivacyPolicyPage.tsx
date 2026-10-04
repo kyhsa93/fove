@@ -48,7 +48,7 @@ export default function PrivacyPolicyPage(): JSX.Element {
               .
             </p>
             <p>
-              None of the information you enter into Fove — birth date, birth time, gender, or questionnaire answers — is passed to these services. It never leaves your browser.
+              None of the information you enter into Fove — birth date, birth time, gender, names, or questionnaire answers — is passed to these services. Google Analytics receives only event names, the day&apos;s calendar pillar (the same for every visitor that day), the result type, the score, and which page you moved to next.
             </p>
           </section>
 

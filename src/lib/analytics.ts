@@ -1,7 +1,10 @@
 type EventName = 'fortune_generated' | 'fortune_completed' | 'fortune_scrolled' | 'shared' | 'clicked_next'
 
 interface EventProps {
-  [key: string]: string | number | boolean | undefined
+  pillar?: string
+  score?: number
+  kind?: 'saju' | 'mbti' | 'combined'
+  destination?: string
 }
 
 declare global {

@@ -552,7 +552,7 @@ export function CompatShareCardButton({ data }: { data: CompatShareData }): JSX.
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
     }, 'image/png')
-    trackEvent('shared', { pillar: `${data.labelA}x${data.labelB}`, score: data.totalScore })
+    trackEvent('shared', { kind: data.kind, score: data.totalScore })
   }, [data])
 
   return <DownloadButton onSave={handleSave} label="궁합 카드 저장" />
