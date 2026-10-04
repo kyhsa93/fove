@@ -110,6 +110,11 @@ export default function InsightPage(): JSX.Element {
             <h1 className="text-3xl font-bold text-gray-900">사주 · MBTI 통합 인사이트</h1>
             <p className="text-sm text-gray-600">사주와 MBTI를 함께 분석해 나만의 성향 리포트를 제공합니다.</p>
           </header>
+          <div className="space-y-3 text-sm leading-relaxed text-gray-700">
+            <p>이 페이지는 Fove의 사주 풀이와 MBTI 검사에서 이미 낸 결과를 한 화면에 모아 보여 줍니다. 새로 묻는 것은 없고, 이 브라우저에 저장된 두 결과를 읽어 옵니다.</p>
+            <p>사주 결과에서 가장 강한 오행을 고르고, MBTI 네 글자 가운데 두 글자와 짝지어 미리 써 둔 문장을 붙입니다. 오행 다섯 가지와 MBTI 글자 여덟 가지의 조합마다 문장이 하나씩 있고, 그 뒤에 오늘의 운세에서 나온 행동 한 줄이 이어집니다.</p>
+            <p>그 아래에는 사주 기반 성향(직업·적성, 재물, 명예·사회성, 건강)과 MBTI 기반 성향, 오늘 해 볼 것과 주의할 점이 나란히 놓입니다. 성향을 재미로 비춰 보는 참고 자료이며, 진로나 건강처럼 중요한 결정의 근거로 쓰기에는 맞지 않습니다.</p>
+          </div>
           <div className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-6 text-center space-y-4">
             <p className="text-sm text-amber-800">사주 정보를 먼저 입력하면 통합 인사이트를 확인할 수 있습니다.</p>
             <div className="flex justify-center gap-3">

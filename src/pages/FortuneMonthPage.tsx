@@ -3,6 +3,7 @@ import { buildMonthlyFortune, buildDailyFortune } from '../lib/saju'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
+import { useHydrated } from '../hooks/useHydrated'
 import { getMonthHistory, getMonthStats, scoreGrade } from '../lib/fortuneHistory'
 import { getMonthCheckin, getCheckinStats, MOOD_META } from '../lib/checkin'
 import { getStreakCount } from '../lib/streak'
@@ -90,7 +91,8 @@ export default function FortuneMonthPage(): JSX.Element {
     return (Object.entries(elementCounts) as [Element, number][]).sort((a, b) => b[1] - a[1])[0]
   }, [elementCounts])
 
-  const monthLabel = new Intl.DateTimeFormat('ko', { year: 'numeric', month: 'long' }).format(new Date(year, month - 1, 1))
+  const hydrated = useHydrated()
+  const monthLabel = hydrated ? new Intl.DateTimeFormat('ko', { year: 'numeric', month: 'long' }).format(new Date(year, month - 1, 1)) : '이번 달'
 
   return (
     <section className="py-6 sm:py-8">

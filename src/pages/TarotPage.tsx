@@ -1,5 +1,6 @@
 import { JSX, useMemo, useState } from 'react'
 import { getDailyDraw } from '../lib/tarotDraw'
+import { useHydrated } from '../hooks/useHydrated'
 import { POSITIONS } from '../data/tarot'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
@@ -75,8 +76,11 @@ export default function TarotPage(): JSX.Element {
   const [revealed, setRevealed] = useState<[boolean, boolean, boolean]>([false, false, false])
   const allRevealed = revealed.every(Boolean)
 
+  const hydrated = useHydrated()
   const now = new Date()
-  const dateLabel = new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }).format(now)
+  const dateLabel = hydrated
+    ? new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }).format(now)
+    : '오늘'
 
   const revealCard = (idx: 0 | 1 | 2) => {
     setRevealed((prev) => {

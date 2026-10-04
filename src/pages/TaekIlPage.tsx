@@ -1,6 +1,7 @@
 import { JSX, useMemo, useState } from 'react'
 import { buildMonthlyFortune, buildDailyFortune } from '../lib/saju'
 import { useSajuCalculator } from '../hooks/useSajuCalculator'
+import { useHydrated } from '../hooks/useHydrated'
 import { navigateTo } from '../lib/router'
 import { ROUTE_PATHS } from '../routes'
 import { ShareLinkButton } from '../components/ShareLinkButton'
@@ -81,7 +82,8 @@ export default function TaekIlPage(): JSX.Element {
   const now = new Date()
   const year = now.getFullYear()
   const month = now.getMonth() + 1
-  const monthLabel = new Intl.DateTimeFormat('ko', { year: 'numeric', month: 'long' }).format(now)
+  const hydrated = useHydrated()
+  const monthLabel = hydrated ? new Intl.DateTimeFormat('ko', { year: 'numeric', month: 'long' }).format(now) : '이번 달'
 
   const monthlyFortune = useMemo(() => buildMonthlyFortune(), [])
 
