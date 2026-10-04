@@ -1,6 +1,5 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import { ZODIAC_SLUGS } from './zodiac.mjs'
 
 const distDir = path.resolve('dist')
 const sitemapPath = path.join(distDir, 'sitemap.xml')
@@ -25,11 +24,6 @@ const routes = [
   { path: `${routePrefix}/fortune/year`, changefreq: 'monthly', priority: '0.7' },
   { path: `${routePrefix}/zodiac`, changefreq: 'monthly', priority: '0.8' },
   { path: `${routePrefix}/zodiac/compatibility`, changefreq: 'monthly', priority: '0.8' },
-  ...ZODIAC_SLUGS.map((slug) => ({
-    path: `${routePrefix}/zodiac/${slug}`,
-    changefreq: 'monthly',
-    priority: '0.7'
-  })),
   { path: `${routePrefix}/insight`, changefreq: 'monthly', priority: '0.8' },
   { path: `${routePrefix}/compatibility`, changefreq: 'monthly', priority: '0.8' },
   { path: `${routePrefix}/compatibility/combined`, changefreq: 'monthly', priority: '0.8' },

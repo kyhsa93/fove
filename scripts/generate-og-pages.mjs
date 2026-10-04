@@ -72,6 +72,7 @@ const routes = [
   },
   ...ZODIAC_SIGNS.map(({ slug, animal, branch, element }) => ({
     path: `/zodiac/${slug}`,
+    noindex: true,
     title: `${animal}띠 운세 — 성격·궁합·직업 특성 | Fove`,
     ogTitle: `${animal}띠 운세 — Fove`,
     description: `${animal}띠(${branch}, ${element} 기운)의 타고난 기질과 관계·직업·재물·건강 특성을 확인하세요. 삼합·육합 기반 띠 궁합도 함께 분석합니다.`,
