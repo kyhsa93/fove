@@ -1,5 +1,6 @@
 import { JSX, useEffect, useRef, useState } from 'react'
 import type { Gender } from '../lib/saju'
+import { useHydrated } from '../hooks/useHydrated'
 
 interface SajuFormProps {
   birthDate: string
@@ -49,6 +50,7 @@ export function SajuForm({
   onGenderChange,
   onNameChange,
 }: SajuFormProps): JSX.Element {
+  const hydrated = useHydrated()
   const init = parseDateParts(birthDate)
   const [year, setYear] = useState(init.year)
   const [month, setMonth] = useState(init.month)
@@ -144,7 +146,7 @@ export function SajuForm({
           )}
           <div className="space-y-0.5">
             <dt className="text-xs uppercase tracking-[0.08em] text-gray-500">생년월일</dt>
-            <dd className="font-medium text-gray-900">{formatBirthDate()}</dd>
+            <dd className="font-medium text-gray-900">{hydrated ? formatBirthDate() : '—'}</dd>
           </div>
           <div className="space-y-0.5">
             <dt className="text-xs uppercase tracking-[0.08em] text-gray-500">태어난 시간</dt>
