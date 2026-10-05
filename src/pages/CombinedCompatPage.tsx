@@ -155,7 +155,7 @@ export default function CombinedCompatPage(): JSX.Element {
   }
 
   const combinedShareOptions = useMemo(() => ({
-    title: combinedScore > 0 ? `사주+MBTI 통합 궁합 ${combinedScore}점 — Fove` : 'Fove 사주+MBTI 통합 궁합',
+    title: combinedScore !== null && combinedScore > 0 ? `사주+MBTI 통합 궁합 ${combinedScore}점 — Fove` : 'Fove 사주+MBTI 통합 궁합',
     description: '사주 오행과 MBTI를 결합한 통합 궁합을 확인해보세요!',
     url: `${typeof window !== 'undefined' ? window.location.origin : ''}${typeof window !== 'undefined' ? window.location.pathname : '/compatibility/combined'}?type=${activeType}`,
   }), [activeType, combinedScore])
