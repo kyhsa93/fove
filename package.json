@@ -2,7 +2,7 @@
   "name": "fove",
   "private": true,
   "version": "0.2.0",
-  "description": "Dot image generator with Vite, React, Tailwind",
+  "description": "Saju (Four Pillars) and MBTI fortune web app — React, Vite SSG, Tailwind",
   "license": "UNLICENSED",
   "type": "module",
   "scripts": {
