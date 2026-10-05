@@ -14,7 +14,7 @@ export function ConsentBanner(): JSX.Element | null {
     >
       <div className="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white/95 px-4 py-4 shadow-xl backdrop-blur sm:flex sm:items-center sm:gap-6 sm:px-6">
         <p className="flex-1 text-sm leading-relaxed text-slate-600">
-          Fove는 관련성 높은 광고 제공을 위해 쿠키를 사용합니다.
+          Fove는 방문 측정(Google Analytics)과 광고(Google AdSense)에 쿠키를 사용합니다. 거부하면 광고 스크립트는 불러오지 않지만 방문 측정은 계속됩니다.
           자세한 내용은{' '}
           <a
             href={`${import.meta.env.BASE_URL}privacy-policy`}
