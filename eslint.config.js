@@ -32,7 +32,6 @@ export default [
       '@typescript-eslint/no-require-imports': 'off',
     },
   },
-  { files: ['server.js'], languageOptions: { sourceType: 'commonjs' } },
   {
     files: ['**/*.html'],
     languageOptions: { parser: htmlParser },
