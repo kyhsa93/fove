@@ -626,6 +626,14 @@ export const LUCKY_DIRECTION: Record<Branch, string> = {
   '술': '서북', '해': '북'
 }
 
+export const ELEMENT_DIRECTION: Record<Element, string> = {
+  '목': '동쪽',
+  '화': '남쪽',
+  '토': '중앙',
+  '금': '서쪽',
+  '수': '북쪽'
+}
+
 export const SCORE_BASE: Record<'strong' | 'weak' | 'supportive' | 'neutral', number> = {
   strong: 85,
   supportive: 75,

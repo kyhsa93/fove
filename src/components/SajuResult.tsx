@@ -9,7 +9,7 @@ import {
   ELEMENT_CONTROLS,
   HEALTH_TIPS_BY_ELEMENT,
   LUCKY_COLOR,
-  LUCKY_DIRECTION,
+  ELEMENT_DIRECTION,
   LUCKY_FOOD,
   ELEMENT_PRODUCES,
   PILLAR_FOCUS,
@@ -492,7 +492,7 @@ function SupplementGuide({ weakest, strongest }: { weakest: Element; strongest: 
   const ITEMS = [
     { icon: '🍽️', label: '챙길 음식', value: LUCKY_FOOD[weakest] },
     { icon: '🎨', label: '보완 색상', value: LUCKY_COLOR[weakest] },
-    { icon: '🧭', label: '좋은 방위', value: `${LUCKY_DIRECTION[weakest]}쪽` },
+    { icon: '🧭', label: '좋은 방위', value: ELEMENT_DIRECTION[weakest] },
     { icon: '💪', label: '추천 활동', value: ELEMENT_ACTION_DO[weakest] },
   ]
 
