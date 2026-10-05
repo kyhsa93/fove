@@ -8,21 +8,26 @@ export default function ContactPage(): JSX.Element {
           <span className="text-xs font-semibold uppercase tracking-[0.18em] text-rose-500/80">Contact</span>
           <h1 className="text-3xl font-bold text-slate-900">Get in Touch</h1>
           <p className="text-base leading-relaxed text-slate-600">
-            Share feedback, report bugs, or start a collaboration. We read every message and respond as quickly as possible.
+            Fove is a personal side project run by one developer. Feedback and bug reports go to the project's public issue tracker on GitHub.
           </p>
         </header>
 
         <div className="space-y-6 text-sm leading-relaxed text-slate-700">
           <section className="space-y-3">
-            <h2 className="text-lg font-semibold text-slate-900">Primary Contact</h2>
+            <h2 className="text-lg font-semibold text-slate-900">Where to Write</h2>
             <div className="rounded-2xl border border-rose-100 bg-rose-50/60 px-2 py-4 text-slate-700 sm:px-6 sm:py-6">
-              <p className="text-sm">Email</p>
+              <p className="text-sm">GitHub Issues</p>
               <a
-                href="mailto:hello@fove.app"
+                href="https://github.com/kyhsa93/fove/issues"
+                target="_blank"
+                rel="noreferrer"
                 className="text-lg font-semibold text-rose-600 hover:underline"
               >
-                hello@fove.app
+                github.com/kyhsa93/fove/issues
               </a>
+              <p className="mt-2 text-xs text-slate-500">
+                Issues are public. Do not include your birth date, birth time, or other personal details.
+              </p>
             </div>
           </section>
 
@@ -31,14 +36,13 @@ export default function ContactPage(): JSX.Element {
             <ul className="list-disc space-y-2 pl-5">
               <li>Include as many details as possible when suggesting improvements or new features.</li>
               <li>For bug reports, describe the steps to reproduce and share your browser and version.</li>
-              <li>Collaboration inquiries move faster if you add information about your company or team.</li>
             </ul>
           </section>
 
           <section className="space-y-2">
             <h2 className="text-lg font-semibold text-slate-900">Response Time</h2>
             <p>
-              We aim to reply within 48 business hours. If a response takes longer, we will follow up via email with the latest status.
+              Issues are read when the developer has time; there is no guaranteed response time.
             </p>
           </section>
         </div>
